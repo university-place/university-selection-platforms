@@ -1,0 +1,21 @@
+examID,dateOfBirth,studentNationalID,firstName,lastName,email,phone,region,mathScore,englishScore,totalResult
+EXM-2024-0001,2004-05-15,1234567890123,Abebe,Kebededd,abebe.k@example.com,+251911222333,Addis Ababa,85,78,totalResult
+EXM-2024-0002,2003-08-22,1234567890124,Almaz,Getnet,almaz.g@example.com,+251921333444,Dire Dawa,92,88,totalResult
+EXM-2024-0003,2004-12-01,1234567890125,Bekele,Haile,bekele.h@example.com,+251922444555,Amhara,74,69,totalResult
+EXM-2024-0004,2005-03-09,1234567890126,Eleni,Tadesse,eleni.t@example.com,+251911555666,Oromia,88,84,totalResult
+EXM-2024-0005,2003-11-30,1234567890127,Mohammed,Ali,mohammed.a@example.com,+251913777888,SNNPR,79,81,totalResult
+EXM-2024-0006,2004-07-18,1234567890128,Hanna,Samuel,hanna.s@example.com,+251914888999,Gambela,91,90,totalResult
+EXM-2024-0007,2002-02-02,1234567890129,Zelalem,Biru,zelalem.b@example.com,+251915000111,Afar,65,58,totalResult
+EXM-2024-0008,2004-09-25,1234567890130,Liya,Negash,liya.n@example.com,+251916222333,Benshangul-Gumuz,83,76,totalResult
+EXM-2024-0009,2003-06-14,1234567890131,Yared,Tefera,yared.t@example.com,+251917333444,Harari,77,72,totalResult
+EXM-2024-0010,2005-01-20,1234567890132,Selam,Abate,selam.a@example.com,+251918444555,Afar,69,64,totalResult
+EXM-2024-0011,2004-04-04,1234567890133,Rahwa,Mekonnen,rahwa.m@example.com,+251919555666,Addis Ababa,95,93,totalResult
+EXM-2024-0012,2003-10-10,1234567890134,Samuel,Bekele,samuel.b@example.com,+251920666777,Oromia,82,80,totalResult
+EXM-2024-0013,2004-02-28,1234567890135,Meron,Fikadu,meron.f@example.com,+251921777888,SNNPR,87,85,totalResult
+EXM-2024-0014,2003-05-05,1234567890136,Getachew,Yared,getachew.y@example.com,+251922888999,Amhara,73,70,totalResult
+EXM-2024-0015,2005-08-08,1234567890137,Aster,Worku,aster.w@example.com,+251923000222,Dire Dawa,90,89,totalResult
+EXM-2024-0016,2004-11-11,1234567890138,Mesfin,Hailu,mesfin.h@example.com,+251924111333,Gambela,78,74,totalResult
+EXM-2024-0017,2003-07-07,1234567890139,Betelhem,Sisay,betelhem.s@example.com,+251925222444,Benshangul-Gumuz,86,82,totalResult
+EXM-2024-0018,2004-03-03,1234567890140,Abel,Fantu,abel.f@example.com,+251926333555,Harari,71,68,totalResult
+EXM-2024-0019,2005-09-09,1234567890141,Selamawit,Kassu,selamawit.k@example.com,+251927444666,Addis Ababa,94,91,totalResult
+EXM-2024-0020,2003-12-12,1234567890142,Mirutse,Hailemariam,mirutse.h@example.com,+251928555777,Oromia,80,79,totalResult

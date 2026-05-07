@@ -1,0 +1,11 @@
+name,code,type,region,address,contactEmail,contactPhone,website,description
+Bahir Dar University,BDU,public,Amhara,Bahir Dar,nolawit21zeradawit@gmail.com,+251912345678,https://www.bdu.edu.et,A leading university in the Amhara region
+Addis Ababa University,AAU,public,Addis Ababa,Addis Ababa,getahunr3@gmail.com,+251987654321,https://www.aau.edu.et,The oldest and largest university in Ethiopia
+Jimma University,JU,public,Oromia,Jimma,genzebandargie51@gmail.com,+251911111111,https://www.ju.edu.et,Comprehensive university known for health sciences
+Haramaya University,HAR,public,Oromia,Harar,getahunrediet3@gmail.com,+251922222222,https://www.haramaya.edu.et,Historic agricultural university
+Mekelle University,MU,public,Tigray,Mekelle,info@mu.edu.et,+251933333333,https://www.mu.edu.et,Prominent university in northern Ethiopia
+Hawassa University,HAS,public,SNNPR,Hawassa,info@hu.edu.et,+251944444444,https://www.hu.edu.et,University in the southern region
+Adama Science and Technology University,ASTU,autonomous,Oromia,Adama,info@astu.edu.et,+251955555555,https://www.astu.edu.et,Specialized in science and technology
+Dire Dawa University,DU,public,Dire Dawa,Dire Dawa,info@ddu.edu.et,+251966666666,https://www.ddu.edu.et,University in eastern Ethiopia
+St. Mary's University,SMU,private,Addis Ababa,Addis Ababa,info@smu.edu.et,+251977777777,https://www.smu.edu.et,One of the oldest private universities
+Unity University,UU,private,Addis Ababa,Addis Ababa,info@unityuniversity.edu.et,+251988888888,https://www.unityuniversity.edu.et,Pioneer private higher education institution

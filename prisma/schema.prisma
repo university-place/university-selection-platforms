@@ -1,0 +1,468 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Student {
+  id                        Int                         @id @default(autoincrement())
+  examID                    String
+  dateOfBirth               DateTime
+  studentNationalID         String
+  firstName                 String
+  lastName                  String
+  email                     String?                     // ✅ Made optional with ?
+  phone                     String?                     // ✅ Made optional with ?
+  region                    String?
+  examResults               Json?
+  dataVersion               String?
+  lastSyncedAt              DateTime?
+  createdAt                 DateTime                    @default(now())
+  updatedAt                 DateTime                    @updatedAt
+  academicYear              String
+  isActive                  Boolean                     @default(true)
+  status                    String?
+  createdBy                 String?
+  updatedBy                 String?
+  isRegistered              Boolean                     @default(false)
+  password                  String?
+  disability                String?
+  gender                    String?
+  photo                     String?
+  age                       Int?
+  school                    String?
+  emailVerified             Boolean                     @default(false)
+  stream                    String?
+  isForeign                 Boolean                     @default(false)
+  nationality               String?
+  appeal                    Appeal[]
+  applications              Application[]
+  DepartmentPlacement       DepartmentPlacement[]
+  documents                 Document[]
+  InterviewInvitation       InterviewInvitation[]
+  placements                Placement[]
+  preferences               Preference[]
+  StudentConfirmation       StudentConfirmation[]
+  studentVerificationTokens StudentVerificationToken[]
+  UniversityAdmissionResult UniversityAdmissionResult[]
+
+  @@unique([examID, academicYear])
+  @@index([academicYear, isActive])
+}
+
+model AcademicYear {
+  id        Int      @id @default(autoincrement())
+  year      String   @unique
+  isActive  Boolean  @default(false)
+  archived  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?
+  updatedBy String?
+}
+
+model PlatformAdmin {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  name      String?
+  role      String   @default("PLATFORM_ADMIN")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id                 String              @id @default(cuid())
+  email              String              @unique
+  password           String?
+  name               String?
+  role               String              @default("MOE_ADMIN")
+  isActive           Boolean             @default(true)
+  lastLogin          DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  emailVerified      Boolean             @default(false)
+  auditLogs          AuditLog[]
+  universityAdmin    UniversityAdmin?
+  verificationTokens VerificationToken[]
+}
+
+model AuditLog {
+  id              Int      @id @default(autoincrement())
+  action          String
+  userId          String?
+  userEmail       String?
+  academicYear    String?
+  recordsInserted Int?
+  recordsSkipped  Int?
+  filename        String?
+  ipAddress       String?
+  userAgent       String?
+  timestamp       DateTime @default(now())
+  user            User?    @relation(fields: [userId], references: [id])
+}
+
+model University {
+  id                        Int                         @id @default(autoincrement())
+  name                      String                      @unique
+  code                      String                      @unique
+  type                      String
+  region                    String?
+  address                   String?
+  contactEmail              String?
+  contactPhone              String?
+  website                   String?
+  description               String?
+  isActive                  Boolean                     @default(true)
+  isVerified                Boolean                     @default(false)
+  verifiedBy                String?
+  verifiedAt                DateTime?
+  createdAt                 DateTime                    @default(now())
+  updatedAt                 DateTime                    @updatedAt
+  admissionInstructions     String?
+  postDecisionInstructions  String?
+  apiKey                    String?                     @unique
+  complianceNotes           String?
+  complianceStatus          String?
+  lastAdmissionInfoUpdate   DateTime?
+  lastCapacityDeclaration   DateTime?
+  allowedDomains            String[]
+  isRegistered              Boolean                     @default(false)
+  applicationDeadline       DateTime?
+  keyFacts                  Json?
+  accreditation             String?
+  history                   String?
+  achievements              String?
+  facilities                String?
+  researchAreas             String?
+  studentLife               String?
+  isAutonomous              Boolean                     @default(false)
+  applicationStartDate      DateTime?                   @db.Timestamp(6)
+  DepartmentPlacement       DepartmentPlacement[]
+  documents                 Document[]
+  InterviewInvitation       InterviewInvitation[]
+  placements                Placement[]
+  preferences               Preference[]
+  programs                  Program[]
+  StudentConfirmation       StudentConfirmation[]
+  admins                    UniversityAdmin[]
+  UniversityAdmissionResult UniversityAdmissionResult[]
+}
+
+model UniversityAdmin {
+  id           Int        @id @default(autoincrement())
+  userId       String     @unique
+  universityId Int
+  department   String?
+  permissions  Json?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  university   University @relation(fields: [universityId], references: [id])
+  user         User       @relation(fields: [userId], references: [id])
+}
+
+model Program {
+  id                         Int                         @id @default(autoincrement())
+  universityId               Int
+  name                       String
+  code                       String
+  fieldOfStudy               String?
+  degree                     String?
+  duration                   Int?
+  description                String?
+  eligibilityRules           Json?
+  isActive                   Boolean                     @default(true)
+  createdAt                  DateTime                    @default(now())
+  updatedAt                  DateTime                    @updatedAt
+  intakeCapacity             Int                         @default(0)
+  isVerified                 Boolean                     @default(false)
+  requiresApproval           Boolean                     @default(true)
+  admissionTracks            AdmissionTrack[]
+  DepartmentPlacement        DepartmentPlacement[]
+  eligibilityRuleRelations   EligibilityRule[]
+  InterviewInvitation        InterviewInvitation[]
+  placements                 Placement[]
+  preferences                Preference[]
+  university                 University                  @relation(fields: [universityId], references: [id])
+  StudentConfirmation        StudentConfirmation[]
+  universityAdmissionResults UniversityAdmissionResult[]
+}
+
+model AdmissionTrack {
+  id                        Int                         @id @default(autoincrement())
+  programId                 Int
+  name                      String
+  intakeCapacity            Int
+  eligibilityRules          Json?
+  applicationFee            Float?
+  startDate                 DateTime?
+  deadline                  DateTime?
+  isActive                  Boolean                     @default(true)
+  createdAt                 DateTime                    @default(now())
+  updatedAt                 DateTime                    @updatedAt
+  targetAudience            String?
+  description               String?
+  program                   Program                     @relation(fields: [programId], references: [id])
+  InterviewInvitation       InterviewInvitation[]
+  placements                Placement[]
+  preferences               Preference[]
+  UniversityAdmissionResult UniversityAdmissionResult[]
+}
+
+model Application {
+  id              Int          @id @default(autoincrement())
+  studentId       Int
+  academicYear    String
+  submissionDate  DateTime     @default(now())
+  attemptCount    Int          @default(1)
+  isFinal         Boolean      @default(false)
+  status          String       @default("DRAFT")
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  lastSubmittedAt DateTime?
+  submissionCount Int?         @default(0)
+  student         Student      @relation(fields: [studentId], references: [id])
+  preferences     Preference[]
+}
+
+model Document {
+  id                 Int         @id @default(autoincrement())
+  studentId          Int
+  type               String
+  fileName           String
+  fileUrl            String
+  fileSize           Int?
+  mimeType           String?
+  uploadDate         DateTime    @default(now())
+  verificationStatus String      @default("PENDING")
+  verifiedBy         String?
+  verifiedAt         DateTime?
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  scope              String?     @default("general")
+  universityId       Int?
+  preferenceId       Int?
+  preference         Preference? @relation(fields: [preferenceId], references: [id], onUpdate: NoAction)
+  student            Student     @relation(fields: [studentId], references: [id])
+  university         University? @relation(fields: [universityId], references: [id], onUpdate: NoAction)
+
+  @@index([universityId])
+  @@index([preferenceId])
+  @@index([scope])
+}
+
+model EligibilityRule {
+  id               Int      @id @default(autoincrement())
+  programId        Int
+  minScore         Int      @default(0)
+  maxScore         Int      @default(350)
+  region           String?
+  disabilityStatus String?
+  stream           String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  program          Program  @relation(fields: [programId], references: [id])
+}
+
+model Preference {
+  id                   Int             @id @default(autoincrement())
+  applicationId        Int
+  universityId         Int
+  programId            Int?
+  admissionTrackId     Int?
+  status               String?         @default("PENDING")
+  decisionDate         DateTime?
+  academicYear         String?         // ✅ ADD THIS LINE
+  confirmationDeadline DateTime?
+  confirmedAt          DateTime?
+  remarks              String?
+  weightedScore        Float?
+  weightPercent        Float?
+  placementReason      String?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  studentId            Int?
+  submissionCount      Int             @default(0)
+  submittedAt          DateTime?
+  isCancelled          Boolean?        @default(false)
+  cancelledAt          DateTime?       @db.Timestamp(6)
+  cancelledReason      String?
+  appeals              Appeal[]
+  documents            Document[]
+  admissionTrack       AdmissionTrack? @relation(fields: [admissionTrackId], references: [id])
+  application          Application     @relation(fields: [applicationId], references: [id])
+  program              Program?        @relation(fields: [programId], references: [id])
+  student              Student?        @relation(fields: [studentId], references: [id])
+  university           University      @relation(fields: [universityId], references: [id])
+}
+
+model Appeal {
+  id           Int         @id @default(autoincrement())
+  studentId    Int
+  preferenceId Int?
+  type         String
+  description  String
+  evidence     Json?
+  status       String      @default("pending")
+  resolution   String?
+  resolvedBy   String?
+  resolvedAt   DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  preference   Preference? @relation(fields: [preferenceId], references: [id])
+  student      Student     @relation(fields: [studentId], references: [id])
+}
+
+model Placement {
+  id               Int             @id @default(autoincrement())
+  studentId        Int
+  universityId     Int
+  programId        Int
+  admissionTrackId Int?
+  academicYear     String
+  status           String
+  remarks          String?
+  confirmedAt      DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  admissionTrack   AdmissionTrack? @relation(fields: [admissionTrackId], references: [id])
+  program          Program         @relation(fields: [programId], references: [id])
+  student          Student         @relation(fields: [studentId], references: [id])
+  university       University      @relation(fields: [universityId], references: [id])
+
+  @@unique([studentId, universityId, programId, academicYear])
+}
+
+model DepartmentPlacement {
+  id            Int        @id @default(autoincrement())
+  studentId     Int
+  universityId  Int
+  programId     Int
+  department    String
+  academicYear  String
+  placementDate DateTime   @default(now())
+  status        String     @default("PLACED")
+  submittedBy   String
+  remarks       String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  program       Program    @relation(fields: [programId], references: [id])
+  student       Student    @relation(fields: [studentId], references: [id])
+  university    University @relation(fields: [universityId], references: [id])
+
+  @@unique([studentId, universityId, programId, academicYear])
+  @@index([academicYear, universityId, status])
+  @@index([studentId])
+}
+
+model StudentConfirmation {
+  id                   Int        @id @default(autoincrement())
+  studentId            Int
+  universityId         Int
+  programId            Int?
+  academicYear         String
+  confirmationDeadline DateTime
+  confirmedAt          DateTime?
+  confirmed            Boolean    @default(false)
+  status               String     @default("PENDING")
+  remarks              String?
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+  program              Program?   @relation(fields: [programId], references: [id])
+  student              Student    @relation(fields: [studentId], references: [id])
+  university           University @relation(fields: [universityId], references: [id])
+
+  @@unique([studentId, universityId, academicYear])
+  @@index([studentId, confirmed, confirmationDeadline])
+  @@index([universityId, academicYear])
+}
+
+model UniversityAdmissionResult {
+  id               Int             @id @default(autoincrement())
+  studentId        Int
+  universityId     Int
+  programId        Int?
+  admissionTrackId Int?
+  academicYear     String
+  decision         String
+  decisionDate     DateTime        @default(now())
+  decisionNotes    String?
+  publishedBy      String
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  admissionTrack   AdmissionTrack? @relation(fields: [admissionTrackId], references: [id])
+  program          Program?        @relation(fields: [programId], references: [id])
+  student          Student         @relation(fields: [studentId], references: [id])
+  university       University      @relation(fields: [universityId], references: [id])
+
+  @@unique([studentId, universityId, programId, academicYear])
+  @@index([universityId, academicYear, decision])
+}
+
+model SystemConfig {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       Json
+  description String?
+  updatedAt   DateTime @updatedAt
+  updatedBy   String?
+}
+
+model VerificationToken {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  usedAt    DateTime?
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@index([token])
+  @@index([expiresAt])
+}
+
+model StudentVerificationToken {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  studentId Int
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  usedAt    DateTime?
+  student   Student   @relation(fields: [studentId], references: [id])
+
+  @@index([token])
+  @@index([expiresAt])
+}
+
+model InterviewInvitation {
+  id               Int             @id @default(autoincrement())
+  studentId        Int
+  universityId     Int
+  programId        Int?
+  admissionTrackId Int?
+  academicYear     String
+  type             String
+  date             DateTime
+  location         String?
+  instructions     String?
+  status           String          @default("PENDING")
+  studentResponse  String?
+  respondedAt      DateTime?
+  result           String?
+  resultNotes      String?
+  publishedBy      String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  responseDeadline DateTime?
+  admissionTrack   AdmissionTrack? @relation(fields: [admissionTrackId], references: [id])
+  program          Program?        @relation(fields: [programId], references: [id])
+  student          Student         @relation(fields: [studentId], references: [id])
+  university       University      @relation(fields: [universityId], references: [id])
+
+  @@index([studentId, status])
+  @@index([universityId, date])
+  @@index([academicYear])
+  @@index([responseDeadline, status])
+}

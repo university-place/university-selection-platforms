@@ -1,0 +1,4 @@
+examID,dateOfBirth,studentNationalID,firstName,lastName,email,phone,region,mathScore,englishScore,status
+EXM-2025-001,2005-06-20,2234567890123,New,Student1,new1@example.com,+251912345678,Addis Ababa,88,90,PASS
+EXM-2025-002,2004-09-15,2234567890124,New,Student2,new2@example.com,+251923456789,Dire Dawa,79,84,PASS
+EXM-2025-003,2006-01-30,2234567890125,New,Student3,new3@example.com,+251934567890,Bahir Dar,91,89,PASS
