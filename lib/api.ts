@@ -621,7 +621,7 @@ export const platformAPI = {
     if (!token) return { success: false, error: 'No token found' };
     
     try {
-      const res = await fetch(`${API_BASE}/admin/universities`, {
+      const res = await fetch(`${API_BASE}/admin/universities/list`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return await res.json();
@@ -689,6 +689,40 @@ export const platformAPI = {
     
     try {
       const res = await fetch(`${API_BASE}/admin/users/${userId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return await res.json();
+    } catch (error) {
+      return { success: false, error: 'Network error' };
+    }
+  },
+
+  toggleStudent: async (studentId: string, activate: boolean) => {
+    const token = authHelpers.getToken();
+    if (!token) return { success: false, error: 'No token found' };
+    
+    try {
+      const res = await fetch(`${API_BASE}/admin/students/${studentId}/toggle`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({ isActive: activate }),
+      });
+      return await res.json();
+    } catch (error) {
+      return { success: false, error: 'Network error' };
+    }
+  },
+
+  deleteStudent: async (studentId: string) => {
+    const token = authHelpers.getToken();
+    if (!token) return { success: false, error: 'No token found' };
+    
+    try {
+      const res = await fetch(`${API_BASE}/admin/students/${studentId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -771,11 +805,12 @@ export const moeAPI = {
   },
 
   // ── Students ────────────────────────────────────────────────────
-  getStudents: async (page = 1, limit = 50, search = '', stream = '') => {
+  getStudents: async (page = 1, limit = 50, search = '', stream = '', placementStatus = '') => {
     try {
       const params = new URLSearchParams({ page: String(page), limit: String(limit) });
       if (search) params.set('search', search);
       if (stream) params.set('stream', stream === 'Natural Science' ? 'natural' : 'social');
+      if (placementStatus) params.set('placementStatus', placementStatus);
       const res = await fetch(`/api/admin/students?${params}`, { headers: getMoeAuthHeader() });
       const data = await res.json();
       if (data.success) {

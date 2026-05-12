@@ -15,9 +15,15 @@ export async function GET(request: Request) {
 
     const token = authHeader.substring(7);
     let decoded: any;
+    
+    // ✅ DECLARE allowedRoles ONLY ONCE at the top
+    const allowedRoles = ['MOE_ADMIN', 'PLATFORM_ADMIN', 'moe_admin', 'platform_admin', 'MOE', 'ADMIN'];
+    
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
-      console.log('Decoded token:', { role: decoded.role, email: decoded.email });
+      console.log('Decoded token role:', decoded.role);
+      console.log('Allowed roles:', allowedRoles);
+      console.log('Is allowed:', allowedRoles.includes(decoded.role));
     } catch (err) {
       return NextResponse.json(
         { success: false, error: 'Invalid token' },
@@ -26,7 +32,9 @@ export async function GET(request: Request) {
     }
 
     // 2. Role check - Accept multiple variations (case insensitive)
-    const allowedRoles = ['MOE_ADMIN', 'PLATFORM_ADMIN', 'moe_admin', 'platform_admin', 'MOE', 'ADMIN'];
+    // ✅ REMOVE this duplicate declaration!
+    // const allowedRoles = ['MOE_ADMIN', 'PLATFORM_ADMIN', ...];  // ← DELETE THIS LINE
+    
     const userRole = decoded.role?.toUpperCase();
     
     if (!allowedRoles.includes(decoded.role) && !allowedRoles.includes(userRole)) {

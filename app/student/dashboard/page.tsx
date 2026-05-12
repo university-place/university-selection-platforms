@@ -1214,10 +1214,9 @@ export default function StudentDashboardPage() {
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'profile', label: 'Profile & Documents', icon: User },
     { id: 'exam-results', label: 'Exam Results', icon: FileText },
-    { id: 'admission-tracks', label: 'Admission Tracks', icon: Award },
     { id: 'universities', label: 'Universities', icon: University },
     { id: 'preferences', label: 'My Preferences', icon: ClipboardList },
-    { id: 'placement', label: 'Placement & Appeal', icon: FileCheck },
+    { id: 'apeal', label: ' Appeal', icon: FileCheck },
     { id: 'invitations', label: 'My Invitations', icon: Mail },  // ✅ ADD THIS
     { id: 'my-placements', label: '📋 My Placement Offers', icon: Award },
     { id: 'notifications', label: 'Notifications', icon: Bell },
@@ -1676,21 +1675,7 @@ export default function StudentDashboardPage() {
         )}
 
         {/* Admission Tracks */}
-        {activeTab === 'admission-tracks' && (
-          <div>
-            <h1 className="text-2xl font-bold mb-6">Admission Tracks</h1>
-            <div className="grid gap-4">
-              {admissionTracks.map(track => (
-                <div key={track.id} className={`bg-white rounded-xl shadow-sm p-6 border-l-8 ${track.isEligible ? 'border-green-500' : 'border-red-500'}`}>
-                  <div className="flex justify-between"><h3 className="font-bold text-lg">{track.name}</h3>{track.isEligible ? <CheckCircle className="text-green-500" /> : <XCircle className="text-red-500" />}</div>
-                  <p className="text-gray-600 mt-2">{track.description}</p>
-                  <p className="text-sm text-gray-500 mt-1">Eligibility: {track.eligibilityCriteria}</p>
-                  <p className="text-sm text-gray-500">Capacity: {track.capacity}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+      
 
         {/* Universities Search & Compare */}
         {activeTab === 'universities' && (
@@ -2367,8 +2352,8 @@ export default function StudentDashboardPage() {
             </div>
           </div>
         </div>
-    )
-  }
+      )}
+
 
     </div>
   );

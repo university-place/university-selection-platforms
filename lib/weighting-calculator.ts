@@ -11,6 +11,13 @@ interface WeightingSettings {
     male: number;
     female: number;
   };
+  disabilityPreferences?: {
+    visual: number;
+    hearing: number;
+    physical: number;
+    learning: number;
+    none: number;
+  };
   disabilityBonus: number;
 }
 
@@ -20,6 +27,7 @@ interface StudentData {
   region: string;
   gender: string;
   hasDisability: boolean;
+  disabilityType?: string;
 }
 
 export function calculateWeightedScore(student: StudentData, settings: WeightingSettings): {
@@ -53,7 +61,12 @@ export function calculateWeightedScore(student: StudentData, settings: Weighting
   
   // 4. Disability Contribution (bonus points)
   let disabilityContribution = 0;
-  if (student.hasDisability) {
+  if (student.hasDisability && student.disabilityType && settings.disabilityPreferences) {
+    const dType = student.disabilityType.toLowerCase() as keyof typeof settings.disabilityPreferences;
+    const prefPercent = settings.disabilityPreferences[dType];
+    const percent = prefPercent !== undefined ? prefPercent : 100;
+    disabilityContribution = (percent / 100) * settings.disabilityWeight;
+  } else if (student.hasDisability) {
     disabilityContribution = settings.disabilityWeight; // Direct points (e.g., 5%)
   }
   

@@ -88,7 +88,8 @@ export async function GET(request: Request) {
         maxExamScore: maxExamScore,
         region: student.region || 'Unknown',
         gender: student.gender || 'Unknown',
-        hasDisability: hasDisability
+        hasDisability: hasDisability,
+        disabilityType: student.disability
       }, settings);
       
       weightedApplicants.push({

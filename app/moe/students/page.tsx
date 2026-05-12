@@ -16,6 +16,7 @@ export default function MOEStudentsPage() {
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [stream, setStream] = useState('');
+  const [placementStatus, setPlacementStatus] = useState('');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
 
@@ -31,7 +32,7 @@ export default function MOEStudentsPage() {
   const fetchStudents = async () => {
     setLoading(true);
     try {
-      const response = await moeAPI.getStudents(page, 10, search, stream);
+      const response = await moeAPI.getStudents(page, 10, search, stream, placementStatus);
       if (response.success) {
         if (Array.isArray(response.data)) {
           setStudents(response.data);
@@ -108,7 +109,7 @@ export default function MOEStudentsPage() {
         {/* Search and Filter */}
         <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
           <form onSubmit={handleSearch} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Search by Exam ID, Name, or Email
@@ -134,6 +135,28 @@ export default function MOEStudentsPage() {
                   <option value="">All Streams</option>
                   <option value="Natural Science">Natural Science</option>
                   <option value="Social Science">Social Science</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Placement Status
+                </label>
+                <select
+                  value={placementStatus}
+                  onChange={(e) => {
+                    setPlacementStatus(e.target.value);
+                    setPage(1);
+                  }}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                >
+                  <option value="">All Statuses</option>
+                  <option value="PLACED">Placed (Any University)</option>
+                  <option value="NOT_PLACED">Not Placed (None)</option>
+                  <option value="MULTI_PLACED">Placed (Multiple Universities)</option>
+                  <option value="ACCEPTED">Accepted by Student</option>
+                  <option value="ACCEPTED_MULTIPLE">Accepted Multiple</option>
+                  <option value="REJECTED">Declined/Rejected by Student</option>
+                  <option value="PENDING">Pending Response</option>
                 </select>
               </div>
               <div className="flex items-end">

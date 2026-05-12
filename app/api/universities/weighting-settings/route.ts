@@ -40,7 +40,9 @@ export async function GET(request: Request) {
         totalWeight: 100,
         regionPreferences: [],
         genderPreferences: { male: 50, female: 50 },
-        disabilityBonus: 5
+        disabilityPreferences: { visual: 100, hearing: 100, physical: 100, learning: 100, none: 0 },
+        disabilityBonus: 5,
+        customCriteria: []
       };
       
       settings = await prisma.systemConfig.create({
@@ -63,10 +65,11 @@ export async function PUT(request: Request) {
   try {
     const { universityId } = await verifyUniversityAdmin(request);
     const body = await request.json();
-    const { examScoreWeight, regionWeight, genderWeight, disabilityWeight, regionPreferences, genderPreferences, disabilityBonus } = body;
+    const { examScoreWeight, regionWeight, genderWeight, disabilityWeight, regionPreferences, genderPreferences, disabilityPreferences, disabilityBonus, customCriteria } = body;
     
     // Validate total weight = 100%
-    const total = (examScoreWeight || 70) + (regionWeight || 15) + (genderWeight || 10) + (disabilityWeight || 5);
+    const customCriteriaSum = (customCriteria || []).reduce((sum: number, c: any) => sum + (c.weight || 0), 0);
+    const total = (examScoreWeight || 70) + (regionWeight || 15) + (genderWeight || 10) + (disabilityWeight || 5) + customCriteriaSum;
     if (total !== 100) {
       return NextResponse.json({ 
         error: `Total weight must equal 100%. Current total: ${total}%` 
@@ -83,7 +86,9 @@ export async function PUT(request: Request) {
           disabilityWeight,
           regionPreferences: regionPreferences || [],
           genderPreferences: genderPreferences || { male: 50, female: 50 },
+          disabilityPreferences: disabilityPreferences || { visual: 100, hearing: 100, physical: 100, learning: 100, none: 0 },
           disabilityBonus: disabilityBonus || 5,
+          customCriteria: customCriteria || [],
           totalWeight: total
         },
         updatedAt: new Date()
@@ -97,7 +102,9 @@ export async function PUT(request: Request) {
           disabilityWeight: disabilityWeight || 5,
           regionPreferences: regionPreferences || [],
           genderPreferences: genderPreferences || { male: 50, female: 50 },
+          disabilityPreferences: disabilityPreferences || { visual: 100, hearing: 100, physical: 100, learning: 100, none: 0 },
           disabilityBonus: disabilityBonus || 5,
+          customCriteria: customCriteria || [],
           totalWeight: total
         },
         description: 'University applicant weighting settings'

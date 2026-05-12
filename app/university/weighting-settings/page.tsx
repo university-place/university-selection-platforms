@@ -12,7 +12,9 @@ interface WeightingSettings {
   disabilityWeight: number;
   regionPreferences: { region: string; weight: number }[];
   genderPreferences: { male: number; female: number };
+  disabilityPreferences: { visual: number; hearing: number; physical: number; learning: number; none: number };
   disabilityBonus: number;
+  customCriteria: { name: string; weight: number }[];
 }
 
 export default function WeightingSettingsPage() {
@@ -23,7 +25,9 @@ export default function WeightingSettingsPage() {
     disabilityWeight: 5,
     regionPreferences: [],
     genderPreferences: { male: 50, female: 50 },
-    disabilityBonus: 5
+    disabilityPreferences: { visual: 100, hearing: 100, physical: 100, learning: 100, none: 0 },
+    disabilityBonus: 5,
+    customCriteria: []
   });
   const [availableRegions, setAvailableRegions] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -99,7 +103,8 @@ export default function WeightingSettingsPage() {
     }
   };
 
-  const totalWeight = settings.examScoreWeight + settings.regionWeight + settings.genderWeight + settings.disabilityWeight;
+  const customCriteriaTotal = settings.customCriteria?.reduce((sum, c) => sum + (c.weight || 0), 0) || 0;
+  const totalWeight = settings.examScoreWeight + settings.regionWeight + settings.genderWeight + settings.disabilityWeight + customCriteriaTotal;
 
   const navLinks = [
     { label: 'Dashboard', href: '/university/dashboard' },
@@ -256,10 +261,139 @@ export default function WeightingSettingsPage() {
               onChange={(e) => setSettings({ ...settings, disabilityWeight: parseInt(e.target.value) })}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-600"
             />
-            <p className="text-xs text-gray-500 mt-1">
-              Students with disabilities receive this percentage bonus
+            
+            {/* Disability Preferences */}
+            <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div>
+                <label className="text-xs text-gray-600 block mb-1">Visual (%)</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={settings.disabilityPreferences?.visual || 0}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    disabilityPreferences: { ...settings.disabilityPreferences, visual: parseInt(e.target.value) || 0 }
+                  })}
+                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-gray-600 block mb-1">Hearing (%)</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={settings.disabilityPreferences?.hearing || 0}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    disabilityPreferences: { ...settings.disabilityPreferences, hearing: parseInt(e.target.value) || 0 }
+                  })}
+                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-gray-600 block mb-1">Physical (%)</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={settings.disabilityPreferences?.physical || 0}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    disabilityPreferences: { ...settings.disabilityPreferences, physical: parseInt(e.target.value) || 0 }
+                  })}
+                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-gray-600 block mb-1">Learning (%)</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={settings.disabilityPreferences?.learning || 0}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    disabilityPreferences: { ...settings.disabilityPreferences, learning: parseInt(e.target.value) || 0 }
+                  })}
+                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm"
+                />
+              </div>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              Percentage of the maximum disability bonus allocated to each type.
             </p>
           </div>
+        </div>
+
+        {/* Custom Criteria */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-bold text-gray-900">Custom Criteria</h2>
+            <button
+              onClick={() => {
+                setSettings({
+                  ...settings,
+                  customCriteria: [...(settings.customCriteria || []), { name: 'New Criterion', weight: 0 }]
+                });
+              }}
+              className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 transition"
+            >
+              + Add Criterion
+            </button>
+          </div>
+          <p className="text-sm text-gray-600 mb-4">
+            Add additional custom weighting criteria specific to your university's evaluation process.
+          </p>
+
+          {(!settings.customCriteria || settings.customCriteria.length === 0) ? (
+            <p className="text-gray-500 text-center py-4 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+              No custom criteria added yet.
+            </p>
+          ) : (
+            settings.customCriteria.map((criterion, index) => (
+              <div key={index} className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex justify-between items-center mb-3">
+                  <input
+                    type="text"
+                    value={criterion.name}
+                    onChange={(e) => {
+                      const newCriteria = [...settings.customCriteria];
+                      newCriteria[index].name = e.target.value;
+                      setSettings({ ...settings, customCriteria: newCriteria });
+                    }}
+                    className="font-medium text-gray-800 bg-white border border-gray-300 rounded px-2 py-1 w-1/2"
+                    placeholder="Criterion Name"
+                  />
+                  <div className="flex items-center gap-4">
+                    <span className="text-blue-600 font-bold">{criterion.weight}%</span>
+                    <button
+                      onClick={() => {
+                        const newCriteria = settings.customCriteria.filter((_, i) => i !== index);
+                        setSettings({ ...settings, customCriteria: newCriteria });
+                      }}
+                      className="text-red-500 hover:text-red-700 text-sm"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={criterion.weight}
+                  onChange={(e) => {
+                    const newCriteria = [...settings.customCriteria];
+                    newCriteria[index].weight = parseInt(e.target.value) || 0;
+                    setSettings({ ...settings, customCriteria: newCriteria });
+                  }}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                />
+              </div>
+            ))
+          )}
         </div>
 
         {/* Region Preferences */}

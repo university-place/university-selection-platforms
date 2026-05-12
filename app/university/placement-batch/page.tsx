@@ -352,7 +352,8 @@ export default function UniversityPlacementBatchPage() {
       maxExamScore: 700,
       region: student.region || 'Unknown',
       gender: student.gender || 'Unknown',
-      hasDisability
+      hasDisability,
+      disabilityType: student.disability
     }, advancedWeightingSettings);
 
     return result.weightedScore;

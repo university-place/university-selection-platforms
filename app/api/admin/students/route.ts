@@ -27,6 +27,7 @@ export async function GET(request: Request) {
     const streamParam = searchParams.get('stream') // 'natural', 'social', or null
     const academicYear = searchParams.get('academicYear')
     const search = searchParams.get('search')
+    const placementStatus = searchParams.get('placementStatus')
     const sortBy = searchParams.get('sortBy') || 'examID'
     const sortOrder = searchParams.get('sortOrder') || 'asc'
 
@@ -57,6 +58,64 @@ export async function GET(request: Request) {
         { lastName: { contains: search, mode: 'insensitive' } },
         { email: { contains: search, mode: 'insensitive' } }
       ]
+    }
+
+    if (placementStatus) {
+      if (placementStatus === 'PLACED') {
+        where.preferences = { some: { status: { in: ['ACCEPTED', 'PLACED', 'BATCH_PLACED'] } } }
+      } else if (placementStatus === 'NOT_PLACED') {
+        const notPlacedAnd = [
+          { preferences: { some: {} } },
+          { preferences: { none: { status: { in: ['ACCEPTED', 'PLACED', 'BATCH_PLACED'] } } } }
+        ];
+        if (where.AND) {
+          where.AND.push(...notPlacedAnd);
+        } else {
+          where.AND = notPlacedAnd;
+        }
+      } else if (placementStatus === 'ACCEPTED') {
+        where.StudentConfirmation = { some: { status: 'CONFIRMED' } }
+      } else if (placementStatus === 'REJECTED') {
+        where.StudentConfirmation = { some: { status: 'DECLINED' } }
+      } else if (placementStatus === 'PENDING') {
+        const pendingOr = [
+          { preferences: { some: { status: 'PENDING' } } },
+          { InterviewInvitation: { some: { status: 'PENDING' } } },
+          { StudentConfirmation: { some: { status: 'PENDING' } } }
+        ]
+        if (where.OR) {
+          where.AND = [{ OR: where.OR }, { OR: pendingOr }]
+          delete where.OR
+        } else {
+          where.OR = pendingOr
+        }
+      } else if (placementStatus === 'MULTI_PLACED') {
+        const allPlaced = await prisma.preference.findMany({
+          where: { status: { in: ['ACCEPTED', 'PLACED', 'BATCH_PLACED'] } },
+          select: { studentId: true, universityId: true }
+        })
+        const counts: Record<number, Set<number>> = {}
+        allPlaced.forEach(p => {
+          if (p.studentId) {
+            if (!counts[p.studentId]) counts[p.studentId] = new Set()
+            counts[p.studentId].add(p.universityId)
+          }
+        })
+        const multiIds = Object.keys(counts).filter(id => counts[parseInt(id)].size > 1).map(Number)
+        where.id = { in: multiIds }
+      } else if (placementStatus === 'ACCEPTED_MULTIPLE') {
+        const allAccepted = await prisma.studentConfirmation.findMany({
+          where: { status: 'CONFIRMED' },
+          select: { studentId: true, universityId: true }
+        })
+        const counts: Record<number, Set<number>> = {}
+        allAccepted.forEach(p => {
+          if (!counts[p.studentId]) counts[p.studentId] = new Set()
+          counts[p.studentId].add(p.universityId)
+        })
+        const multiIds = Object.keys(counts).filter(id => counts[parseInt(id)].size > 1).map(Number)
+        where.id = { in: multiIds }
+      }
     }
 
     // Get total count for pagination

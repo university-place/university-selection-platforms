@@ -136,31 +136,42 @@ export async function GET(
       .flatMap((a) => a.preferences)
       .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 
-    const universityStatuses = flattenedPreferences.map((p) => {
-      const confirmation = student.StudentConfirmation.find((c) => c.universityId === p.universityId);
-      const placement = student.placements.find((pl) => pl.universityId === p.universityId);
-      const invitation = student.InterviewInvitation.find((inv) => inv.universityId === p.universityId);
+    const allUniversityIds = new Set<number>();
+    
+    flattenedPreferences.forEach(p => allUniversityIds.add(p.universityId));
+    student.StudentConfirmation.forEach(c => allUniversityIds.add(c.universityId));
+    student.placements.forEach(p => allUniversityIds.add(p.universityId));
+    student.InterviewInvitation.forEach(i => allUniversityIds.add(i.universityId));
+
+    const universityStatuses = Array.from(allUniversityIds).map((universityId) => {
+      const p = flattenedPreferences.find(pref => pref.universityId === universityId);
+      const confirmation = student.StudentConfirmation.find((c) => c.universityId === universityId);
+      const placement = student.placements.find((pl) => pl.universityId === universityId);
+      const invitation = student.InterviewInvitation.find((inv) => inv.universityId === universityId);
 
       let status = 'PENDING';
       if (confirmation?.confirmed || confirmation?.status === 'CONFIRMED') status = 'CONFIRMED';
       else if (confirmation?.status === 'DECLINED') status = 'DECLINED';
-      else if (p.status === 'BATCH_NOT_PLACED' || p.status === 'REJECTED') status = 'NOT_PLACED';
-      else if (p.status === 'BATCH_PLACED' || p.status === 'PLACED') status = 'PLACED';
-      else if (p.status === 'ACCEPTED' || placement?.status === 'ACCEPTED') status = 'WAITING_RESPONSE';
+      else if (p?.status === 'BATCH_NOT_PLACED' || p?.status === 'REJECTED') status = 'NOT_PLACED';
+      else if (p?.status === 'BATCH_PLACED' || p?.status === 'PLACED') status = 'PLACED';
+      else if (p?.status === 'ACCEPTED' || placement?.status === 'ACCEPTED') status = 'WAITING_RESPONSE';
       else if (invitation && ['PENDING', 'ACCEPTED'].includes(invitation.status)) status = 'WAITING_RESPONSE';
 
+      const universityName = p?.university?.name || confirmation?.university?.name || placement?.university?.name || invitation?.university?.name || 'Unknown';
+      const programName = p?.program?.name || confirmation?.program?.name || placement?.program?.name || invitation?.program?.name || 'Any Program';
+
       return {
-        preferenceId: p.id,
-        universityId: p.universityId,
-        universityName: p.university?.name,
-        universityCode: p.university?.code,
-        programName: p.program?.name,
-        preferenceStatus: p.status,
+        preferenceId: p?.id || `virtual-${universityId}`,
+        universityId,
+        universityName,
+        universityCode: p?.university?.code || 'N/A',
+        programName,
+        preferenceStatus: p?.status || 'N/A',
         normalizedStatus: status,
         invitationStatus: invitation?.status || null,
         confirmationStatus: confirmation?.status || null,
         placementStatus: placement?.status || null,
-        timestamp: p.createdAt,
+        timestamp: p?.createdAt || confirmation?.createdAt || invitation?.createdAt || placement?.createdAt,
       };
     });
 

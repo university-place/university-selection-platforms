@@ -30,14 +30,36 @@ export default function PlatformUsersPage() {
 
   const fetchUsers = async () => {
     setLoading(true);
+    setError('');
     try {
-      const response = await platformAPI.getUsers(roleFilter || undefined);
-      if (response.success && Array.isArray(response.data)) {
-        setUsers(response.data);
-      } else if (response.success && response.data && 'users' in response.data) {
-        setUsers((response.data as any).users);
+      // If filtering by student, fetch students instead of users
+      if (roleFilter === 'student') {
+        const response = await platformAPI.getStudents(1, 500, '');
+        if (response.success) {
+          const studentData = Array.isArray(response.data) ? response.data : response.students || [];
+          setUsers(
+            studentData.map((student: any) => ({
+              id: String(student.id || student._id),
+              email: student.email || student.examID || '',
+              name: `${student.firstName || ''} ${student.lastName || ''}`.trim() || 'Unknown',
+              role: 'student',
+              status: student.isActive ? 'active' : 'inactive',
+              verified: student.isVerified || false,
+            }))
+          );
+        } else {
+          setError(response.error || 'Failed to load students');
+        }
       } else {
-        setError(response.error || 'Failed to load users');
+        // Fetch regular users for other roles
+        const response = await platformAPI.getUsers(roleFilter || undefined);
+        if (response.success && Array.isArray(response.data)) {
+          setUsers(response.data);
+        } else if (response.success && response.data && 'users' in response.data) {
+          setUsers((response.data as any).users);
+        } else {
+          setError(response.error || 'Failed to load users');
+        }
       }
     } catch (err) {
       setError('An error occurred');
@@ -46,28 +68,40 @@ export default function PlatformUsersPage() {
     }
   };
 
-  const handleToggleStatus = async (userId: string, currentStatus: string) => {
+  const handleToggleStatus = async (userId: string, currentStatus: string, role?: string) => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
     try {
-      const response = await platformAPI.toggleUser(userId, currentStatus === 'inactive');
+      let response;
+      if (roleFilter === 'student' || role === 'student') {
+        response = await platformAPI.toggleStudent(userId, currentStatus === 'inactive');
+      } else {
+        response = await platformAPI.toggleUser(userId, currentStatus === 'inactive');
+      }
+
       if (response.success) {
         setSuccess(`User ${newStatus} successfully`);
         setUsers((prev) =>
           prev.map((user) => (user.id === userId ? { ...user, status: newStatus as any } : user))
         );
       } else {
-        setError(response.error || 'Failed to update user status');
+        setError(response.error || 'Failed to update status');
       }
     } catch (err) {
       setError('An error occurred');
     }
   };
 
-  const handleDeleteUser = async (userId: string) => {
+  const handleDeleteUser = async (userId: string, role?: string) => {
     if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
 
     try {
-      const response = await platformAPI.deleteUser(userId);
+      let response;
+      if (roleFilter === 'student' || role === 'student') {
+        response = await platformAPI.deleteStudent(userId);
+      } else {
+        response = await platformAPI.deleteUser(userId);
+      }
+
       if (response.success) {
         setSuccess('User deleted successfully');
         setUsers((prev) => prev.filter((user) => user.id !== userId));
@@ -164,7 +198,12 @@ export default function PlatformUsersPage() {
         </div>
 
         {/* Users Table */}
-        {users.length === 0 ? (
+        {loading ? (
+          <div className="bg-white rounded-lg shadow p-12 text-center border border-gray-200">
+            <div className="inline-flex h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-orange-500" />
+            <p className="mt-4 text-gray-600">Loading users…</p>
+          </div>
+        ) : users.length === 0 ? (
           <div className="bg-white rounded-lg shadow p-12 text-center border border-gray-200">
             <p className="text-gray-600">No users found</p>
           </div>
@@ -216,7 +255,7 @@ export default function PlatformUsersPage() {
                       </td>
                       <td className="px-6 py-4 text-sm space-x-2 flex gap-2">
                         <Button
-                          onClick={() => handleToggleStatus(user.id, user.status)}
+                          onClick={() => handleToggleStatus(user.id, user.status, user.role)}
                           className={`px-3 py-1 rounded text-xs ${
                             user.status === 'active'
                               ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
@@ -226,7 +265,7 @@ export default function PlatformUsersPage() {
                           {user.status === 'active' ? 'Deactivate' : 'Activate'}
                         </Button>
                         <Button
-                          onClick={() => handleDeleteUser(user.id)}
+                          onClick={() => handleDeleteUser(user.id, user.role)}
                           className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-xs"
                         >
                           Delete

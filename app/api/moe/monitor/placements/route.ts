@@ -22,42 +22,90 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const universityId = searchParams.get('universityId');
-    const status = searchParams.get('status');
+    const status = searchParams.get('status') || 'ALL'; // PLACED, NOT_PLACED, MULTI_PLACED, ALL
     const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '50');
+    const limit = parseInt(searchParams.get('limit') || '30');
+    const search = searchParams.get('search');
 
     const where: any = {};
-    if (universityId) where.universityId = parseInt(universityId);
-    if (status) where.status = status;
+    
+    if (search) {
+      where.OR = [
+        { examID: { contains: search, mode: 'insensitive' } },
+        { firstName: { contains: search, mode: 'insensitive' } },
+        { lastName: { contains: search, mode: 'insensitive' } }
+      ];
+    }
 
-    const [placements, total] = await Promise.all([
-      prisma.placement.findMany({
+    if (status === 'PLACED') {
+      where.preferences = { some: { status: { in: ['ACCEPTED', 'PLACED', 'BATCH_PLACED'] } } };
+    } else if (status === 'NOT_PLACED') {
+      where.AND = [
+        { preferences: { some: {} } },
+        { preferences: { none: { status: { in: ['ACCEPTED', 'PLACED', 'BATCH_PLACED'] } } } }
+      ];
+    } else if (status === 'MULTI_PLACED') {
+      // Find IDs first
+      const allPlaced = await prisma.preference.findMany({
+        where: { status: { in: ['ACCEPTED', 'PLACED', 'BATCH_PLACED'] } },
+        select: { studentId: true, universityId: true }
+      });
+      const counts: Record<number, Set<number>> = {};
+      allPlaced.forEach(p => {
+        if (p.studentId) {
+          if (!counts[p.studentId]) counts[p.studentId] = new Set();
+          counts[p.studentId].add(p.universityId);
+        }
+      });
+      const multiIds = Object.keys(counts).filter(id => counts[parseInt(id)].size > 1).map(Number);
+      where.id = { in: multiIds };
+    }
+
+    const [students, total] = await Promise.all([
+      prisma.student.findMany({
         where,
         skip: (page - 1) * limit,
         take: limit,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { examID: 'asc' },
         include: {
-          student: { select: { examID: true, firstName: true, lastName: true, stream: true, examResults: true } },
-          university: { select: { name: true, code: true, region: true } },
-          program: { select: { name: true, code: true } },
+          preferences: {
+            where: { status: { in: ['ACCEPTED', 'PLACED', 'BATCH_PLACED'] } },
+            include: { university: { select: { name: true, region: true } } }
+          },
+          StudentConfirmation: {
+            where: { status: 'CONFIRMED' },
+            include: { university: { select: { name: true, region: true } } }
+          }
         },
       }),
-      prisma.placement.count({ where }),
+      prisma.student.count({ where }),
     ]);
 
-    const [totalPlaced, accepted, rejected, pending] = await Promise.all([
-      prisma.placement.count(),
-      prisma.placement.count({ where: { status: 'ACCEPTED' } }),
-      prisma.placement.count({ where: { status: 'REJECTED' } }),
-      prisma.placement.count({ where: { status: 'PENDING' } }),
-    ]);
+    // Aggregate summary stats quickly
+    const totalStudents = await prisma.student.count();
+    const placedStudents = await prisma.student.count({
+      where: { preferences: { some: { status: { in: ['ACCEPTED', 'PLACED', 'BATCH_PLACED'] } } } }
+    });
+    
+    // We can estimate multiple placed similarly
+    const multiPlacedRaw = await prisma.preference.groupBy({
+      by: ['studentId'],
+      where: { status: { in: ['ACCEPTED', 'PLACED', 'BATCH_PLACED'] } },
+      having: { studentId: { _count: { gt: 1 } } }
+    });
+
+    const summary = {
+      totalStudents,
+      placed: placedStudents,
+      notPlaced: totalStudents - placedStudents,
+      multiPlaced: multiPlacedRaw.length
+    };
 
     return NextResponse.json({
       success: true,
-      data: placements.map((p) => {
+      data: students.map((s) => {
         let totalScore: number | null = null;
-        const raw = p.student?.examResults;
+        const raw = s.examResults;
         if (raw) {
           try {
             const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
@@ -66,22 +114,45 @@ export async function GET(request: Request) {
             totalScore = null;
           }
         }
+
+        // Gather unique universities that placed the student
+        const universities = new Map();
+        s.preferences.forEach(p => {
+          if (p.university) universities.set(p.university.name, p.university.region);
+        });
+        s.StudentConfirmation.forEach(c => {
+          if (c.university) universities.set(c.university.name, c.university.region);
+        });
+
+        const universityNames = Array.from(universities.keys());
+        
+        let aggStatus = 'Not Placed';
+        if (universityNames.length === 1) aggStatus = 'Placed';
+        if (universityNames.length > 1) aggStatus = 'Multi-Placed';
+
         return {
-          ...p,
-          batch: null,
+          id: s.id,
           student: {
-            ...p.student,
+            examID: s.examID,
+            firstName: s.firstName,
+            lastName: s.lastName,
+            stream: s.stream,
             totalScore,
           },
+          universities: universityNames,
+          regions: Array.from(new Set(universities.values())),
+          status: aggStatus,
+          createdAt: s.createdAt
         };
       }),
       total,
       page,
       limit,
-      summary: { totalPlaced, accepted, rejected, pending },
+      summary,
     });
   } catch (error) {
     console.error('MOE placements monitor error:', error);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }
+

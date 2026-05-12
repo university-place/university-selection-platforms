@@ -22,11 +22,11 @@ interface Placement {
   status: string;
   createdAt: string;
   student: { examID: string; firstName: string; lastName: string; stream: string; totalScore: number };
-  university: { name: string; code: string; region: string };
-  batch: { name: string; academicYear: string } | null;
+  universities: string[];
+  regions: string[];
 }
 
-interface Summary { totalPlaced: number; accepted: number; rejected: number; pending: number; }
+interface Summary { totalStudents: number; placed: number; notPlaced: number; multiPlaced: number; }
 
 const STATUS_COLOR: Record<string, string> = {
   ACCEPTED: 'bg-green-100 text-green-800',
@@ -37,11 +37,11 @@ const STATUS_COLOR: Record<string, string> = {
 
 export default function MOEPlacementsPage() {
   const [placements, setPlacements] = useState<Placement[]>([]);
-  const [summary, setSummary] = useState<Summary>({ totalPlaced: 0, accepted: 0, rejected: 0, pending: 0 });
+  const [summary, setSummary] = useState<Summary>({ totalStudents: 0, placed: 0, notPlaced: 0, multiPlaced: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
 
@@ -72,7 +72,7 @@ export default function MOEPlacementsPage() {
     ? placements.filter((p) =>
         `${p.student?.firstName} ${p.student?.lastName}`.toLowerCase().includes(search.toLowerCase()) ||
         p.student?.examID?.toLowerCase().includes(search.toLowerCase()) ||
-        p.university?.name?.toLowerCase().includes(search.toLowerCase()))
+        p.universities.some(u => u.toLowerCase().includes(search.toLowerCase())))
     : placements;
 
   return (
@@ -88,10 +88,10 @@ export default function MOEPlacementsPage() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
             {[
-              { label: 'Total Placed', value: summary.totalPlaced, color: 'bg-white/20' },
-              { label: 'Accepted', value: summary.accepted, color: 'bg-green-500/30' },
-              { label: 'Rejected', value: summary.rejected, color: 'bg-red-500/30' },
-              { label: 'Pending', value: summary.pending, color: 'bg-yellow-500/30' },
+              { label: 'Total Students', value: summary.totalStudents, color: 'bg-white/20' },
+              { label: 'Total Placed', value: summary.placed, color: 'bg-green-500/30' },
+              { label: 'Multi-Placed', value: summary.multiPlaced, color: 'bg-blue-500/30' },
+              { label: 'Not Placed', value: summary.notPlaced, color: 'bg-red-500/30' },
             ].map(({ label, value, color }) => (
               <div key={label} className={`${color} rounded-lg p-3`}>
                 <p className="text-xs font-medium opacity-80">{label}</p>
@@ -111,11 +111,10 @@ export default function MOEPlacementsPage() {
             <Filter className="w-4 h-4 text-gray-400" />
             <select className="outline-none text-sm bg-transparent" value={statusFilter}
               onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}>
-              <option value="">All Statuses</option>
-              <option value="OFFERED">Offered</option>
-              <option value="ACCEPTED">Accepted</option>
-              <option value="REJECTED">Rejected</option>
-              <option value="PENDING">Pending</option>
+              <option value="ALL">All Students</option>
+              <option value="PLACED">Placed (Any)</option>
+              <option value="MULTI_PLACED">Multi-Placed (&gt;1)</option>
+              <option value="NOT_PLACED">Not Placed Any</option>
             </select>
           </div>
         </div>
@@ -131,7 +130,7 @@ export default function MOEPlacementsPage() {
               <table className="w-full text-sm">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    {['#', 'Student', 'Exam ID', 'Stream', 'Score', 'University', 'Region', 'Batch', 'Status', 'Date'].map((h) => (
+                    {['#', 'Student', 'Exam ID', 'Stream', 'Score', 'Placed Universities', 'Region', 'Aggregate Status', 'Date'].map((h) => (
                       <th key={h} className="text-left px-4 py-3 text-gray-600 font-semibold text-xs uppercase">{h}</th>
                     ))}
                   </tr>
@@ -146,11 +145,22 @@ export default function MOEPlacementsPage() {
                       <td className="px-4 py-3 font-mono text-emerald-700 text-xs">{p.student?.examID}</td>
                       <td className="px-4 py-3 text-gray-600">{p.student?.stream}</td>
                       <td className="px-4 py-3 font-semibold">{p.student?.totalScore ?? '—'}</td>
-                      <td className="px-4 py-3">{p.university?.name}</td>
-                      <td className="px-4 py-3 text-gray-500">{p.university?.region}</td>
-                      <td className="px-4 py-3 text-gray-500 text-xs">{p.batch?.academicYear || '—'}</td>
                       <td className="px-4 py-3">
-                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${STATUS_COLOR[p.status] || 'bg-gray-100 text-gray-700'}`}>
+                        {p.universities && p.universities.length > 0 ? (
+                          p.universities.map((u, idx) => (
+                            <span key={idx} className="block text-xs bg-gray-100 rounded px-2 py-1 mb-1">{u}</span>
+                          ))
+                        ) : (
+                          <span className="text-gray-400">None</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-gray-500">{p.regions && p.regions.length > 0 ? p.regions.join(', ') : '—'}</td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                          p.status === 'Placed' ? 'bg-green-100 text-green-800' :
+                          p.status === 'Multi-Placed' ? 'bg-blue-100 text-blue-800' :
+                          'bg-red-100 text-red-800'
+                        }`}>
                           {p.status}
                         </span>
                       </td>

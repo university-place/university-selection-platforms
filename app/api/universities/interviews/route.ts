@@ -57,7 +57,8 @@ export async function GET(request: Request) {
             lastName: true,
             email: true,
             phone: true,
-            region: true
+            region: true,
+            stream: true
           }
         },
         program: { select: { id: true, name: true, code: true } },
@@ -134,12 +135,8 @@ export async function POST(request: Request) {
       });
 
       if (existing) {
-        results.push({ 
-          examID: inv.examID, 
-          status: 'skipped', 
-          reason: 'Already has pending invitation' 
-        });
-        continue;
+        // Overwrite the existing invitation by deleting it first
+        await prisma.interviewInvitation.delete({ where: { id: existing.id } });
       }
 
       let programId = null;
@@ -440,6 +437,18 @@ export async function DELETE(request: Request) {
   try {
     const { universityId } = await verifyUniversityAdmin(request);
     const { searchParams } = new URL(request.url);
+    const action = searchParams.get('action');
+    
+    if (action === 'clearAll') {
+      await prisma.interviewInvitation.deleteMany({
+        where: { universityId }
+      });
+      return NextResponse.json({
+        success: true,
+        message: 'All invitations cleared successfully'
+      });
+    }
+
     const invitationId = searchParams.get('id');
 
     if (!invitationId) {

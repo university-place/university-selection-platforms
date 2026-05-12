@@ -57,12 +57,26 @@ export default function UniversityInvitationsPage() {
   const [selectedInvitation, setSelectedInvitation] = useState<Invitation | null>(null);
   const [showResultModal, setShowResultModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showBulkInviteModal, setShowBulkInviteModal] = useState(false);
   const [academicYear, setAcademicYear] = useState('2024');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [streamFilter, setStreamFilter] = useState('all');
 
   // Form states for sending invitation
   const [inviteForm, setInviteForm] = useState({
     examID: '',
+    type: 'INTERVIEW',
+    date: '',
+    time: '',
+    location: '',
+    instructions: '',
+    programName: ''
+  });
+
+  // Form states for bulk invitation
+  const [bulkInviteForm, setBulkInviteForm] = useState({
+    filterType: 'WEIGHTED_SCORE', // 'WEIGHTED_SCORE' or 'RAW_SCORE'
+    threshold: 350,
     type: 'INTERVIEW',
     date: '',
     time: '',
@@ -177,6 +191,129 @@ export default function UniversityInvitationsPage() {
     } catch (err) {
       console.error('Send error:', err);
       alert('Failed to send invitation');
+    }
+  };
+
+  const handleClearAll = async () => {
+    const confirm = window.confirm('Are you sure you want to clear ALL invitations? This action cannot be undone.');
+    if (!confirm) return;
+
+    try {
+      const token = authHelpers.getToken();
+      const res = await fetch('/api/universities/interviews?action=clearAll', {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        alert('✅ All invitations have been cleared.');
+        fetchInvitations();
+      } else {
+        alert(`❌ Error: ${data.error}`);
+      }
+    } catch (err) {
+      console.error('Clear all error:', err);
+      alert('Failed to clear invitations.');
+    }
+  };
+
+  const handleBulkInvite = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const token = authHelpers.getToken();
+    
+    if (!bulkInviteForm.date || !bulkInviteForm.time) {
+      alert('Please select both date and time');
+      return;
+    }
+    
+    const dateTime = new Date(`${bulkInviteForm.date}T${bulkInviteForm.time}`);
+    setLoading(true);
+    
+    try {
+      // 1. Fetch applicants to filter
+      const appsRes = await fetch(`/api/universities/applicants?limit=1000`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const appsData = await appsRes.json();
+      
+      if (!appsRes.ok || !appsData.applicants) {
+        console.error('API Error Response:', appsData);
+        throw new Error(appsData.error || 'Failed to fetch applicants for filtering');
+      }
+
+      // 2. Filter applicants
+      const eligibleApplicants = appsData.applicants.filter((app: any) => {
+        // Only invite students who haven't been placed/invited yet (status is SUBMITTED or PENDING)
+        if (app.status !== 'SUBMITTED' && app.status !== 'PENDING') return false;
+        if (app.finalStatus && app.finalStatus !== 'SUBMITTED' && app.finalStatus !== 'PENDING') return false;
+        
+        const score = bulkInviteForm.filterType === 'WEIGHTED_SCORE' 
+          ? (app.score || app.student?.totalScore || 0)
+          : (app.student?.totalScore || app.score || 0);
+          
+        return score >= bulkInviteForm.threshold;
+      });
+
+      if (eligibleApplicants.length === 0) {
+        alert('No eligible students found matching this criteria that are not already placed/invited.');
+        setLoading(false);
+        return;
+      }
+
+      const confirm = window.confirm(`Found ${eligibleApplicants.length} eligible students. Send invitations to all of them?`);
+      if (!confirm) {
+        setLoading(false);
+        return;
+      }
+
+      // 3. Construct invitations array
+      const invitations = eligibleApplicants.map((app: any) => ({
+        examID: app.student?.examID || app.examID,
+        type: bulkInviteForm.type,
+        date: dateTime.toISOString(),
+        location: bulkInviteForm.location,
+        instructions: bulkInviteForm.instructions,
+        programName: bulkInviteForm.programName || undefined
+      }));
+
+      // 4. Send bulk invite request
+      const res = await fetch('/api/universities/interviews', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          invitations,
+          academicYear: academicYear,
+          responseDeadlineDays: 7
+        })
+      });
+      
+      const data = await res.json();
+      if (data.success) {
+        alert(`✅ Successfully sent ${eligibleApplicants.length} invitations!`);
+        setShowBulkInviteModal(false);
+        setBulkInviteForm({
+          filterType: 'WEIGHTED_SCORE',
+          threshold: 350,
+          type: 'INTERVIEW',
+          date: '',
+          time: '',
+          location: '',
+          instructions: '',
+          programName: ''
+        });
+        fetchInvitations();
+      } else {
+        alert(`❌ Error: ${data.error || 'Failed to send bulk invitations'}`);
+      }
+    } catch (err) {
+      console.error('Bulk send error:', err);
+      alert('An error occurred during bulk invitation.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -343,7 +480,16 @@ export default function UniversityInvitationsPage() {
             <option value="2024">2024 Academic Year</option>
             <option value="2025">2025 Academic Year</option>
           </select>
-          
+
+          <select
+            value={streamFilter}
+            onChange={(e) => setStreamFilter(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+          >
+            <option value="all">All Streams</option>
+            <option value="Natural Science">Natural Science</option>
+            <option value="Social Science">Social Science</option>
+          </select>
           <button
             onClick={() => fetchInvitations()}
             className="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-1"
@@ -353,13 +499,32 @@ export default function UniversityInvitationsPage() {
           </button>
         </div>
         
-        <button
-          onClick={() => setShowSendModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition"
-        >
-          <Send className="w-4 h-4" />
-          Send Invitation
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={handleClearAll}
+            className="flex items-center gap-2 px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition"
+            title="Clear all invitations"
+          >
+            <XCircle className="w-4 h-4" />
+            Reset All
+          </button>
+          
+          <button
+            onClick={() => setShowBulkInviteModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
+          >
+            <Users className="w-4 h-4" />
+            Bulk Invite
+          </button>
+          
+          <button
+            onClick={() => setShowSendModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition"
+          >
+            <Send className="w-4 h-4" />
+            Send Invitation
+          </button>
+        </div>
       </div>
 
       {/* Invitations Table */}
@@ -385,7 +550,18 @@ export default function UniversityInvitationsPage() {
                   </td>
                 </tr>
               ) : (
-                invitations.map((inv) => (
+                invitations
+                .filter(inv => {
+                  if (filterStatus !== 'all' && inv.status !== filterStatus) return false;
+                  if (streamFilter !== 'all') {
+                    // Assuming stream is available on student object in future, for now fallback to basic filtering if present
+                    if (inv.student && (inv.student as any).stream) {
+                      return (inv.student as any).stream === streamFilter;
+                    }
+                  }
+                  return true;
+                })
+                .map((inv) => (
                   <tr key={inv.id} className="hover:bg-gray-50 transition">
                     <td className="px-6 py-4">
                       <div>
@@ -776,6 +952,142 @@ export default function UniversityInvitationsPage() {
                   className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
                 >
                   Save & Reinvite
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Invitation Modal */}
+      {showBulkInviteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-auto">
+            <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
+              <h3 className="text-xl font-bold flex items-center gap-2">
+                <Users className="w-5 h-5 text-blue-600" />
+                Bulk Invite Students
+              </h3>
+              <button onClick={() => setShowBulkInviteModal(false)} className="text-gray-500 hover:text-gray-700">
+                <XCircle className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleBulkInvite} className="p-6 space-y-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <p className="text-sm text-blue-800">
+                  This tool will automatically find unplaced students who meet your score threshold and send them all an invitation.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Filter By *</label>
+                  <select
+                    value={bulkInviteForm.filterType}
+                    onChange={(e) => setBulkInviteForm({ ...bulkInviteForm, filterType: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  >
+                    <option value="WEIGHTED_SCORE">Weight Analysis Score</option>
+                    <option value="RAW_SCORE">Raw Exam Score</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Minimum Score *</label>
+                  <input
+                    type="number"
+                    value={bulkInviteForm.threshold}
+                    onChange={(e) => setBulkInviteForm({ ...bulkInviteForm, threshold: parseInt(e.target.value) || 0 })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    placeholder="e.g., 350"
+                    required
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Invitation Type *</label>
+                <select
+                  value={bulkInviteForm.type}
+                  onChange={(e) => setBulkInviteForm({ ...bulkInviteForm, type: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                >
+                  <option value="INTERVIEW">Interview</option>
+                  <option value="EXAM">Entrance Exam</option>
+                  <option value="BOTH">Interview + Exam</option>
+                </select>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
+                  <input
+                    type="date"
+                    value={bulkInviteForm.date}
+                    onChange={(e) => setBulkInviteForm({ ...bulkInviteForm, date: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Time *</label>
+                  <input
+                    type="time"
+                    value={bulkInviteForm.time}
+                    onChange={(e) => setBulkInviteForm({ ...bulkInviteForm, time: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    required
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                <input
+                  type="text"
+                  value={bulkInviteForm.location}
+                  onChange={(e) => setBulkInviteForm({ ...bulkInviteForm, location: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  placeholder="e.g., Room 101, Main Building"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Instructions</label>
+                <textarea
+                  value={bulkInviteForm.instructions}
+                  onChange={(e) => setBulkInviteForm({ ...bulkInviteForm, instructions: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  rows={3}
+                  placeholder="What should the students bring?"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Program (Optional)</label>
+                <input
+                  type="text"
+                  value={bulkInviteForm.programName}
+                  onChange={(e) => setBulkInviteForm({ ...bulkInviteForm, programName: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  placeholder="e.g., Software Engineering"
+                />
+              </div>
+              
+              <div className="flex justify-end gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowBulkInviteModal(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+                >
+                  {loading ? 'Finding Students...' : 'Review & Send'}
                 </button>
               </div>
             </form>
