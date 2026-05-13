@@ -9,7 +9,7 @@ import {
   Search, Filter, X, Calendar, MapPin, Users, Award, 
   ChevronDown, ChevronUp, GraduationCap, SortAsc, SortDesc,
   BookOpen, Eye, RefreshCw, CheckCircle, XCircle, Clock, AlertCircle,
-  UserCheck, UserX, BarChart3
+  UserCheck, UserX, BarChart3, Bell, Settings
 } from 'lucide-react';
 
 interface Document {
@@ -301,11 +301,13 @@ export default function UniversityApplicantsPage() {
   };
 
   const navLinks = [
-    { label: 'Dashboard', href: '/university/dashboard' },
-    { label: 'Applicants', href: '/university/applicants' },
-    { label: 'Invitations', href: '/university/invitations' },
-    { label: 'Placements', href: '/university/placements' },
-    { label: 'Programs', href: '/university/programs' },
+    { label: 'Dashboard', href: '/university/dashboard', icon: BarChart3 },
+    { label: 'Applicants', href: '/university/applicants', icon: Users },
+    { label: 'Invitations', href: '/university/invitations', icon: Bell },
+    { label: 'Placements', href: '/university/placements', icon: Award },
+    { label: 'Programs', href: '/university/programs', icon: BookOpen },
+    { label: 'Appeals', href: '/university/appeals', icon: AlertCircle },
+    { label: 'Settings', href: '/university/settings', icon: Settings },
   ];
 
   if (loading) {

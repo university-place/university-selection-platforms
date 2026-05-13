@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Edit2, Trash2, BookOpen, AlertCircle } from 'lucide-react';
+import { Plus, Edit2, Trash2, BookOpen, AlertCircle, BarChart3, Users, Bell, Award, Settings, X } from 'lucide-react';
 import { authHelpers } from '@/lib/api';
+import { DashboardLayout } from '@/components/DashboardLayout';
 
 interface Program {
   id: number;
@@ -107,6 +108,16 @@ export default function UniversityProgramsPage() {
     }
   }
 
+  const navLinks = [
+    { label: 'Dashboard', href: '/university/dashboard', icon: BarChart3 },
+    { label: 'Applicants', href: '/university/applicants', icon: Users },
+    { label: 'Invitations', href: '/university/invitations', icon: Bell },
+    { label: 'Placements', href: '/university/placements', icon: Award },
+    { label: 'Programs', href: '/university/programs', icon: BookOpen },
+    { label: 'Appeals', href: '/university/appeals', icon: AlertCircle },
+    { label: 'Settings', href: '/university/settings', icon: Settings },
+  ];
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -116,8 +127,8 @@ export default function UniversityProgramsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-6xl mx-auto">
+    <DashboardLayout title="Academic Programs" navLinks={navLinks} theme="green">
+      <div className="max-w-6xl mx-auto py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Academic Programs</h1>
@@ -253,7 +264,7 @@ export default function UniversityProgramsPage() {
           </div>
         </div>
       )}
-    </div>
+    </DashboardLayout>
   );
 }
 

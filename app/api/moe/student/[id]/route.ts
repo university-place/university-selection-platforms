@@ -144,7 +144,14 @@ export async function GET(
     student.InterviewInvitation.forEach(i => allUniversityIds.add(i.universityId));
 
     const universityStatuses = Array.from(allUniversityIds).map((universityId) => {
-      const p = flattenedPreferences.find(pref => pref.universityId === universityId);
+      // Find all preferences for this university, sorted by newest first
+      const universityPrefs = flattenedPreferences
+        .filter(pref => pref.universityId === universityId)
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      
+      // Prefer the first non-cancelled one, or just the first one if all are cancelled
+      const p = universityPrefs.find(pref => !pref.isCancelled) || universityPrefs[0];
+      
       const confirmation = student.StudentConfirmation.find((c) => c.universityId === universityId);
       const placement = student.placements.find((pl) => pl.universityId === universityId);
       const invitation = student.InterviewInvitation.find((inv) => inv.universityId === universityId);

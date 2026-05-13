@@ -3,24 +3,31 @@
 import { useEffect, useState } from 'react';
 import { MOEDashboardLayout } from '@/components/MOEDashboardLayout';
 import { moeAuthHelpers } from '@/lib/api';
-import { Shield, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
+import { 
+  Shield, CheckCircle, AlertTriangle, XCircle, 
+  LayoutDashboard, Users, FileText, Target, 
+  AlertCircle, Building2, ShieldCheck, Clock, 
+  Upload, Settings 
+} from 'lucide-react';
 
 const NAV_LINKS = [
-  { label: 'Dashboard', href: '/moe/dashboard' },
-  { label: 'Students', href: '/moe/students' },
-  { label: 'Applications', href: '/moe/applications' },
-  { label: 'Placements', href: '/moe/placements' },
-  { label: 'Appeals', href: '/moe/appeals' },
-  { label: 'Universities', href: '/moe/universities' },
-  { label: 'Compliance', href: '/moe/compliance' },
-  { label: 'Audit Log', href: '/moe/audit' },
-  { label: 'Upload', href: '/moe/upload' },
+  { label: 'Dashboard', href: '/moe/dashboard', icon: LayoutDashboard },
+  { label: 'Students', href: '/moe/students', icon: Users },
+  { label: 'Applications', href: '/moe/applications', icon: FileText },
+  { label: 'Placements', href: '/moe/placements', icon: Target },
+  { label: 'Appeals', href: '/moe/appeals', icon: AlertCircle },
+  { label: 'Universities', href: '/moe/universities', icon: Building2 },
+  { label: 'Compliance', href: '/moe/compliance', icon: ShieldCheck },
+  { label: 'Audit Log', href: '/moe/audit', icon: Clock },
+  { label: 'Upload', href: '/moe/upload', icon: Upload },
+  { label: 'Settings', href: '/moe/settings', icon: Settings },
 ];
 
 interface ComplianceRow {
   id: number; name: string; code: string; region: string; isActive: boolean;
   totalApplications: number; invitationsSent: number; acceptedApplications: number;
   pendingApplications: number; totalPlacements: number; responseRate: number; complianceStatus: string;
+  appealCount: number;
 }
 
 const COMPLIANCE_COLOR: Record<string, { badge: string; icon: any; label: string }> = {
@@ -103,7 +110,7 @@ export default function MOECompliancePage() {
               <table className="w-full text-sm">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    {['University', 'Code', 'Region', 'Applications', 'Invitations', 'Accepted', 'Placements', 'Response Rate', 'Compliance'].map((h) => (
+                    {['University', 'Code', 'Region', 'Applications', 'Invitations', 'Accepted', 'Placements', 'Appeals', 'Response Rate', 'Compliance'].map((h) => (
                       <th key={h} className="text-left px-4 py-3 text-gray-600 font-semibold text-xs uppercase">{h}</th>
                     ))}
                   </tr>
@@ -123,6 +130,15 @@ export default function MOECompliancePage() {
                         <td className="px-4 py-3 text-center">{u.invitationsSent}</td>
                         <td className="px-4 py-3 text-center text-green-700 font-semibold">{u.acceptedApplications}</td>
                         <td className="px-4 py-3 text-center text-purple-700 font-semibold">{u.totalPlacements}</td>
+                        <td className="px-4 py-3 text-center">
+                          {u.appealCount > 0 ? (
+                            <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-bold shadow-sm">
+                              {u.appealCount} Appeals
+                            </span>
+                          ) : (
+                            <span className="text-gray-400 text-xs">None</span>
+                          )}
+                        </td>
                         <td className="px-4 py-3 text-center">
                           <div className="flex items-center justify-center gap-1">
                             <div className="w-16 bg-gray-200 rounded-full h-2">

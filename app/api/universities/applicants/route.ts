@@ -83,6 +83,7 @@ export async function GET(request: Request) {
     const programId = searchParams.get('programId')
     const page = parseInt(searchParams.get('page') || '1', 10)
     const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), 1000)
+    const stream = searchParams.get('stream')
     const skip = (page - 1) * limit
 
     // ✅ ONLY SHOW SUBMITTED APPLICATIONS (not cancelled, not draft)
@@ -105,6 +106,14 @@ export async function GET(request: Request) {
     
     if (programId) {
       where.programId = parseInt(programId)
+    }
+
+    if (stream && stream !== 'all') {
+      where.application = {
+        student: {
+          stream: stream
+        }
+      }
     }
 
     const total = await prisma.preference.count({ where })

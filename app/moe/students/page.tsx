@@ -8,6 +8,16 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { moeAPI, moeAuthHelpers } from '@/lib/api';
 import { Student } from '@/lib/types';
+import { Users, CheckCircle, XCircle, Clock, Award, AlertTriangle } from 'lucide-react';
+
+interface PlacementSummary {
+  total: number;
+  placed: number;
+  multiPlaced: number;
+  notPlacedSome: number;
+  notPlacedNone: number;
+  acceptedByStudent: number;
+}
 
 export default function MOEStudentsPage() {
   const router = useRouter();
@@ -19,13 +29,15 @@ export default function MOEStudentsPage() {
   const [placementStatus, setPlacementStatus] = useState('');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [summary, setSummary] = useState<PlacementSummary>({
+    total: 0, placed: 0, multiPlaced: 0, notPlacedSome: 0, notPlacedNone: 0, acceptedByStudent: 0
+  });
 
   useEffect(() => {
     if (!moeAuthHelpers.isAuthenticated()) {
       router.push('/moe/login');
       return;
     }
-
     fetchStudents();
   }, [router, page, stream]);
 
@@ -34,12 +46,17 @@ export default function MOEStudentsPage() {
     try {
       const response = await moeAPI.getStudents(page, 10, search, stream, placementStatus);
       if (response.success) {
-        if (Array.isArray(response.data)) {
-          setStudents(response.data);
-        } else if (response.data && 'data' in response.data) {
-          setStudents((response.data as any).data);
-          setTotal((response.data as any).total || 0);
-        }
+        const data = response.data as any;
+        const studentList = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.students)
+          ? data.students
+          : Array.isArray(data?.data)
+          ? data.data
+          : [];
+        setStudents(studentList);
+        setTotal(data?.pagination?.total || data?.total || studentList.length);
+        if (data?.summary) setSummary(data.summary);
       } else {
         setError(response.error || 'Failed to load students');
       }
@@ -65,6 +82,16 @@ export default function MOEStudentsPage() {
     { label: 'Appeals', href: '/moe/appeals' },
     { label: 'Compliance', href: '/moe/compliance' },
     { label: 'Audit Log', href: '/moe/audit' },
+    { label: 'Settings', href: '/moe/settings' },
+  ];
+
+  const summaryCards = [
+    { label: 'Total Students', value: summary.total, icon: Users, color: 'bg-purple-50 text-purple-700 border-purple-200', iconBg: 'bg-purple-100' },
+    { label: 'Placed', value: summary.placed, icon: CheckCircle, color: 'bg-green-50 text-green-700 border-green-200', iconBg: 'bg-green-100' },
+    { label: 'Multi-Placed', value: summary.multiPlaced, icon: Award, color: 'bg-blue-50 text-blue-700 border-blue-200', iconBg: 'bg-blue-100' },
+    { label: 'Not Placed (Applied)', value: summary.notPlacedSome, icon: AlertTriangle, color: 'bg-yellow-50 text-yellow-700 border-yellow-200', iconBg: 'bg-yellow-100' },
+    { label: 'Not Placed (No App)', value: summary.notPlacedNone, icon: XCircle, color: 'bg-red-50 text-red-700 border-red-200', iconBg: 'bg-red-100' },
+    { label: 'Accepted by Student', value: summary.acceptedByStudent, icon: Clock, color: 'bg-emerald-50 text-emerald-700 border-emerald-200', iconBg: 'bg-emerald-100' },
   ];
 
   const columns = [
@@ -84,16 +111,13 @@ export default function MOEStudentsPage() {
       render: (value: string | null | undefined) => {
         const safeValue = value || 'pending';
         return (
-        <span
-          className={`px-2 py-1 rounded text-xs font-semibold ${
-            safeValue === 'verified'
-              ? 'bg-green-100 text-green-800'
-              : 'bg-yellow-100 text-yellow-800'
-          }`}
-        >
-          {safeValue.charAt(0).toUpperCase() + safeValue.slice(1)}
-        </span>
-      )},
+          <span className={`px-2 py-1 rounded text-xs font-semibold ${
+            safeValue === 'verified' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+          }`}>
+            {safeValue.charAt(0).toUpperCase() + safeValue.slice(1)}
+          </span>
+        );
+      },
     },
   ];
 
@@ -105,6 +129,22 @@ export default function MOEStudentsPage() {
             <p className="text-red-700">{error}</p>
           </div>
         )}
+
+        {/* Placement Status Summary Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {summaryCards.map((card) => {
+            const Icon = card.icon;
+            return (
+              <div key={card.label} className={`rounded-xl border p-4 ${card.color}`}>
+                <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-3 ${card.iconBg}`}>
+                  <Icon className="w-5 h-5" />
+                </div>
+                <p className="text-2xl font-bold">{card.value.toLocaleString()}</p>
+                <p className="text-xs font-medium mt-1 opacity-80">{card.label}</p>
+              </div>
+            );
+          })}
+        </div>
 
         {/* Search and Filter */}
         <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
@@ -126,10 +166,7 @@ export default function MOEStudentsPage() {
                 </label>
                 <select
                   value={stream}
-                  onChange={(e) => {
-                    setStream(e.target.value);
-                    setPage(1);
-                  }}
+                  onChange={(e) => { setStream(e.target.value); setPage(1); }}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 >
                   <option value="">All Streams</option>
@@ -143,15 +180,14 @@ export default function MOEStudentsPage() {
                 </label>
                 <select
                   value={placementStatus}
-                  onChange={(e) => {
-                    setPlacementStatus(e.target.value);
-                    setPage(1);
-                  }}
+                  onChange={(e) => { setPlacementStatus(e.target.value); setPage(1); }}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 >
                   <option value="">All Statuses</option>
                   <option value="PLACED">Placed (Any University)</option>
-                  <option value="NOT_PLACED">Not Placed (None)</option>
+                  <option value="NOT_PLACED">Not Placed (All)</option>
+                  <option value="NOT_PLACED_SOME">Not Placed (Applied to Some)</option>
+                  <option value="NOT_PLACED_NONE">Not Placed (Applied to None)</option>
                   <option value="MULTI_PLACED">Placed (Multiple Universities)</option>
                   <option value="ACCEPTED">Accepted by Student</option>
                   <option value="ACCEPTED_MULTIPLE">Accepted Multiple</option>
@@ -160,10 +196,7 @@ export default function MOEStudentsPage() {
                 </select>
               </div>
               <div className="flex items-end">
-                <Button
-                  type="submit"
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-                >
+                <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white">
                   Search
                 </Button>
               </div>

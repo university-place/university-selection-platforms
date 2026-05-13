@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
+import {
   Save, Building, Mail, Phone, Globe, FileText, AlertCircle, CheckCircle,
   Upload, Users, Settings, BookOpen, Plus, Trash2, Edit2, X, ImageIcon,
-  Target, Shield, Calendar, Award, Heart, Library, Microscope, Trophy, Sparkles, Clock
+  Target, Shield, Calendar, Award, Heart, Library, Microscope, Trophy, Sparkles, Clock,
+  BarChart3, Bell
 } from 'lucide-react';
 import { authHelpers } from '@/lib/api';
+import { DashboardLayout } from '@/components/DashboardLayout';
 
 // ==================== Types ====================
 interface UniversityProfile {
@@ -31,6 +33,7 @@ interface UniversityProfile {
   postDecisionInstructions: string;
   applicationStartDate?: string;
   applicationDeadline?: string;
+  totalCapacity?: number;
   keyFacts?: {
     established?: number;
     students?: number;
@@ -90,6 +93,34 @@ export default function UniversitySettingsPage() {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [activeTab, setActiveTab] = useState('basic');
 
+  // Password form state
+  const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  const [passwordSaving, setPasswordSaving] = useState(false);
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setMessage({ type: 'error', text: 'New passwords do not match' }); return;
+    }
+    setPasswordSaving(true);
+    try {
+      const token = authHelpers.getToken();
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ currentPassword: passwordForm.currentPassword, newPassword: passwordForm.newPassword })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMessage({ type: 'success', text: 'Password changed successfully' });
+        setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      } else {
+        setMessage({ type: 'error', text: data.error || 'Failed to change password' });
+      }
+    } catch { setMessage({ type: 'error', text: 'Network error' }); }
+    finally { setPasswordSaving(false); setTimeout(() => setMessage(null), 4000); }
+  };
+
   // Modal states
   const [showTrackModal, setShowTrackModal] = useState(false);
   const [showRuleModal, setShowRuleModal] = useState(false);
@@ -137,7 +168,14 @@ export default function UniversitySettingsPage() {
       });
       if (profileRes.ok) {
         const profileData = await profileRes.json();
+        // Ensure keyFacts is at least an empty object to avoid crashes
+        if (profileData && !profileData.keyFacts) {
+          profileData.keyFacts = {};
+        }
         setProfile(profileData);
+      } else {
+        const errData = await profileRes.json().catch(() => ({}));
+        setMessage({ type: 'error', text: errData.error || `Failed to load profile (Status: ${profileRes.status})` });
       }
 
       // Fetch programs
@@ -217,7 +255,7 @@ export default function UniversitySettingsPage() {
 
     const token = authHelpers.getToken();
     const method = editingTrack ? 'PUT' : 'POST';
-    const url = editingTrack 
+    const url = editingTrack
       ? `/api/universities/tracks?id=${editingTrack.id}`
       : '/api/universities/tracks';
 
@@ -273,7 +311,7 @@ export default function UniversitySettingsPage() {
 
     const token = authHelpers.getToken();
     const method = editingRule ? 'PUT' : 'POST';
-    const url = editingRule 
+    const url = editingRule
       ? `/api/universities/rules?id=${editingRule.id}`
       : '/api/universities/rules';
 
@@ -347,7 +385,7 @@ export default function UniversitySettingsPage() {
     if (!profile) return null;
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    
+
     if (profile.applicationStartDate) {
       const startDate = new Date(profile.applicationStartDate);
       startDate.setHours(0, 0, 0, 0);
@@ -355,7 +393,7 @@ export default function UniversitySettingsPage() {
         return { status: 'upcoming', message: `Applications open on ${startDate.toLocaleDateString()}`, color: 'blue' };
       }
     }
-    
+
     if (profile.applicationDeadline) {
       const deadline = new Date(profile.applicationDeadline);
       deadline.setHours(23, 59, 59, 999);
@@ -363,11 +401,11 @@ export default function UniversitySettingsPage() {
         return { status: 'closed', message: `Applications closed on ${deadline.toLocaleDateString()}`, color: 'red' };
       }
     }
-    
+
     if (profile.applicationStartDate && profile.applicationDeadline) {
       return { status: 'open', message: `Applications open until ${new Date(profile.applicationDeadline).toLocaleDateString()}`, color: 'green' };
     }
-    
+
     return null;
   };
 
@@ -381,26 +419,35 @@ export default function UniversitySettingsPage() {
     );
   }
 
+  const navLinks = [
+    { label: 'Dashboard', href: '/university/dashboard', icon: BarChart3 },
+    { label: 'Applicants', href: '/university/applicants', icon: Users },
+    { label: 'Invitations', href: '/university/invitations', icon: Bell },
+    { label: 'Placements', href: '/university/placements', icon: Award },
+    { label: 'Programs', href: '/university/programs', icon: BookOpen },
+    { label: 'Appeals', href: '/university/appeals', icon: AlertCircle },
+    { label: 'Settings', href: '/university/settings', icon: Settings },
+  ];
+
   const tabs = [
     { id: 'basic', label: 'Basic Information', icon: Building },
     { id: 'programs', label: 'Academic Programs', icon: BookOpen },
     { id: 'tracks', label: 'Admission Tracks', icon: Target },
-    // { id: 'eligibility', label: 'Eligibility Rules', icon: Shield },
     { id: 'intake', label: 'Intake Capacity', icon: Users },
+    { id: 'security', label: 'Security', icon: Shield },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 md:p-8">
-      <div className="max-w-6xl mx-auto">
+    <DashboardLayout title="University Admin" navLinks={navLinks} theme="green">
+      <div className="max-w-6xl mx-auto py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">University Administration Settings</h1>
           <p className="text-gray-600 mt-1">Configure university information, programs, admission tracks, and rules</p>
         </div>
 
         {message && (
-          <div className={`mb-6 p-4 rounded-lg flex items-center gap-3 ${
-            message.type === 'success' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
-          }`}>
+          <div className={`mb-6 p-4 rounded-lg flex items-center gap-3 ${message.type === 'success' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
+            }`}>
             {message.type === 'success' ? <CheckCircle className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
             {message.text}
           </div>
@@ -430,11 +477,10 @@ export default function UniversitySettingsPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-6 py-4 text-base font-semibold transition whitespace-nowrap ${
-                    activeTab === tab.id
+                  className={`flex items-center gap-2 px-6 py-4 text-base font-semibold transition whitespace-nowrap ${activeTab === tab.id
                       ? 'bg-white text-green-700 border-b-4 border-green-600'
                       : 'text-gray-600 hover:text-green-700'
-                  }`}
+                    }`}
                 >
                   <Icon className="w-5 h-5" />
                   {tab.label}
@@ -666,10 +712,10 @@ export default function UniversitySettingsPage() {
                       <label className="block text-lg font-bold text-gray-900 mb-2">Established Year</label>
                       <input
                         type="number"
-                        value={profile.keyFacts?.established || ''}
-                        onChange={e => setProfile({ 
-                          ...profile, 
-                          keyFacts: { ...profile.keyFacts, established: parseInt(e.target.value) || 0 }
+                        value={profile.keyFacts?.established ?? ''}
+                        onChange={e => setProfile({
+                          ...profile,
+                          keyFacts: { ...(profile.keyFacts || {}), established: parseInt(e.target.value) || 0 }
                         })}
                         className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       />
@@ -678,10 +724,10 @@ export default function UniversitySettingsPage() {
                       <label className="block text-lg font-bold text-gray-900 mb-2">Total Students</label>
                       <input
                         type="number"
-                        value={profile.keyFacts?.students || ''}
-                        onChange={e => setProfile({ 
-                          ...profile, 
-                          keyFacts: { ...profile.keyFacts, students: parseInt(e.target.value) || 0 }
+                        value={profile.keyFacts?.students ?? ''}
+                        onChange={e => setProfile({
+                          ...profile,
+                          keyFacts: { ...(profile.keyFacts || {}), students: parseInt(e.target.value) || 0 }
                         })}
                         className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       />
@@ -690,13 +736,35 @@ export default function UniversitySettingsPage() {
                       <label className="block text-lg font-bold text-gray-900 mb-2">Number of Programs</label>
                       <input
                         type="number"
-                        value={profile.keyFacts?.programs || ''}
-                        onChange={e => setProfile({ 
-                          ...profile, 
-                          keyFacts: { ...profile.keyFacts, programs: parseInt(e.target.value) || 0 }
+                        value={profile.keyFacts?.programs ?? ''}
+                        onChange={e => setProfile({
+                          ...profile,
+                          keyFacts: { ...(profile.keyFacts || {}), programs: parseInt(e.target.value) || 0 }
                         })}
                         className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       />
+                    </div>
+                  </div>
+
+                  {/* Total Intake Capacity */}
+                  <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Users className="w-6 h-6 text-green-600" />
+                      <label className="block text-lg font-bold text-gray-900">Total University Intake Capacity</label>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <input
+                        type="number"
+                        min="0"
+                        value={profile.totalCapacity || 0}
+                        onChange={e => setProfile({ ...profile, totalCapacity: parseInt(e.target.value) || 0 })}
+                        className="w-48 border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      />
+                      <p className="text-sm text-gray-600">
+                        Maximum number of student applications accepted platform-wide.
+                        <br />
+                        <span className="text-xs text-gray-500 font-normal">Leave 0 for unlimited (default).</span>
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -729,7 +797,7 @@ export default function UniversitySettingsPage() {
                       <p className="text-sm text-gray-500 mt-1">⏰ Students cannot apply after this date</p>
                     </div>
                   </div>
-                  
+
                   {/* Status Preview */}
                   {periodStatus && (
                     <div className={`mt-4 p-4 bg-${periodStatus.color}-50 rounded-lg border border-${periodStatus.color}-200`}>
@@ -957,7 +1025,7 @@ export default function UniversitySettingsPage() {
                           <span className="text-sm font-semibold">{item.filled} / {item.totalIntake} filled</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-3">
-                          <div 
+                          <div
                             className="bg-green-600 h-3 rounded-full transition-all"
                             style={{ width: `${item.totalIntake > 0 ? (item.filled / item.totalIntake) * 100 : 0}%` }}
                           />
@@ -967,6 +1035,64 @@ export default function UniversitySettingsPage() {
                     ))}
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* ==================== SECURITY TAB ==================== */}
+            {activeTab === 'security' && (
+              <div className="max-w-md">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="bg-indigo-100 p-3 rounded-xl">
+                    <Shield className="w-6 h-6 text-indigo-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">Account Security</h2>
+                    <p className="text-sm text-gray-500">Update your university administration account password</p>
+                  </div>
+                </div>
+
+                <form onSubmit={handleChangePassword} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1">Current Password</label>
+                    <input
+                      type="password"
+                      value={passwordForm.currentPassword}
+                      onChange={e => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
+                      className="w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1">New Password</label>
+                    <input
+                      type="password"
+                      value={passwordForm.newPassword}
+                      onChange={e => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+                      className="w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      required
+                      minLength={6}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1">Confirm New Password</label>
+                    <input
+                      type="password"
+                      value={passwordForm.confirmPassword}
+                      onChange={e => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+                      className="w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      required
+                      minLength={6}
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={passwordSaving}
+                    className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition disabled:opacity-50"
+                  >
+                    <Save className="w-4 h-4" />
+                    {passwordSaving ? 'Updating...' : 'Change Password'}
+                  </button>
+                </form>
               </div>
             )}
           </div>
@@ -1172,6 +1298,6 @@ export default function UniversitySettingsPage() {
           </div>
         </div>
       )}
-    </div>
+    </DashboardLayout>
   );
 }

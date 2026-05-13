@@ -814,7 +814,8 @@ export const moeAPI = {
       const res = await fetch(`/api/admin/students?${params}`, { headers: getMoeAuthHeader() });
       const data = await res.json();
       if (data.success) {
-        return { success: true, data: data.students, total: data.pagination?.total || 0 };
+        // Return the full data object so the page can access students, summary, and pagination
+        return { success: true, data: data };
       }
       return { success: false, error: data.error || 'Failed to load students', data: [] };
     } catch {

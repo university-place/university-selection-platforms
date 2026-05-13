@@ -8,7 +8,8 @@ import {
   Users, Award, CheckCircle, XCircle, Clock, Calendar,
   Search, Filter, Eye, Download, Mail, Phone, MapPin,
   GraduationCap, BookOpen, TrendingUp, AlertCircle,
-  Loader2, RefreshCw, ChevronDown, ChevronUp
+  Loader2, RefreshCw, ChevronDown, ChevronUp,
+  BarChart3, Bell, Settings
 } from 'lucide-react';
 
 interface PlacedStudent {
@@ -129,11 +130,13 @@ export default function UniversityPlacementsPage() {
   });
 
   const navLinks = [
-    { label: 'Dashboard', href: '/university/dashboard' },
-    { label: 'Applicants', href: '/university/applicants' },
-    { label: 'Programs', href: '/university/programs' },
-    { label: 'Invitations', href: '/university/invitations' },
-    { label: 'Placements', href: '/university/placements' }
+    { label: 'Dashboard', href: '/university/dashboard', icon: BarChart3 },
+    { label: 'Applicants', href: '/university/applicants', icon: Users },
+    { label: 'Invitations', href: '/university/invitations', icon: Bell },
+    { label: 'Placements', href: '/university/placements', icon: Award },
+    { label: 'Programs', href: '/university/programs', icon: BookOpen },
+    { label: 'Appeals', href: '/university/appeals', icon: AlertCircle },
+    { label: 'Settings', href: '/university/settings', icon: Settings },
   ];
 
   if (loading) {

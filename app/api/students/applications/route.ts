@@ -2,8 +2,22 @@ import { NextResponse } from 'next/server';
 import prisma from '@/prisma/client';
 import jwt from 'jsonwebtoken';
 
-const MAX_ATTEMPTS = 100;
-const MAX_ATTEMPTS_PER_UNIVERSITY = 100;
+const DEFAULT_MAX_ATTEMPTS = 10;
+
+async function getMaxAttempts() {
+  try {
+    const config = await prisma.systemConfig.findUnique({
+      where: { key: 'maxSubmissionAttempts' }
+    });
+    if (config && typeof config.value === 'number') {
+      return config.value;
+    }
+    return DEFAULT_MAX_ATTEMPTS;
+  } catch (error) {
+    console.error('Error fetching max attempts:', error);
+    return DEFAULT_MAX_ATTEMPTS;
+  }
+}
 
 async function verifyStudent(request: Request) {
   const authHeader = request.headers.get('authorization');
@@ -87,6 +101,47 @@ function isApplicationOpen(startDate: Date | null, deadline: Date | null): boole
   return true;
 }
 
+// Helper function to check university capacity
+async function checkUniversityCapacity(universityId: number, currentStudentId?: number) {
+  const university = await prisma.university.findUnique({
+    where: { id: universityId },
+    select: { totalCapacity: true, name: true }
+  });
+
+  if (!university || university.totalCapacity === null || university.totalCapacity <= 0) {
+    return { allowed: true };
+  }
+
+  const activeYear = await prisma.academicYear.findFirst({ where: { isActive: true } });
+  const year = activeYear?.year || new Date().getFullYear().toString();
+
+  // Count unique students with active/submitted preferences, excluding the current student if updating
+  const uniqueStudents = await prisma.preference.groupBy({
+    by: ['studentId'],
+    where: {
+      universityId,
+      isCancelled: false,
+      application: { academicYear: year },
+      studentId: currentStudentId ? { not: currentStudentId } : undefined,
+      // Align with what the university sees as "applicants"
+      status: { in: ['SUBMITTED', 'ACCEPTED', 'REJECTED', 'PLACED', 'WAITLISTED', 'BATCH_PLACED', 'BATCH_NOT_PLACED'] }
+    }
+  });
+  
+  const count = uniqueStudents.length;
+
+  if (count >= university.totalCapacity) {
+    return {
+      allowed: false,
+      message: `Maximum intake capacity (${university.totalCapacity}) reached for this university.`
+    };
+  }
+
+
+  return { allowed: true, current: count, total: university.totalCapacity };
+}
+
+
 // GET - Fetch student's applications
 // GET - Fetch student's applications
 export async function GET(request: Request) {
@@ -109,7 +164,15 @@ export async function GET(request: Request) {
                 name: true, 
                 code: true, 
                 applicationDeadline: true,
-                applicationStartDate: true  // ✅ ADD THIS
+                applicationStartDate: true,
+                totalCapacity: true,
+                _count: {
+                  select: {
+                    preferences: {
+                      where: { isCancelled: false }
+                    }
+                  }
+                }
               } 
             },
             program: { select: { id: true, name: true, code: true } },
@@ -119,6 +182,9 @@ export async function GET(request: Request) {
         }
       }
     });
+
+    
+    const maxAttempts = await getMaxAttempts();
     
     if (!application) {
       return NextResponse.json({ 
@@ -126,8 +192,8 @@ export async function GET(request: Request) {
         applications: [],
         submissionInfo: {
           attemptsUsed: 0,
-          maxAttempts: MAX_ATTEMPTS,
-          attemptsLeft: MAX_ATTEMPTS,
+          maxAttempts: maxAttempts,
+          attemptsLeft: maxAttempts,
           lastSubmittedAt: null
         }
       });
@@ -135,7 +201,7 @@ export async function GET(request: Request) {
     
     const formattedApplications = application.preferences.map((pref, index) => {
       const submissionCount = pref.submissionCount || 0;
-      const remainingAttempts = MAX_ATTEMPTS_PER_UNIVERSITY - submissionCount;
+      const remainingAttempts = maxAttempts - submissionCount;
       const isSubmitted = !!pref.submittedAt;
       
       // Helper function to check if application is open
@@ -173,21 +239,24 @@ export async function GET(request: Request) {
         remainingAttempts: remainingAttempts,
         canSubmit: remainingAttempts > 0,
         universityDeadline: pref.university?.applicationDeadline,
-       applicationStartDate: pref.university?.applicationStartDate,  // ✅ THIS MUST BE HERE
-        isApplicationOpen: isApplicationOpen(),  // ✅ ADD THIS
+        applicationStartDate: pref.university?.applicationStartDate,
+        isApplicationOpen: isApplicationOpen(),
         isDeadlinePassed: pref.university?.applicationDeadline ? new Date(pref.university.applicationDeadline) < new Date() : false,
+        totalCapacity: pref.university?.totalCapacity || 0,
+        currentApplicants: pref.university?._count?.preferences || 0,
         createdAt: pref.createdAt,
         updatedAt: pref.updatedAt
       };
     });
+
     
     return NextResponse.json({
       success: true,
       applications: formattedApplications,
       submissionInfo: {
         attemptsUsed: application.submissionCount || 0,
-        maxAttempts: MAX_ATTEMPTS,
-        attemptsLeft: MAX_ATTEMPTS - (application.submissionCount || 0),
+        maxAttempts: maxAttempts,
+        attemptsLeft: maxAttempts - (application.submissionCount || 0),
         lastSubmittedAt: application.lastSubmittedAt
       }
     });
@@ -210,7 +279,7 @@ export async function POST(request: Request) {
       console.log('POST - Student ID:', studentId);
       console.log('POST - Applications:', JSON.stringify(applications, null, 2));
 
-      // ✅ Validate dates for each university
+      // ✅ Validate dates and capacity for each university
       for (const app of applications) {
         const dateValidation = await validateApplicationDates(app.universityId);
         if (!dateValidation.allowed) {
@@ -219,7 +288,16 @@ export async function POST(request: Request) {
             success: false 
           }, { status: 400 });
         }
+
+        const capacityValidation = await checkUniversityCapacity(app.universityId, studentId);
+        if (!capacityValidation.allowed) {
+          return NextResponse.json({ 
+            error: capacityValidation.message,
+            success: false 
+          }, { status: 403 });
+        }
       }
+
 
       const activeYear = await prisma.academicYear.findFirst({ where: { isActive: true } });
       const academicYear = activeYear?.year || new Date().getFullYear().toString();
@@ -314,13 +392,21 @@ export async function POST(request: Request) {
     if (universityId) {
       console.log('Adding single preference for university:', universityId);
       
-      // ✅ Validate dates
+      // ✅ Validate dates and capacity
       const dateValidation = await validateApplicationDates(universityId);
       if (!dateValidation.allowed) {
         return NextResponse.json({ 
           error: dateValidation.message,
           success: false 
         }, { status: 400 });
+      }
+
+      const capacityValidation = await checkUniversityCapacity(universityId, studentId);
+      if (!capacityValidation.allowed) {
+        return NextResponse.json({ 
+          error: capacityValidation.message,
+          success: false 
+        }, { status: 403 });
       }
       
       const activeYear = await prisma.academicYear.findFirst({ where: { isActive: true } });
@@ -380,11 +466,21 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Preference not found' }, { status: 404 });
       }
       
+      const maxAttempts = await getMaxAttempts();
       const currentAttempts = preference.submissionCount || 0;
       
-      if (currentAttempts >= MAX_ATTEMPTS_PER_UNIVERSITY) {
+      if (currentAttempts >= maxAttempts) {
         return NextResponse.json({ error: 'No attempts left' }, { status: 403 });
       }
+
+      const capacityValidation = await checkUniversityCapacity(preference.universityId, studentId);
+      if (!capacityValidation.allowed) {
+        return NextResponse.json({ 
+          error: capacityValidation.message,
+          success: false 
+        }, { status: 403 });
+      }
+
       
       const updatedPreference = await prisma.preference.update({
         where: { id: preference.id },
@@ -396,7 +492,7 @@ export async function POST(request: Request) {
         }
       });
       
-      const remainingAttempts = MAX_ATTEMPTS_PER_UNIVERSITY - (updatedPreference.submissionCount || 0);
+      const remainingAttempts = maxAttempts - (updatedPreference.submissionCount || 0);
       
       return NextResponse.json({
         success: true,
@@ -595,16 +691,25 @@ export async function PATCH(request: Request) {
       }, { status: 404 });
     }
 
-    const MAX_ATTEMPTS_PER_PREFERENCE = 100;
+    const maxAttempts = await getMaxAttempts();
     const currentAttempts = preference.submissionCount || 0;
 
-    console.log(`Current attempts for preference ${preferenceId}: ${currentAttempts}/${MAX_ATTEMPTS_PER_PREFERENCE}`);
+    console.log(`Current attempts for preference ${preferenceId}: ${currentAttempts}/${maxAttempts}`);
 
-    if (currentAttempts >= MAX_ATTEMPTS_PER_PREFERENCE) {
+    if (currentAttempts >= maxAttempts) {
       return NextResponse.json({
-        error: `You have exhausted your ${MAX_ATTEMPTS_PER_PREFERENCE} submission attempts for this university.`
+        error: `You have exhausted your ${maxAttempts} submission attempts for this university.`
       }, { status: 403 });
     }
+
+    const capacityValidation = await checkUniversityCapacity(preference.universityId, studentId);
+    if (!capacityValidation.allowed) {
+      return NextResponse.json({ 
+        error: capacityValidation.message,
+        success: false 
+      }, { status: 403 });
+    }
+
 
     // Update the specific preference
     const updatedPreference = await prisma.preference.update({
@@ -628,7 +733,7 @@ export async function PATCH(request: Request) {
       });
     }
 
-    const remainingAttempts = MAX_ATTEMPTS_PER_PREFERENCE - (updatedPreference.submissionCount || 0);
+    const remainingAttempts = maxAttempts - (updatedPreference.submissionCount || 0);
     const attemptsUsed = updatedPreference.submissionCount || 0;
 
     console.log(`Submission successful! Used: ${attemptsUsed}, Remaining: ${remainingAttempts}`);
@@ -638,7 +743,7 @@ export async function PATCH(request: Request) {
       message: `✅ Application submitted successfully! You have ${remainingAttempts} attempt(s) remaining for this university.`,
       submissionCount: updatedPreference.submissionCount,
       remainingAttempts: remainingAttempts,
-      maxAttempts: MAX_ATTEMPTS_PER_PREFERENCE,
+      maxAttempts: maxAttempts,
       submittedAt: updatedPreference.submittedAt,
       preference: {
         id: updatedPreference.id,

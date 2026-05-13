@@ -99,11 +99,15 @@ interface PlacementResult {
 
 interface Appeal {
   id: number;
-  placementId: number;
-  reason: string;
-  status: 'SUBMITTED' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED';
-  submittedAt: string;
-  responseMessage?: string;
+  type: string;
+  description: string;
+  status: 'pending' | 'resolved' | 'rejected';
+  resolution?: string;
+  createdAt: string;
+  preference?: {
+    university: { name: string };
+    program: { name: string };
+  };
 }
 
 interface Notification {
@@ -165,7 +169,7 @@ const [submittingPref, setSubmittingPref] = useState<number | null>(null);
   const [availablePrograms, setAvailablePrograms] = useState<{ id: number; name: string }[]>([]);
   const [availableTracks, setAvailableTracks] = useState<{ id: number; name: string }[]>([]);
   const [editingPreferenceId, setEditingPreferenceId] = useState<number | null>(null);
-  const [appealForm, setAppealForm] = useState({ reason: '', document: null as File | null });
+  const [appealForm, setAppealForm] = useState({ type: 'placement', description: '', preferenceId: '' });
   const [showAppealModal, setShowAppealModal] = useState(false);
 
   // Fetch all data on load
@@ -622,22 +626,39 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
 }
 
   async function submitAppeal() {
-    if (!appealForm.reason) return;
+    if (!appealForm.description || !appealForm.type) return;
     const token = authHelpers.getToken();
-    const formData = new FormData();
-    formData.append('placementId', placement!.id.toString());
-    formData.append('reason', appealForm.reason);
-    if (appealForm.document) formData.append('document', appealForm.document);
-    const res = await fetch('/api/students/appeals', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData,
-    });
-    const data = await res.json();
-    if (data.success) {
-      setShowAppealModal(false);
-      fetchDashboardData();
-    } else alert(data.error);
+    try {
+      const res = await fetch('/api/students/appeals', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          type: appealForm.type,
+          description: appealForm.description,
+          preferenceId: appealForm.preferenceId || null
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setShowAppealModal(false);
+        setAppealForm({ type: 'placement', description: '', preferenceId: '' });
+        alert('Appeal submitted successfully to the Ministry of Education.');
+        
+        // Refresh appeals
+        const appealsRes = await fetch('/api/students/appeals', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const appealsData = await appealsRes.json();
+        if (appealsData.success) setAppeals(appealsData.data);
+      } else {
+        alert(data.error || 'Failed to submit appeal');
+      }
+    } catch (err) {
+      alert('Network error');
+    }
   }
 
   // Render different sections
@@ -1517,110 +1538,127 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
 
             {/* Appeals Section */}
             <div className="bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-lg font-bold mb-6">Appeals</h2>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-lg font-bold">My Appeals to MoE</h2>
+                <button 
+                  onClick={() => setShowAppealModal(true)}
+                  className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-semibold transition"
+                >
+                  <Plus className="w-4 h-4" />
+                  File New Appeal
+                </button>
+              </div>
               
               {appeals.length === 0 ? (
                 <div className="text-center py-8">
                   <MessageCircle className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                  <p className="text-gray-500">No appeals submitted</p>
-                  {placement && placement.status !== 'PLACED' && (
-                    <p className="text-sm text-gray-400 mt-1">You can file an appeal below</p>
-                  )}
+                  <p className="text-gray-500">No appeals submitted yet</p>
                 </div>
               ) : (
-                <div className="space-y-4 mb-6">
+                <div className="space-y-4">
                   {appeals.map(ap => (
                     <div key={ap.id} className="p-4 border rounded-lg hover:shadow-md transition">
                       <div className="flex items-start justify-between mb-3">
-                        <h3 className="font-semibold text-gray-900">Appeal #{ap.id}</h3>
-                        <div className="flex items-center gap-2">
-                          {ap.status === 'APPROVED' && (
-                            <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">Approved</span>
-                          )}
-                          {ap.status === 'REJECTED' && (
-                            <span className="px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold">Rejected</span>
-                          )}
-                          {ap.status === 'UNDER_REVIEW' && (
-                            <span className="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold">Under Review</span>
-                          )}
-                          {ap.status === 'SUBMITTED' && (
-                            <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">Submitted</span>
+                        <div>
+                          <h3 className="font-bold text-gray-900 uppercase text-xs tracking-wider">Appeal #{ap.id} • {ap.type}</h3>
+                          {ap.preference && (
+                            <p className="text-xs text-blue-600 font-medium mt-1">
+                              Target: {ap.preference.university.name} - {ap.preference.program.name}
+                            </p>
                           )}
                         </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
+                            ap.status === 'resolved' ? 'bg-green-100 text-green-700' : 
+                            ap.status === 'rejected' ? 'bg-red-100 text-red-700' : 
+                            'bg-yellow-100 text-yellow-700'
+                          }`}>
+                            {ap.status}
+                          </span>
+                        </div>
                       </div>
-                      <p className="text-gray-600 mb-2">{ap.reason}</p>
-                      <p className="text-xs text-gray-500">Submitted on {new Date(ap.submittedAt).toLocaleString()}</p>
-                      {ap.responseMessage && (
-                        <div className="mt-3 p-3 bg-gray-50 rounded border border-gray-200">
-                          <p className="text-xs font-semibold text-gray-700 mb-1">Response from University:</p>
-                          <p className="text-sm text-gray-600">{ap.responseMessage}</p>
+                      <p className="text-gray-600 text-sm italic mb-2">"{ap.description}"</p>
+                      <p className="text-[10px] text-gray-400">Submitted on {new Date(ap.createdAt).toLocaleString()}</p>
+                      {ap.resolution && (
+                        <div className="mt-3 p-3 bg-green-50 rounded border border-green-100">
+                          <p className="text-xs font-bold text-green-800 mb-1 uppercase tracking-tighter">MOE Resolution:</p>
+                          <p className="text-sm text-green-700">{ap.resolution}</p>
                         </div>
                       )}
                     </div>
                   ))}
                 </div>
               )}
-
-              {placement && placement.status !== 'PLACED' && (
-                <button 
-                  onClick={() => setShowAppealModal(true)}
-                  className="w-full flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-4 py-3 rounded-lg font-semibold transition"
-                >
-                  <Plus className="w-5 h-5" />
-                  File an Appeal
-                </button>
-              )}
             </div>
 
             {/* Appeal Modal */}
             {showAppealModal && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-xl w-full max-w-md shadow-2xl">
-                  <div className="p-6 border-b">
-                    <h3 className="text-xl font-bold text-gray-900">File an Appeal</h3>
-                    <p className="text-sm text-gray-600 mt-1">Provide detailed information about why you believe your placement decision should be reconsidered</p>
+              <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                  <div className="p-8 bg-gradient-to-r from-orange-500 to-red-600 text-white">
+                    <h3 className="text-2xl font-black tracking-tight">File an Appeal to MoE</h3>
+                    <p className="text-orange-100 text-sm mt-1 opacity-90">Your appeal will be reviewed by the Ministry of Education.</p>
                   </div>
-                  <div className="p-6 space-y-4">
+                  <div className="p-8 space-y-6">
                     <div>
-                      <label className="text-sm font-semibold text-gray-700 block mb-2">Appeal Reason</label>
+                      <label className="text-xs font-black uppercase tracking-widest text-gray-400 block mb-3">Appeal Type *</label>
+                      <select 
+                        className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-500 transition-all"
+                        value={appealForm.type}
+                        onChange={e => setAppealForm({ ...appealForm, type: e.target.value })}
+                      >
+                        <option value="placement">Placement Reconsideration</option>
+                        <option value="eligibility">Eligibility Dispute</option>
+                        <option value="technical">Technical Error</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-black uppercase tracking-widest text-gray-400 block mb-3">Related Preference (Optional)</label>
+                      <select 
+                        className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-500 transition-all"
+                        value={appealForm.preferenceId}
+                        onChange={e => setAppealForm({ ...appealForm, preferenceId: e.target.value })}
+                      >
+                        <option value="">None / Not Applicable</option>
+                        {preferences.map(p => (
+                          <option key={p.id} value={p.id}>
+                            {p.universityName} - {p.programName}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-black uppercase tracking-widest text-gray-400 block mb-3">Detailed Description *</label>
                       <textarea 
-                        className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
-                        rows={5}
-                        placeholder="Explain in detail why you are filing this appeal..."
-                        value={appealForm.reason}
-                        onChange={e => setAppealForm({ ...appealForm, reason: e.target.value })}
+                        className="w-full bg-gray-50 border-none rounded-xl p-4 text-sm font-medium focus:ring-2 focus:ring-orange-500 resize-none min-h-[120px]"
+                        placeholder="Please explain your case clearly..."
+                        value={appealForm.description}
+                        onChange={e => setAppealForm({ ...appealForm, description: e.target.value })}
                       />
-                    </div>
-                    <div>
-                      <label className="text-sm font-semibold text-gray-700 block mb-2">Supporting Document (Optional)</label>
-                      <input 
-                        type="file"
-                        onChange={e => setAppealForm({ ...appealForm, document: e.target.files?.[0] || null })}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                      />
-                      {appealForm.document && (
-                        <p className="text-xs text-gray-500 mt-2">Selected file: {appealForm.document.name}</p>
-                      )}
                     </div>
                   </div>
-                  <div className="flex justify-end gap-3 p-6 border-t bg-gray-50 rounded-b-xl">
-                    <button 
-                      onClick={() => setShowAppealModal(false)}
-                      className="px-4 py-2 border border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-100 transition"
-                    >
-                      Cancel
-                    </button>
+                  <div className="flex gap-4 p-8 bg-gray-50/50">
                     <button 
                       onClick={submitAppeal}
-                      disabled={!appealForm.reason}
-                      className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg font-semibold transition"
+                      disabled={!appealForm.description}
+                      className="flex-1 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-4 rounded-2xl font-black uppercase tracking-widest text-sm transition-all active:scale-95 shadow-lg shadow-orange-600/20"
                     >
                       Submit Appeal
+                    </button>
+                    <button 
+                      onClick={() => setShowAppealModal(false)}
+                      className="flex-1 bg-gray-200 text-gray-700 py-4 rounded-2xl font-black uppercase tracking-widest text-sm hover:bg-gray-300 transition-all active:scale-95"
+                    >
+                      Cancel
                     </button>
                   </div>
                 </div>
               </div>
             )}
+
           </div>
         )}
 

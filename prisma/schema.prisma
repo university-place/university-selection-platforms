@@ -139,6 +139,7 @@ model University {
   researchAreas             String?
   studentLife               String?
   isAutonomous              Boolean                     @default(false)
+  totalCapacity             Int                         @default(0)
   applicationStartDate      DateTime?                   @db.Timestamp(6)
   DepartmentPlacement       DepartmentPlacement[]
   documents                 Document[]

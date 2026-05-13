@@ -9,7 +9,7 @@ import {
   Calendar, CheckCircle, Clock, AlertCircle,
   Upload, BookOpen, UserPlus, BarChart3, Activity,
   Award, Target, Download, Eye,
-  ShieldCheck,
+  ShieldCheck, Settings,
   LayoutDashboard
 } from 'lucide-react';
 
@@ -168,6 +168,7 @@ export default function MOEDashboardPage() {
     { label: 'Audit Log', href: '/moe/audit', icon: FileText },
     { label: 'Reports', href: '/moe/reports', icon: BarChart3 },
     { label: 'Registry', href: '/moe/registry', icon: BookOpen },
+    { label: 'Settings', href: '/moe/settings', icon: Settings },
   ];
 
   if (loading) {

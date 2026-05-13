@@ -40,10 +40,11 @@ export async function GET(request: Request) {
 
     const complianceData = await Promise.all(
       universities.map(async (uni) => {
-        const [invitationsSent, acceptedApps, pendingApps] = await Promise.all([
+        const [invitationsSent, acceptedApps, pendingApps, appealCount] = await Promise.all([
           prisma.interviewInvitation.count({ where: { universityId: uni.id } }).catch(() => 0),
           prisma.application.count({ where: { universityId: uni.id, status: 'ACCEPTED' } }),
           prisma.application.count({ where: { universityId: uni.id, status: 'PENDING' } }),
+          prisma.appeal.count({ where: { preference: { universityId: uni.id } } }),
         ]);
 
         const totalApps = uni._count.applications;
@@ -62,8 +63,9 @@ export async function GET(request: Request) {
           acceptedApplications: acceptedApps,
           pendingApplications: pendingApps,
           totalPlacements: uni._count.placements,
+          appealCount,
           responseRate,
-          complianceStatus: responseRate >= 80 ? 'COMPLIANT' : responseRate >= 50 ? 'PARTIAL' : 'NON_COMPLIANT',
+          complianceStatus: (responseRate >= 80 && appealCount < 5) ? 'COMPLIANT' : (responseRate >= 50 || appealCount < 10) ? 'PARTIAL' : 'NON_COMPLIANT',
         };
       })
     );

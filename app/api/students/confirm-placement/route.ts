@@ -2,6 +2,18 @@ import { NextResponse } from 'next/server';
 import prisma from '@/prisma/client';
 import jwt from 'jsonwebtoken';
 
+async function getMaxAcceptances(): Promise<number> {
+  try {
+    const config = await prisma.systemConfig.findUnique({
+      where: { key: 'maxPlacementAcceptances' }
+    });
+    if (config && typeof config.value === 'number') return config.value;
+    return 1; // default: only 1 university
+  } catch {
+    return 1;
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const authHeader = request.headers.get('authorization');
@@ -38,6 +50,22 @@ export async function POST(request: Request) {
     // Check if deadline has passed
     if (preference.confirmationDeadline && new Date(preference.confirmationDeadline) < new Date()) {
       return NextResponse.json({ error: 'Response deadline has passed' }, { status: 400 });
+    }
+
+    // ✅ Enforce MOE placement acceptance limit (only when confirming)
+    if (action === 'confirm') {
+      const maxAcceptances = await getMaxAcceptances();
+      const confirmedCount = await prisma.studentConfirmation.count({
+        where: {
+          studentId: decoded.id,
+          status: 'CONFIRMED'
+        }
+      });
+      if (confirmedCount >= maxAcceptances) {
+        return NextResponse.json({
+          error: `You cannot accept more than ${maxAcceptances} university placement${maxAcceptances > 1 ? 's' : ''}. The Ministry of Education has set this limit for the current academic year.`
+        }, { status: 403 });
+      }
     }
     
     const status = action === 'confirm' ? 'CONFIRMED' : 'DECLINED';
@@ -79,7 +107,6 @@ export async function POST(request: Request) {
       }
     });
     
-    // Send notification (you can implement email sending here)
     console.log(`Student ${decoded.id} ${action}ed offer from ${preference.university?.name}`);
     
     return NextResponse.json({
@@ -92,4 +119,4 @@ export async function POST(request: Request) {
     console.error('Error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-}
+}

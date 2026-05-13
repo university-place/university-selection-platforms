@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+// Force reload: 2026-05-12T21:50:00
 import prisma from '@/prisma/client'
 import jwt from 'jsonwebtoken'
 
@@ -56,8 +57,9 @@ export async function GET(request: Request) {
         accreditation: true,
         admissionInstructions: true,
         postDecisionInstructions: true,
-        applicationStartDate: true,   // ✅ ADD THIS
-        applicationDeadline: true,    // ✅ ADD THIS
+        applicationStartDate: true,
+        applicationDeadline: true,
+        totalCapacity: true,
         keyFacts: true,
         programs: {
           where: { isActive: true },
@@ -109,8 +111,9 @@ export async function PUT(request: Request) {
   accreditation,
   admissionInstructions,
   postDecisionInstructions,
-  applicationStartDate,     // ✅ ADD THIS LINE
+  applicationStartDate,
   applicationDeadline,
+  totalCapacity,
   keyFacts,
 } = body;
 
@@ -153,8 +156,9 @@ export async function PUT(request: Request) {
     accreditation,
     admissionInstructions,
     postDecisionInstructions,
-   applicationStartDate: applicationStartDate ? new Date(applicationStartDate) : null,  // ✅ ADD THIS LINE
+    applicationStartDate: applicationStartDate ? new Date(applicationStartDate) : null,
     applicationDeadline: applicationDeadline ? new Date(applicationDeadline) : null,
+    totalCapacity: totalCapacity !== undefined ? parseInt(totalCapacity) : undefined,
     keyFacts: keyFacts || undefined,
   },
 });

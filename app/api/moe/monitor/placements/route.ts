@@ -26,6 +26,7 @@ export async function GET(request: Request) {
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '30');
     const search = searchParams.get('search');
+    const stream = searchParams.get('stream');
 
     const where: any = {};
     
@@ -35,6 +36,10 @@ export async function GET(request: Request) {
         { firstName: { contains: search, mode: 'insensitive' } },
         { lastName: { contains: search, mode: 'insensitive' } }
       ];
+    }
+
+    if (stream && stream !== 'ALL') {
+      where.stream = stream;
     }
 
     if (status === 'PLACED') {

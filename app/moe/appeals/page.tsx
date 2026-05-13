@@ -3,28 +3,38 @@
 import { useEffect, useState } from 'react';
 import { MOEDashboardLayout } from '@/components/MOEDashboardLayout';
 import { moeAuthHelpers } from '@/lib/api';
-import { MessageSquare, Filter, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { 
+  MessageSquare, Filter, CheckCircle, XCircle, Clock,
+  LayoutDashboard, Users, FileText, Target, 
+  AlertCircle, Building2, ShieldCheck, Upload, Settings
+} from 'lucide-react';
 
 const NAV_LINKS = [
-  { label: 'Dashboard', href: '/moe/dashboard' },
-  { label: 'Students', href: '/moe/students' },
-  { label: 'Applications', href: '/moe/applications' },
-  { label: 'Placements', href: '/moe/placements' },
-  { label: 'Appeals', href: '/moe/appeals' },
-  { label: 'Universities', href: '/moe/universities' },
-  { label: 'Compliance', href: '/moe/compliance' },
-  { label: 'Audit Log', href: '/moe/audit' },
-  { label: 'Upload', href: '/moe/upload' },
+  { label: 'Dashboard', href: '/moe/dashboard', icon: LayoutDashboard },
+  { label: 'Students', href: '/moe/students', icon: Users },
+  { label: 'Applications', href: '/moe/applications', icon: FileText },
+  { label: 'Placements', href: '/moe/placements', icon: Target },
+  { label: 'Appeals', href: '/moe/appeals', icon: AlertCircle },
+  { label: 'Universities', href: '/moe/universities', icon: Building2 },
+  { label: 'Compliance', href: '/moe/compliance', icon: ShieldCheck },
+  { label: 'Audit Log', href: '/moe/audit', icon: Clock },
+  { label: 'Upload', href: '/moe/upload', icon: Upload },
+  { label: 'Settings', href: '/moe/settings', icon: Settings },
 ];
 
 interface Appeal {
   id: number;
-  reason: string;
+  description: string;
+  type: string;
   status: string;
   resolution: string | null;
   createdAt: string;
   resolvedAt: string | null;
-  student: { examID: string; firstName: string; lastName: string; stream: string };
+  student: { examID: string; firstName: string; lastName: string; stream: string; region: string };
+  preference?: {
+    university: { name: true };
+    program: { name: true };
+  };
 }
 
 interface Summary { totalAppeals: number; pending: number; resolved: number; rejected: number; }
@@ -35,6 +45,7 @@ export default function MOEAppealsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [streamFilter, setStreamFilter] = useState('');
   const [updating, setUpdating] = useState<number | null>(null);
   const [selectedAppeal, setSelectedAppeal] = useState<Appeal | null>(null);
   const [resolution, setResolution] = useState('');
@@ -44,15 +55,23 @@ export default function MOEAppealsPage() {
     setLoading(true);
     try {
       const token = moeAuthHelpers.getToken();
-      const params = new URLSearchParams({ limit: '100' });
-      if (statusFilter) params.set('status', statusFilter);
-      const res = await fetch(`/api/moe/monitor/appeals?${params}`, {
+      const params = new URLSearchParams();
+      if (statusFilter) params.set('status', statusFilter.toLowerCase());
+      if (streamFilter) params.set('stream', streamFilter);
+      
+      const res = await fetch(`/api/moe/appeals?${params}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
       if (data.success) {
         setAppeals(data.data);
-        if (data.summary) setSummary(data.summary);
+        
+        // Calculate summary from data
+        const total = data.data.length;
+        const pending = data.data.filter((a: any) => a.status === 'pending').length;
+        const resolved = data.data.filter((a: any) => a.status === 'resolved').length;
+        const rejected = data.data.filter((a: any) => a.status === 'rejected').length;
+        setSummary({ totalAppeals: total, pending, resolved, rejected });
       } else {
         setError(data.error || 'Failed to load');
       }
@@ -60,17 +79,17 @@ export default function MOEAppealsPage() {
     finally { setLoading(false); }
   };
 
-  useEffect(() => { fetchAppeals(); }, [statusFilter]);
+  useEffect(() => { fetchAppeals(); }, [statusFilter, streamFilter]);
 
   const handleResolve = async () => {
     if (!selectedAppeal || !newStatus) return;
     setUpdating(selectedAppeal.id);
     try {
       const token = moeAuthHelpers.getToken();
-      const res = await fetch('/api/moe/monitor/appeals', {
+      const res = await fetch('/api/moe/appeals', {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ appealId: selectedAppeal.id, status: newStatus, resolution }),
+        body: JSON.stringify({ id: selectedAppeal.id, status: newStatus.toLowerCase(), resolution }),
       });
       const data = await res.json();
       if (data.success) {
@@ -83,9 +102,9 @@ export default function MOEAppealsPage() {
   };
 
   const STATUS_COLOR: Record<string, string> = {
-    PENDING: 'bg-yellow-100 text-yellow-800',
-    RESOLVED: 'bg-green-100 text-green-800',
-    REJECTED: 'bg-red-100 text-red-800',
+    pending: 'bg-yellow-100 text-yellow-800',
+    resolved: 'bg-green-100 text-green-800',
+    rejected: 'bg-red-100 text-red-800',
   };
 
   return (
@@ -114,16 +133,43 @@ export default function MOEAppealsPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-4 flex gap-3">
+        <div className="bg-white rounded-xl shadow-sm p-4 flex flex-wrap gap-4">
           <div className="flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2">
             <Filter className="w-4 h-4 text-gray-400" />
             <select className="outline-none text-sm bg-transparent" value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}>
               <option value="">All Statuses</option>
-              <option value="PENDING">Pending</option>
-              <option value="RESOLVED">Resolved</option>
-              <option value="REJECTED">Rejected</option>
+              <option value="pending">Pending</option>
+              <option value="resolved">Resolved</option>
+              <option value="rejected">Rejected</option>
             </select>
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => setStreamFilter('')}
+              className={`px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all ${
+                streamFilter === '' ? 'bg-purple-600 text-white shadow-lg' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              All Streams ({summary.totalAppeals})
+            </button>
+            <button
+              onClick={() => setStreamFilter('Natural Science')}
+              className={`px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all ${
+                streamFilter === 'Natural Science' ? 'bg-green-600 text-white shadow-lg' : 'bg-green-50 text-green-700 hover:bg-green-100'
+              }`}
+            >
+              Natural Science
+            </button>
+            <button
+              onClick={() => setStreamFilter('Social Science')}
+              className={`px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all ${
+                streamFilter === 'Social Science' ? 'bg-blue-600 text-white shadow-lg' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+              }`}
+            >
+              Social Science
+            </button>
           </div>
         </div>
 
@@ -138,34 +184,41 @@ export default function MOEAppealsPage() {
               <table className="w-full text-sm">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    {['Student', 'Exam ID', 'Stream', 'Reason', 'Status', 'Filed', 'Actions'].map((h) => (
+                    {['Student', 'Exam ID', 'Stream', 'Type', 'Description', 'Status', 'Filed', 'Actions'].map((h) => (
                       <th key={h} className="text-left px-4 py-3 text-gray-600 font-semibold text-xs uppercase">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {appeals.length === 0 ? (
-                    <tr><td colSpan={7} className="text-center py-12 text-gray-400">No appeals found</td></tr>
+                    <tr><td colSpan={8} className="text-center py-12 text-gray-400">No appeals found</td></tr>
                   ) : appeals.map((a) => (
                     <tr key={a.id} className="hover:bg-gray-50 transition">
                       <td className="px-4 py-3 font-medium">{a.student?.firstName} {a.student?.lastName}</td>
                       <td className="px-4 py-3 font-mono text-orange-700 text-xs">{a.student?.examID}</td>
-                      <td className="px-4 py-3 text-gray-600">{a.student?.stream}</td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-1 rounded text-xs font-bold ${
+                          a.student?.stream === 'Natural Science' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                        }`}>
+                          {a.student?.stream}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-gray-600 font-medium uppercase text-xs">{a.type}</td>
                       <td className="px-4 py-3 max-w-xs">
-                        <p className="truncate text-gray-700" title={a.reason}>{a.reason}</p>
+                        <p className="truncate text-gray-700" title={a.description}>{a.description}</p>
                         {a.resolution && <p className="text-xs text-green-600 mt-1 truncate">Resolution: {a.resolution}</p>}
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${STATUS_COLOR[a.status] || 'bg-gray-100 text-gray-700'}`}>
+                        <span className={`px-2 py-1 rounded-full text-xs font-semibold uppercase ${STATUS_COLOR[a.status] || 'bg-gray-100 text-gray-700'}`}>
                           {a.status}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-gray-500 text-xs">{new Date(a.createdAt).toLocaleDateString()}</td>
                       <td className="px-4 py-3">
-                        {a.status === 'PENDING' && (
-                          <button onClick={() => { setSelectedAppeal(a); setNewStatus('RESOLVED'); }}
-                            className="text-xs bg-orange-600 text-white px-3 py-1 rounded hover:bg-orange-700 transition">
-                            Resolve
+                        {a.status === 'pending' && (
+                          <button onClick={() => { setSelectedAppeal(a); setNewStatus('resolved'); }}
+                            className="text-xs font-bold bg-orange-600 text-white px-3 py-1 rounded-full hover:bg-orange-700 transition shadow-sm">
+                            DECIDE
                           </button>
                         )}
                       </td>
@@ -179,36 +232,39 @@ export default function MOEAppealsPage() {
 
         {/* Resolution Modal */}
         {selectedAppeal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6">
-              <h3 className="text-lg font-bold mb-2">Resolve Appeal</h3>
-              <p className="text-sm text-gray-600 mb-4">
-                Student: <strong>{selectedAppeal.student?.firstName} {selectedAppeal.student?.lastName}</strong>
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+            <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg p-8 animate-in zoom-in-95 duration-200">
+              <h3 className="text-2xl font-black mb-2 tracking-tight">Resolve Appeal</h3>
+              <p className="text-sm text-gray-600 mb-6">
+                Student: <strong className="text-foreground">{selectedAppeal.student?.firstName} {selectedAppeal.student?.lastName}</strong> ({selectedAppeal.student?.examID})
               </p>
-              <p className="text-sm bg-gray-50 rounded p-3 mb-4 text-gray-700">{selectedAppeal.reason}</p>
-              <div className="space-y-4">
+              <div className="bg-gray-50 rounded-2xl p-4 mb-6 text-sm text-gray-700 border border-gray-100">
+                <p className="font-bold uppercase text-[10px] tracking-widest text-gray-400 mb-2">Appeal Description</p>
+                {selectedAppeal.description}
+              </div>
+              <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Decision *</label>
-                  <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                  <label className="block text-xs font-black uppercase tracking-widest text-muted-foreground mb-2">Final Decision *</label>
+                  <select className="w-full bg-muted border-none rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-orange-500 transition-all"
                     value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
-                    <option value="">Select…</option>
-                    <option value="RESOLVED">Resolved (Approve)</option>
-                    <option value="REJECTED">Rejected (Deny)</option>
+                    <option value="">Select Action…</option>
+                    <option value="resolved">Approve Appeal (Resolved)</option>
+                    <option value="rejected">Deny Appeal (Rejected)</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Resolution Note</label>
-                  <textarea rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                    placeholder="Explain your decision…" value={resolution}
+                  <label className="block text-xs font-black uppercase tracking-widest text-muted-foreground mb-2">Resolution Note</label>
+                  <textarea rows={3} className="w-full bg-muted border-none rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-orange-500 transition-all"
+                    placeholder="Provide reasoning for your decision…" value={resolution}
                     onChange={(e) => setResolution(e.target.value)} />
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-4 pt-2">
                   <button onClick={handleResolve} disabled={!newStatus || updating !== null}
-                    className="flex-1 bg-orange-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-orange-700 disabled:opacity-50">
-                    {updating ? 'Saving…' : 'Submit Decision'}
+                    className="flex-1 bg-orange-600 text-white py-4 rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-orange-700 disabled:opacity-50 shadow-lg shadow-orange-600/20 active:scale-95 transition-all">
+                    {updating ? 'Processing…' : 'Submit Decision'}
                   </button>
                   <button onClick={() => setSelectedAppeal(null)}
-                    className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg text-sm font-medium hover:bg-gray-300">
+                    className="flex-1 bg-gray-100 text-gray-600 py-4 rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-gray-200 active:scale-95 transition-all">
                     Cancel
                   </button>
                 </div>
@@ -220,3 +276,4 @@ export default function MOEAppealsPage() {
     </MOEDashboardLayout>
   );
 }
+

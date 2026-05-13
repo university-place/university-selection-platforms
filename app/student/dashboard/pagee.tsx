@@ -1269,13 +1269,11 @@ export default function StudentDashboardPage() {
               onClick={() => {
                 if (item.id === 'invitations') {
                   router.push('/student/invitations');
-                } else if (item.id === 'my-placements') {
-                  router.push('/student/placements');
                 } else {
                   setActiveTab(item.id);
                 }
               }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeTab === item.id && item.id !== 'invitations' && item.id !== 'my-placements' ? 'bg-blue-50 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700 hover:bg-gray-100'}`}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeTab === item.id && item.id !== 'invitations' ? 'bg-blue-50 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700 hover:bg-gray-100'}`}
             >
               <item.icon className="w-5 h-5" />
               <span>{item.label}</span>
@@ -1440,7 +1438,7 @@ export default function StudentDashboardPage() {
                   </button>
                   {placement && (
                     <button
-                      onClick={() => router.push('/student/placements')}
+                      onClick={() => setActiveTab('placement')}
                       className="w-full flex items-center gap-3 p-3 bg-orange-50 hover:bg-orange-100 rounded-lg transition text-left font-medium text-orange-700"
                     >
                       <Award className="w-5 h-5" />
@@ -1946,9 +1944,9 @@ export default function StudentDashboardPage() {
                               </div>
                               {ap.preference && (
                                 <p className="text-sm font-bold text-gray-800">
-                                  Target: {ap.preference.university?.name || 'N/A'}
+                                  Target: {ap.preference.university.name}
                                   <span className="mx-2 text-gray-300">|</span>
-                                  <span className="text-gray-500 font-medium">{ap.preference.program?.name || 'General Appeal'}</span>
+                                  <span className="text-gray-500 font-medium">{ap.preference.program.name}</span>
                                 </p>
                               )}
                             </div>
@@ -2165,14 +2163,7 @@ export default function StudentDashboardPage() {
           </div>
         )}
 
-        <button
-          key="my-placements"
-          onClick={() => router.push('/student/placements')}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-gray-700 hover:bg-blue-50 hover:text-blue-600"
-        >
-          <Award className="w-5 h-5" />
-          <span>My Placement Offers</span>
-        </button>
+
       </main>
       {/* Edit Program/Track Modal */}
       {editingPref && (

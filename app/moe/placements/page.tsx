@@ -42,6 +42,7 @@ export default function MOEPlacementsPage() {
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const [streamFilter, setStreamFilter] = useState('ALL');
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
 
@@ -51,6 +52,7 @@ export default function MOEPlacementsPage() {
       const token = moeAuthHelpers.getToken();
       const params = new URLSearchParams({ page: String(page), limit: '30' });
       if (statusFilter) params.set('status', statusFilter);
+      if (streamFilter && streamFilter !== 'ALL') params.set('stream', streamFilter);
       const res = await fetch(`/api/moe/monitor/placements?${params}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -66,7 +68,7 @@ export default function MOEPlacementsPage() {
     finally { setLoading(false); }
   };
 
-  useEffect(() => { fetchPlacements(); }, [page, statusFilter]);
+  useEffect(() => { fetchPlacements(); }, [page, statusFilter, streamFilter]);
 
   const filtered = search
     ? placements.filter((p) =>
@@ -115,6 +117,15 @@ export default function MOEPlacementsPage() {
               <option value="PLACED">Placed (Any)</option>
               <option value="MULTI_PLACED">Multi-Placed (&gt;1)</option>
               <option value="NOT_PLACED">Not Placed Any</option>
+            </select>
+          </div>
+          <div className="flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2">
+            <Filter className="w-4 h-4 text-gray-400" />
+            <select className="outline-none text-sm bg-transparent" value={streamFilter}
+              onChange={(e) => { setStreamFilter(e.target.value); setPage(1); }}>
+              <option value="ALL">All Streams</option>
+              <option value="Natural Science">Natural Science</option>
+              <option value="Social Science">Social Science</option>
             </select>
           </div>
         </div>

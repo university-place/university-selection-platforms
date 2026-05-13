@@ -24,7 +24,19 @@ async function verifyUniversityAdmin(request: Request) {
 export async function GET(request: Request) {
   try {
     const { universityId } = await verifyUniversityAdmin(request);
-    const totalApplications = await prisma.preference.count({ where: { universityId } });
+    const activeYear = await prisma.academicYear.findFirst({ where: { isActive: true } });
+    const year = activeYear?.year || new Date().getFullYear().toString();
+
+    const uniqueStudents = await prisma.preference.groupBy({
+      by: ['studentId'],
+      where: { 
+        universityId, 
+        isCancelled: false,
+        application: { academicYear: year },
+        status: { in: ['SUBMITTED', 'ACCEPTED', 'REJECTED', 'PLACED', 'WAITLISTED', 'BATCH_PLACED', 'BATCH_NOT_PLACED'] }
+      }
+    });
+    const totalApplications = uniqueStudents.length;
     const accepted = await prisma.preference.count({ where: { universityId, status: 'ACCEPTED' } });
     const rejected = await prisma.preference.count({ where: { universityId, status: 'REJECTED' } });
     const pending = await prisma.preference.count({

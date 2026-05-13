@@ -56,6 +56,9 @@ export async function GET(request: Request) {
       totalPrograms,
       totalApplications,
       totalPlacements,
+      pendingApplications,
+      acceptedApplications,
+      rejectedApplications,
       totalActiveUniversities,
       totalVerifiedUniversities,
       totalAppeals,
@@ -71,8 +74,16 @@ export async function GET(request: Request) {
       prisma.student.count({ where: { isActive: true } }),
       prisma.university.count(),
       prisma.program.count(),
-      prisma.application.count({ where: { status: { not: 'DRAFT' } } }),
-      prisma.placement.count(),
+      // All submitted applications (non-draft)
+      prisma.preference.count({ where: { submittedAt: { not: null } } }),
+      // Students placed at any university (ACCEPTED, PLACED, BATCH_PLACED)
+      prisma.preference.count({ where: { status: { in: ['ACCEPTED', 'PLACED', 'BATCH_PLACED'] } } }),
+      // Pending preferences
+      prisma.preference.count({ where: { status: 'PENDING' } }),
+      // Student confirmed acceptances
+      prisma.studentConfirmation.count({ where: { status: 'CONFIRMED' } }),
+      // Student declined
+      prisma.studentConfirmation.count({ where: { status: 'DECLINED' } }),
       prisma.university.count({ where: { isActive: true } }),
       prisma.university.count({ where: { isVerified: true } }),
       prisma.appeal.count(),
@@ -93,8 +104,8 @@ export async function GET(request: Request) {
       }),
     ]);
 
-    const placementRate = totalApplications > 0 
-      ? Math.round((totalPlacements / totalApplications) * 100) 
+    const placementRate = totalStudents > 0 
+      ? Math.round((totalPlacements / totalStudents) * 100) 
       : 0;
 
     return NextResponse.json({
@@ -105,10 +116,15 @@ export async function GET(request: Request) {
         socialScience: socialScienceStudents,
         registered: registeredStudents,
         verified: activeStudents,
+        activeStudents,
         totalUniversities,
         totalPrograms,
         totalApplications,
         totalPlacements,
+        pendingApplications,
+        acceptedApplications,
+        rejectedApplications,
+        activeUniversities: totalActiveUniversities,
         totalActiveUniversities,
         totalVerifiedUniversities,
         totalAppeals,

@@ -8,7 +8,8 @@ import {
   Mail, Send, Calendar, Clock, MapPin, FileText, User, CheckCircle,
   XCircle, AlertCircle, Plus, Trash2, Edit2, Eye, RefreshCw,
   Filter, Search, ChevronDown, ChevronUp, Loader2, GraduationCap,
-  Phone, Mail as MailIcon, MessageCircle, Award, Target, Users
+  Phone, Mail as MailIcon, MessageCircle, Award, Target, Users,
+  BarChart3, Bell, BookOpen, Settings
 } from 'lucide-react';
 
 interface Student {
@@ -82,7 +83,8 @@ export default function UniversityInvitationsPage() {
     time: '',
     location: '',
     instructions: '',
-    programName: ''
+    programName: '',
+    stream: 'all'
   });
 
   // Form states for edit
@@ -232,7 +234,8 @@ export default function UniversityInvitationsPage() {
     
     try {
       // 1. Fetch applicants to filter
-      const appsRes = await fetch(`/api/universities/applicants?limit=1000`, {
+      const streamParam = bulkInviteForm.stream !== 'all' ? `&stream=${bulkInviteForm.stream}` : '';
+      const appsRes = await fetch(`/api/universities/applicants?limit=1000${streamParam}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const appsData = await appsRes.json();
@@ -303,7 +306,8 @@ export default function UniversityInvitationsPage() {
           time: '',
           location: '',
           instructions: '',
-          programName: ''
+          programName: '',
+          stream: 'all'
         });
         fetchInvitations();
       } else {
@@ -437,12 +441,13 @@ export default function UniversityInvitationsPage() {
   };
 
   const navLinks = [
-    { label: 'Dashboard', href: '/university/dashboard' },
-    { label: 'Applications', href: '/university/applications' },
-    { label: 'Applicants', href: '/university/applicants' },
-    { label: 'Programs', href: '/university/programs' },
-    { label: 'Invitations', href: '/university/invitations' },
-    { label: 'Placements', href: '/university/placements' }
+    { label: 'Dashboard', href: '/university/dashboard', icon: BarChart3 },
+    { label: 'Applicants', href: '/university/applicants', icon: Users },
+    { label: 'Invitations', href: '/university/invitations', icon: Bell },
+    { label: 'Placements', href: '/university/placements', icon: Award },
+    { label: 'Programs', href: '/university/programs', icon: BookOpen },
+    { label: 'Appeals', href: '/university/appeals', icon: AlertCircle },
+    { label: 'Settings', href: '/university/settings', icon: Settings },
   ];
 
   if (loading) {
@@ -1005,17 +1010,31 @@ export default function UniversityInvitationsPage() {
                 </div>
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Invitation Type *</label>
-                <select
-                  value={bulkInviteForm.type}
-                  onChange={(e) => setBulkInviteForm({ ...bulkInviteForm, type: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                >
-                  <option value="INTERVIEW">Interview</option>
-                  <option value="EXAM">Entrance Exam</option>
-                  <option value="BOTH">Interview + Exam</option>
-                </select>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Target Stream *</label>
+                  <select
+                    value={bulkInviteForm.stream}
+                    onChange={(e) => setBulkInviteForm({ ...bulkInviteForm, stream: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  >
+                    <option value="all">All Streams</option>
+                    <option value="Natural Science">Natural Science</option>
+                    <option value="Social Science">Social Science</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Invitation Type *</label>
+                  <select
+                    value={bulkInviteForm.type}
+                    onChange={(e) => setBulkInviteForm({ ...bulkInviteForm, type: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  >
+                    <option value="INTERVIEW">Interview</option>
+                    <option value="EXAM">Entrance Exam</option>
+                    <option value="BOTH">Interview + Exam</option>
+                  </select>
+                </div>
               </div>
               
               <div className="grid grid-cols-2 gap-4">

@@ -73,6 +73,13 @@ export async function GET(request: Request) {
         } else {
           where.AND = notPlacedAnd;
         }
+      } else if (placementStatus === 'NOT_PLACED_SOME') {
+        where.AND = [
+          { preferences: { some: {} } },
+          { preferences: { none: { status: { in: ['ACCEPTED', 'PLACED', 'BATCH_PLACED'] } } } }
+        ];
+      } else if (placementStatus === 'NOT_PLACED_NONE') {
+        where.preferences = { none: {} };
       } else if (placementStatus === 'ACCEPTED') {
         where.StudentConfirmation = { some: { status: 'CONFIRMED' } }
       } else if (placementStatus === 'REJECTED') {
@@ -121,6 +128,53 @@ export async function GET(request: Request) {
     // Get total count for pagination
     const total = await prisma.student.count({ where })
 
+    // Placement status summary counts (based on preferences)
+    const [
+      placedIds,
+      multiPlacedIds,
+      notPlacedWithPrefsCount,
+      notPlacedNoPrefsCount,
+      acceptedIds,
+    ] = await Promise.all([
+      // PLACED: has at least one accepted pref
+      prisma.preference.findMany({
+        where: { status: { in: ['ACCEPTED', 'PLACED', 'BATCH_PLACED'] } },
+        select: { studentId: true },
+        distinct: ['studentId']
+      }),
+      // MULTI_PLACED: placed in more than one university
+      prisma.preference.groupBy({
+        by: ['studentId'],
+        where: { status: { in: ['ACCEPTED', 'PLACED', 'BATCH_PLACED'] } },
+        having: { studentId: { _count: { gt: 1 } } },
+        _count: true
+      }),
+      // NOT_PLACED with some preferences
+      prisma.student.count({
+        where: {
+          preferences: { some: {} },
+          NOT: { preferences: { some: { status: { in: ['ACCEPTED', 'PLACED', 'BATCH_PLACED'] } } } }
+        }
+      }),
+      // NOT_PLACED with zero preferences
+      prisma.student.count({ where: { preferences: { none: {} } } }),
+      // ACCEPTED by student (confirmed)
+      prisma.studentConfirmation.findMany({
+        where: { status: 'CONFIRMED' },
+        select: { studentId: true },
+        distinct: ['studentId']
+      }),
+    ]);
+
+    const summary = {
+      total,
+      placed: placedIds.length,
+      multiPlaced: multiPlacedIds.length,
+      notPlacedSome: notPlacedWithPrefsCount,
+      notPlacedNone: notPlacedNoPrefsCount,
+      acceptedByStudent: acceptedIds.length,
+    };
+
     // Get students with pagination and sorting
     const students = await prisma.student.findMany({
       where,
@@ -158,6 +212,7 @@ export async function GET(request: Request) {
     return NextResponse.json({
       success: true,
       students,
+      summary,
       pagination: {
         page,
         limit,
