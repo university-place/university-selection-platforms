@@ -89,7 +89,9 @@ export async function GET(request: Request) {
         region: student.region || 'Unknown',
         gender: student.gender || 'Unknown',
         hasDisability: hasDisability,
-        disabilityType: student.disability
+        disabilityType: student.disability,
+        customAttributes: (student as any).customAttributes || {},
+        examResults: student.examResults as any
       }, settings);
       
       weightedApplicants.push({

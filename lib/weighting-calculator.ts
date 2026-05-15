@@ -19,6 +19,12 @@ interface WeightingSettings {
     none: number;
   };
   disabilityBonus: number;
+  customCriteria?: {
+    attribute: string;
+    value: any;
+    operator: 'equals' | 'greater' | 'less' | 'contains';
+    weight: number;
+  }[];
 }
 
 interface StudentData {
@@ -28,6 +34,8 @@ interface StudentData {
   gender: string;
   hasDisability: boolean;
   disabilityType?: string;
+  customAttributes?: Record<string, any>;
+  examResults?: Record<string, number>;
 }
 
 export function calculateWeightedScore(student: StudentData, settings: WeightingSettings): {
@@ -70,7 +78,40 @@ export function calculateWeightedScore(student: StudentData, settings: Weighting
     disabilityContribution = settings.disabilityWeight; // Direct points (e.g., 5%)
   }
   
-  const weightedScore = examScoreContribution + regionContribution + genderContribution + disabilityContribution;
+  // 5. Custom Criteria Contribution
+  let customContribution = 0;
+  if (settings.customCriteria && settings.customCriteria.length > 0) {
+    settings.customCriteria.forEach(criteria => {
+      // Check in customAttributes first, then in examResults (for new subjects), then in main student fields
+      let studentValue = (student.customAttributes && student.customAttributes[criteria.attribute]) ?? 
+                         (student.examResults && student.examResults[criteria.attribute]) ?? 
+                         (student as any)[criteria.attribute];
+      
+      let isMatch = false;
+      if (studentValue !== undefined && studentValue !== null) {
+        switch (criteria.operator) {
+          case 'equals':
+            isMatch = String(studentValue).toLowerCase() === String(criteria.value).toLowerCase();
+            break;
+          case 'greater':
+            isMatch = Number(studentValue) > Number(criteria.value);
+            break;
+          case 'less':
+            isMatch = Number(studentValue) < Number(criteria.value);
+            break;
+          case 'contains':
+            isMatch = String(studentValue).toLowerCase().includes(String(criteria.value).toLowerCase());
+            break;
+        }
+      }
+      
+      if (isMatch) {
+        customContribution += criteria.weight;
+      }
+    });
+  }
+  
+  const weightedScore = examScoreContribution + regionContribution + genderContribution + disabilityContribution + customContribution;
   
   return {
     weightedScore,
@@ -79,6 +120,7 @@ export function calculateWeightedScore(student: StudentData, settings: Weighting
       regionContribution,
       genderContribution,
       disabilityContribution,
+      customContribution, // ADDED
       maxPossible: 100
     }
   };

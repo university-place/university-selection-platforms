@@ -6,6 +6,7 @@ import {
   User, Mail, Phone, MapPin, Calendar, Award, BookOpen, 
   GraduationCap, AlertCircle 
 } from 'lucide-react';
+import CustomAttributes from './CustomAttributes';
 
 interface Document {
   id: number;
@@ -41,6 +42,7 @@ interface Student {
     essay: Document[];
     other: Document[];
   };
+  customAttributes?: Record<string, any>;
 }
 
 interface Props {
@@ -220,6 +222,9 @@ export default function ApplicantDetailsModal({ student, isOpen, onClose }: Prop
                   <p className="font-bold text-lg text-green-700">{student.totalScore}</p>
                 </div>
               </div>
+
+              {/* ✅ DYNAMIC CUSTOM ATTRIBUTES */}
+              <CustomAttributes attributes={student.customAttributes || null} theme="green" />
             </div>
           )}
 

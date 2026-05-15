@@ -111,8 +111,15 @@ export async function POST(request: Request) {
     }
 
     const text = await file.text()
-    const parser = parse(text, { columns: true, skip_empty_lines: true })
+    const parser = parse(text, { columns: true, skip_empty_lines: true, trim: true })
     const records = await parser.toArray()
+
+    // Get custom attributes definition
+    const customAttrConfig = await prisma.systemConfig.findUnique({
+      where: { key: 'student_custom_attributes' }
+    })
+    const customAttrDefs = (customAttrConfig?.value as any[]) || []
+    const customAttrKeys = customAttrDefs.map(d => d.name)
 
     const BATCH_SIZE = 1000
     let totalInserted = 0
@@ -127,20 +134,16 @@ export async function POST(request: Request) {
           const examID = String(r.examID).trim()
           const dob = r.dateOfBirth ? new Date(r.dateOfBirth) : null
           
-          // ========== BUILD EXAM RESULTS WITH ALL INDIVIDUAL SUBJECTS ==========
+          // ========== BUILD EXAM RESULTS DYNAMICALLY ==========
           const examResults: any = {}
           
-          // Natural Science subjects
-          if (r.mathScore) examResults.mathematics = Number(r.mathScore)
-          if (r.englishScore) examResults.english = Number(r.englishScore)
-          if (r.physicsScore) examResults.physics = Number(r.physicsScore)
-          if (r.chemistryScore) examResults.chemistry = Number(r.chemistryScore)
-          if (r.biologyScore) examResults.biology = Number(r.biologyScore)
-          
-          // Social Science subjects
-          if (r.historyScore) examResults.history = Number(r.historyScore)
-          if (r.geographyScore) examResults.geography = Number(r.geographyScore)
-          if (r.economicsScore) examResults.economics = Number(r.economicsScore)
+          // Add any column ending in "Score" to examResults
+          Object.keys(r).forEach(key => {
+            if (key.toLowerCase().endsWith('score')) {
+              const subjectName = key.toLowerCase().replace('score', '');
+              examResults[subjectName] = Number(r[key]);
+            }
+          })
           
           // Total score
           if (r.total) examResults.total = Number(r.total)
@@ -149,6 +152,21 @@ export async function POST(request: Request) {
           if (r.scienceScore && !r.physicsScore) {
             examResults.science = Number(r.scienceScore)
           }
+
+          // ========== NEW: Dynamic Custom Attributes ==========
+          const customAttributes: any = {}
+          customAttrKeys.forEach(key => {
+            if (r[key] !== undefined) {
+              const def = customAttrDefs.find(d => d.name === key)
+              if (def?.type === 'number') {
+                customAttributes[key] = Number(r[key])
+              } else if (def?.type === 'boolean') {
+                customAttributes[key] = String(r[key]).toLowerCase() === 'true' || String(r[key]).toLowerCase() === 'yes'
+              } else {
+                customAttributes[key] = r[key]
+              }
+            }
+          })
 
           // ========== NEW: Determine stream based on exam results ==========
           const stream = determineStream(examResults)
@@ -174,7 +192,8 @@ export async function POST(request: Request) {
             ${r.disability ? `'${String(r.disability).replace(/'/g, "''")}'` : 'NULL'},
             ${r.school ? `'${String(r.school).replace(/'/g, "''")}'` : 'NULL'},
             ${r.photo ? `'${String(r.photo).replace(/'/g, "''")}'` : 'NULL'},
-            ${stream ? `'${stream.replace(/'/g, "''")}'` : 'NULL'}
+            ${stream ? `'${stream.replace(/'/g, "''")}'` : 'NULL'},
+            '${JSON.stringify(customAttributes).replace(/'/g, "''")}'::jsonb
           )`
         }).join(',')
 
@@ -183,7 +202,7 @@ export async function POST(request: Request) {
             "examID", "academicYear", "dateOfBirth", "studentNationalID",
             "firstName", "lastName", "email", "phone", "region", "examResults",
             "status", "isActive", "createdAt", "updatedAt",
-            "gender", "disability", "school", "photo", "stream"
+            "gender", "disability", "school", "photo", "stream", "customAttributes"
           ) VALUES ${values}
           ON CONFLICT ("examID", "academicYear") DO UPDATE SET
             "dateOfBirth" = EXCLUDED."dateOfBirth",
@@ -201,7 +220,8 @@ export async function POST(request: Request) {
             "disability" = EXCLUDED."disability",
             "school" = EXCLUDED."school",
             "photo" = EXCLUDED."photo",
-            "stream" = EXCLUDED."stream"
+            "stream" = EXCLUDED."stream",
+            "customAttributes" = EXCLUDED."customAttributes"
         `
 
         try {
@@ -215,14 +235,14 @@ export async function POST(request: Request) {
         const data = batch.map(r => {
           const examResults: any = {}
           
-          if (r.mathScore) examResults.mathematics = Number(r.mathScore)
-          if (r.englishScore) examResults.english = Number(r.englishScore)
-          if (r.physicsScore) examResults.physics = Number(r.physicsScore)
-          if (r.chemistryScore) examResults.chemistry = Number(r.chemistryScore)
-          if (r.biologyScore) examResults.biology = Number(r.biologyScore)
-          if (r.historyScore) examResults.history = Number(r.historyScore)
-          if (r.geographyScore) examResults.geography = Number(r.geographyScore)
-          if (r.economicsScore) examResults.economics = Number(r.economicsScore)
+          // Add any column ending in "Score" to examResults
+          Object.keys(r).forEach(key => {
+            if (key.toLowerCase().endsWith('score')) {
+              const subjectName = key.toLowerCase().replace('score', '');
+              examResults[subjectName] = Number(r[key]);
+            }
+          })
+          
           if (r.total) examResults.total = Number(r.total)
           
           // Determine stream
@@ -248,7 +268,8 @@ export async function POST(request: Request) {
             disability: r.disability || null,
             school: r.school || null,
             photo: r.photo || null,
-            stream: stream
+            stream: stream,
+            customAttributes: customAttributes
           }
         })
 

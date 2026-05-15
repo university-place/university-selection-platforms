@@ -47,6 +47,8 @@ model Student {
   StudentConfirmation       StudentConfirmation[]
   studentVerificationTokens StudentVerificationToken[]
   UniversityAdmissionResult UniversityAdmissionResult[]
+  customAttributes          Json?                       // ✅ Dynamic attributes from MOE admin
+
 
   @@unique([examID, academicYear])
   @@index([academicYear, isActive])

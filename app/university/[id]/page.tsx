@@ -651,14 +651,7 @@ export default function UniversityPublicPage() {
         )}
 
         {/* Apply Button */}
-        <div className="mt-6">
-          <button
-            onClick={() => router.push('/student/dashboard?tab=preferences')}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition"
-          >
-            Apply to {university.name}
-          </button>
-        </div>
+
       </div>
     </div>
   );

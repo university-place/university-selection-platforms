@@ -216,7 +216,7 @@ export default function UniversityDashboardPage() {
                 <FileText className="w-10 h-10 text-blue-500 group-hover:text-white" />
               </div>
               <div className="text-right">
-                <p className="text-sm font-black text-muted-foreground uppercase tracking-[0.2em] mb-2">total capacity </p>
+                <p className="text-sm font-black text-muted-foreground uppercase tracking-[0.2em] mb-2">total applicants </p>
                 <p className="text-5xl font-black text-foreground tracking-tighter tabular-nums">{stats.totalApplications}</p>
               </div>
             </div>

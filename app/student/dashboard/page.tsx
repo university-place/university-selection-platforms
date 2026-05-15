@@ -16,6 +16,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { studentAPI, authHelpers } from '@/lib/api';
+import CustomAttributes from '@/components/CustomAttributes';
 
 // ------------------------------
 // Types
@@ -41,6 +42,7 @@ interface StudentProfile {
   maxSubmissionAttempts: number;
   isRegistered: boolean;
   emailVerified: boolean;
+  customAttributes: Record<string, any> | null;
 }
 
 interface Document {
@@ -171,7 +173,7 @@ export default function StudentDashboardPage() {
   const [universities, setUniversities] = useState<University[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all');
-  const [compareList, setCompareList] = useState<University[]>([]);
+  // const [compareList, setCompareList] = useState<University[]>([]);
   const [preferences, setPreferences] = useState<Preference[]>([]);
   const [placement, setPlacement] = useState<PlacementResult | null>(null);
   const [appeals, setAppeals] = useState<Appeal[]>([]);
@@ -252,6 +254,16 @@ export default function StudentDashboardPage() {
           setUploadedDocuments(profileResult.profile.documents);
           setDocuments(profileResult.profile.documents);
         }
+      } else if (profileResult.error && (
+        profileResult.error.toLowerCase().includes('auth failed') || 
+        profileResult.error.toLowerCase().includes('token') || 
+        profileResult.error.toLowerCase().includes('unauthorized') ||
+        profileResult.error === 'Forbidden'
+      )) {
+        console.error('Dashboard: Auth error detected:', profileResult.error);
+        authHelpers.logout();
+        router.push('/student/login');
+        return;
       }
 
       const appsResult = await studentAPI.getApplications();
@@ -935,8 +947,8 @@ export default function StudentDashboardPage() {
                   </span>
                 ) : (
                   isSubmitted
-                    ? `🔄 Resubmit (${pref.remainingAttempts || 100} left)`
-                    : `📝 Submit (${pref.remainingAttempts || 100} left)`
+                    ? `🔄 Resubmit (${pref.remainingAttempts || 0} left)`
+                    : `📝 Submit (${pref.remainingAttempts || 0} left)`
                 )}
               </button>
             )}
@@ -945,7 +957,7 @@ export default function StudentDashboardPage() {
             {isSubmitted && !isCancelled && (
               <div className="flex flex-col items-end gap-1">
                 <span className="text-xs text-gray-400">
-                  {pref.remainingAttempts || 100} attempts left
+                  {pref.remainingAttempts || 0} attempts left
                 </span>
               </div>
             )}
@@ -1247,18 +1259,18 @@ export default function StudentDashboardPage() {
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
       <aside className="w-72 bg-white shadow-lg fixed h-full overflow-y-auto z-10">
-        <div className="p-6 border-b">
-          <div className="flex items-center gap-3">
+        <div className="p-8 border-b text-center">
+          <div className="flex flex-col items-center gap-4">
             {profile.photo ? (
-              <img src={profile.photo} className="w-12 h-12 rounded-full object-cover" />
+              <img src={profile.photo} className="w-24 h-24 rounded-3xl object-cover shadow-xl border-4 border-blue-50" />
             ) : (
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
+              <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl flex items-center justify-center text-white font-black text-3xl shadow-xl">
                 {profile.firstName[0]}{profile.lastName[0]}
               </div>
             )}
             <div>
-              <h2 className="font-semibold">{profile.firstName} {profile.lastName}</h2>
-              <p className="text-sm text-gray-500">{profile.examID}</p>
+              <h2 className="font-black text-xl text-gray-900 tracking-tighter">{profile.firstName} {profile.lastName}</h2>
+              <p className="text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full mt-1 inline-block">{profile.examID}</p>
             </div>
           </div>
         </div>
@@ -1548,8 +1560,9 @@ export default function StudentDashboardPage() {
                 </div>
                 <div className="pb-4 border-b">
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Date of Birth</p>
-                  <p className="text-lg font-semibold text-gray-900 mt-1">{new Date(profile.dateOfBirth).toLocaleDateString()}</p>
-                  <p className="text-sm text-gray-500 mt-1">{profile.age} years old</p>
+                  <p className="text-lg font-semibold text-gray-900 mt-1">
+                    {profile.dateOfBirth ? new Date(profile.dateOfBirth).toLocaleDateString() : 'Not provided'}
+                  </p>
                 </div>
                 <div className="pb-4 border-b">
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Gender</p>
@@ -1564,6 +1577,9 @@ export default function StudentDashboardPage() {
                   <p className="text-lg font-semibold text-gray-900 mt-1">{profile.stream}</p>
                 </div>
               </div>
+
+              {/* Dynamic Attributes */}
+              <CustomAttributes attributes={profile.customAttributes} theme="blue" />
             </div>
 
             {/* Documents Section */}
@@ -1678,20 +1694,57 @@ export default function StudentDashboardPage() {
 
         {/* Exam Results */}
         {activeTab === 'exam-results' && (
-          <div>
-            <h1 className="text-2xl font-bold mb-6">Exam Results</h1>
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="mb-4"><span className="font-semibold">Stream:</span> {profile.stream}</div>
-              <div className="mb-4"><span className="font-semibold">Total Score:</span> <span className="text-2xl font-bold text-blue-600">{profile.totalScore}</span></div>
-              <h3 className="font-semibold mb-3">Subject Scores</h3>
-              <div className="space-y-3">
-                {Object.entries(profile.examResults).map(([subj, score]) => (
-                  <div key={subj}>
-                    <div className="flex justify-between"><span>{subj.charAt(0).toUpperCase() + subj.slice(1)}</span><span>{score}</span></div>
-                    <div className="w-full bg-gray-200 rounded-full h-2"><div className="bg-blue-600 h-2 rounded-full" style={{ width: `${(score / 100) * 100}%` }}></div></div>
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="mb-8">
+              <h1 className="text-4xl font-black text-gray-900 tracking-tighter">Exam Results</h1>
+              <p className="text-gray-500 font-medium mt-1">Official national examination scores</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+               <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[2rem] p-8 text-white shadow-2xl shadow-blue-500/20 col-span-1 md:col-span-2">
+                 <div className="flex justify-between items-start">
+                   <div>
+                     <p className="text-blue-100 font-black uppercase tracking-widest text-xs mb-2">Examination Stream</p>
+                     <h2 className="text-3xl font-black tracking-tight">{profile.stream}</h2>
+                   </div>
+                   <Award className="w-12 h-12 text-blue-200/50" />
+                 </div>
+                 <div className="mt-12">
+                   <p className="text-blue-100 font-black uppercase tracking-widest text-xs mb-2">Total Score</p>
+                   <div className="flex items-baseline gap-2">
+                     <span className="text-6xl font-black tracking-tighter">{profile.totalScore}</span>
+                     <span className="text-blue-200 font-bold text-xl">/ 700</span>
+                   </div>
+                 </div>
+               </div>
+
+               {/* <div className="bg-white rounded-[2rem] p-8 border-2 border-gray-100 shadow-sm flex flex-col justify-center">
+                 <p className="text-gray-400 font-black uppercase tracking-widest text-[10px] mb-4">Percentile Ranking</p>
+                 <div className="text-5xl font-black text-gray-900 tracking-tighter mb-2">
+                   {((profile.totalScore / 700) * 100).toFixed(1)}%
+                 </div>
+                 <p className="text-gray-500 text-sm font-medium">Top candidate performance in the {profile.academicYear} academic year.</p>
+               </div> */}
+            </div>
+
+            <h2 className="text-xl font-black text-gray-900 mb-6 flex items-center gap-3">
+               <div className="w-2 h-8 bg-blue-600 rounded-full"></div>
+               Subject Performance Breakdown
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Object.entries(profile.examResults).map(([subj, score]) => (
+                <div key={subj} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-full -mr-12 -mt-12 group-hover:scale-150 transition-transform duration-500"></div>
+                  <div className="relative z-10">
+                    <p className="text-gray-400 font-black uppercase tracking-widest text-[10px] mb-1">{subj.charAt(0).toUpperCase() + subj.slice(1)}</p>
+                    <div className="flex justify-between items-end">
+                      <span className="text-3xl font-black text-gray-900 tracking-tighter">{score}</span>
+                      <span className="text-gray-300 font-bold text-sm mb-1">pts</span>
+                    </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -1717,20 +1770,11 @@ export default function StudentDashboardPage() {
                   <div><h3 className="font-semibold">{uni.name}</h3><p className="text-sm text-gray-500">{uni.region} | {uni.type}</p></div>
                   <div className="flex gap-2">
                     <button onClick={() => window.open(`/university/${uni.id}`, '_blank')} className="px-3 py-1 text-blue-600 border border-blue-600 rounded-lg">View Profile</button>
-                    <button onClick={() => setCompareList(prev => prev.includes(uni) ? prev.filter(u => u.id !== uni.id) : [...prev, uni])} className={`px-3 py-1 rounded-lg ${compareList.includes(uni) ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>Compare</button>
+                    {/* <button onClick={() => setCompareList(prev => prev.includes(uni) ? prev.filter(u => u.id !== uni.id) : [...prev, uni])} className={`px-3 py-1 rounded-lg ${compareList.includes(uni) ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>Compare</button> */}
                   </div>
                 </div>
               ))}
             </div>
-            {compareList.length > 0 && (
-              <div className="fixed bottom-4 right-4 bg-white shadow-xl rounded-xl p-4 w-96 border">
-                <h3 className="font-bold mb-2">Compare ({compareList.length})</h3>
-                <div className="max-h-64 overflow-auto">
-                  {compareList.map(uni => <div key={uni.id} className="flex justify-between"><span>{uni.name}</span><button onClick={() => setCompareList(prev => prev.filter(u => u.id !== uni.id))}><X className="w-4 h-4" /></button></div>)}
-                </div>
-                <button className="mt-2 w-full bg-blue-600 text-white py-1 rounded-lg" onClick={() => alert('Comparison table would open here')}>Compare Now</button>
-              </div>
-            )}
           </div>
         )}
 
@@ -1832,7 +1876,7 @@ export default function StudentDashboardPage() {
               <div className="bg-white rounded-xl shadow-sm p-6">
                 <div className="flex justify-between items-center mb-6">
                   <div>
-                    <h2 className="text-lg font-bold">Your Ranked Preferences</h2>
+                    <h2 className="text-lg font-bold">Your Preferences</h2>
                     <p className="text-sm text-gray-600 mt-1">{preferences.length} preference(s) added</p>
                   </div>
                   {preferences.length > 0 && (
@@ -1953,8 +1997,8 @@ export default function StudentDashboardPage() {
                               )}
                             </div>
                             <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${ap.status === 'resolved' ? 'bg-green-100 text-green-700' :
-                                ap.status === 'rejected' ? 'bg-red-100 text-red-700' :
-                                  'bg-yellow-100 text-yellow-700'
+                              ap.status === 'rejected' ? 'bg-red-100 text-red-700' :
+                                'bg-yellow-100 text-yellow-700'
                               }`}>
                               {ap.status}
                             </span>
@@ -2427,6 +2471,7 @@ export default function StudentDashboardPage() {
       )}
 
 
-    </div>
+
+ </div>
   );
 }

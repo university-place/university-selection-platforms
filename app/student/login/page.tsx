@@ -96,6 +96,10 @@ export default function StudentLoginPage() {
         text: 'Register here',
         href: '/student/register',
       }}
+      forgotPasswordLink={{
+        text: 'Forgot Password?',
+        href: '/student/forgot-password',
+      }}
       theme="blue"
     />
   );

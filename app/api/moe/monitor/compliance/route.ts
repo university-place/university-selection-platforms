@@ -21,6 +21,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 403 });
     }
 
+    // FIXED: Use correct relation names from your schema
     const universities = await prisma.university.findMany({
       select: {
         id: true,
@@ -30,8 +31,16 @@ export async function GET(request: Request) {
         isActive: true,
         _count: {
           select: {
-            applications: true,
-            placements: true,
+            preferences: true,    // ✅ Changed from 'applications' to 'preferences'
+            placements: true,     // ✅ This exists in your schema
+            // Other available relations from your schema:
+            // programs: true,
+            // admins: true,
+            // DepartmentPlacement: true,
+            // InterviewInvitation: true,
+            // StudentConfirmation: true,
+            // UniversityAdmissionResult: true,
+            // documents: true,
           },
         },
       },
@@ -40,39 +49,121 @@ export async function GET(request: Request) {
 
     const complianceData = await Promise.all(
       universities.map(async (uni) => {
-        const [invitationsSent, acceptedApps, pendingApps, appealCount] = await Promise.all([
-          prisma.interviewInvitation.count({ where: { universityId: uni.id } }).catch(() => 0),
-          prisma.application.count({ where: { universityId: uni.id, status: 'ACCEPTED' } }),
-          prisma.application.count({ where: { universityId: uni.id, status: 'PENDING' } }),
-          prisma.appeal.count({ where: { preference: { universityId: uni.id } } }),
-        ]);
-
-        const totalApps = uni._count.applications;
-        const responseRate = totalApps > 0
-          ? Math.round(((totalApps - pendingApps) / totalApps) * 100)
+        // Get counts from the correct models
+        const totalApplications = uni._count.preferences; // ✅ Now this works
+        
+        const acceptedApplications = await prisma.preference.count({
+          where: { 
+            universityId: uni.id, 
+            status: 'ACCEPTED' 
+          }
+        });
+        
+        const pendingApplications = await prisma.preference.count({
+          where: { 
+            universityId: uni.id, 
+            status: 'PENDING' 
+          }
+        });
+        
+        const rejectedApplications = await prisma.preference.count({
+          where: { 
+            universityId: uni.id, 
+            status: 'REJECTED' 
+          }
+        });
+        
+        // Interview invitations count
+        const invitationsSent = await prisma.interviewInvitation.count({
+          where: { universityId: uni.id }
+        });
+        
+        // Appeals count (through preferences)
+        const appealCount = await prisma.appeal.count({
+          where: { 
+            preference: { 
+              universityId: uni.id 
+            } 
+          }
+        });
+        
+        // Student confirmations count
+        const studentConfirmations = await prisma.studentConfirmation.count({
+          where: { 
+            universityId: uni.id,
+            confirmed: true 
+          }
+        });
+        
+        const responseRate = totalApplications > 0
+          ? Math.round(((acceptedApplications + rejectedApplications) / totalApplications) * 100)
           : 0;
+        
+        const totalPlacements = uni._count.placements || 0;
+
+        // Determine compliance status based on response rate and appeals
+        let complianceStatus = 'NON_COMPLIANT';
+        if (responseRate >= 80 && appealCount < 5) {
+          complianceStatus = 'COMPLIANT';
+        } else if (responseRate >= 50 || appealCount < 10) {
+          complianceStatus = 'PARTIAL';
+        } else {
+          complianceStatus = 'NON_COMPLIANT';
+        }
 
         return {
           id: uni.id,
           name: uni.name,
           code: uni.code,
-          region: uni.region,
+          region: uni.region || 'N/A',
           isActive: uni.isActive,
-          totalApplications: totalApps,
+          totalApplications,
           invitationsSent,
-          acceptedApplications: acceptedApps,
-          pendingApplications: pendingApps,
-          totalPlacements: uni._count.placements,
+          acceptedApplications,
+          pendingApplications,
+          rejectedApplications,
+          totalPlacements,
+          studentConfirmations,
           appealCount,
           responseRate,
-          complianceStatus: (responseRate >= 80 && appealCount < 5) ? 'COMPLIANT' : (responseRate >= 50 || appealCount < 10) ? 'PARTIAL' : 'NON_COMPLIANT',
+          complianceStatus,
+          // Additional metrics for better monitoring
+          completionRate: totalApplications > 0 
+            ? Math.round((studentConfirmations / totalApplications) * 100)
+            : 0,
         };
       })
     );
 
-    return NextResponse.json({ success: true, data: complianceData });
+    // Calculate overall compliance statistics
+    const summary = {
+      totalUniversities: complianceData.length,
+      compliantUniversities: complianceData.filter(u => u.complianceStatus === 'COMPLIANT').length,
+      partialUniversities: complianceData.filter(u => u.complianceStatus === 'PARTIAL').length,
+      nonCompliantUniversities: complianceData.filter(u => u.complianceStatus === 'NON_COMPLIANT').length,
+      totalApplications: complianceData.reduce((sum, u) => sum + u.totalApplications, 0),
+      totalPlacements: complianceData.reduce((sum, u) => sum + u.totalPlacements, 0),
+      averageResponseRate: Math.round(
+        complianceData.reduce((sum, u) => sum + u.responseRate, 0) / (complianceData.length || 1)
+      ),
+      totalAppeals: complianceData.reduce((sum, u) => sum + u.appealCount, 0),
+    };
+
+    return NextResponse.json({ 
+      success: true, 
+      data: complianceData,
+      summary,
+      lastUpdated: new Date().toISOString()
+    });
   } catch (error) {
     console.error('MOE compliance monitor error:', error);
-    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : String(error)
+      },
+      { status: 500 }
+    );
   }
 }

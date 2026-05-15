@@ -9,17 +9,20 @@ import jwt from 'jsonwebtoken'
 async function verifyStudent(request: Request) {
   const authHeader = request.headers.get('authorization')
   if (!authHeader?.startsWith('Bearer ')) {
+    console.error('VerifyStudent: Missing or malformed auth header');
     throw new Error('No token provided')
   }
   const token = authHeader.substring(7)
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any
     if (decoded.role !== 'STUDENT') {
+      console.error('VerifyStudent: Incorrect role:', decoded.role);
       throw new Error('Forbidden')
     }
     return { studentId: decoded.id }
-  } catch {
-    throw new Error('Invalid token')
+  } catch (err: any) {
+    console.error('VerifyStudent: JWT error:', err.message);
+    throw new Error(`Auth failed: ${err.message}`)
   }
 }
 
@@ -89,6 +92,7 @@ export async function GET(request: Request) {
         emailVerified: true,
         createdAt: true,
         updatedAt: true,
+        customAttributes: true,
       },
     })
 
@@ -97,7 +101,7 @@ export async function GET(request: Request) {
     }
 
     // Parse examResults
-    let examResults = student.examResults
+    let examResults = student.examResults ?? {}
     if (typeof examResults === 'string') {
       try {
         examResults = JSON.parse(examResults)
@@ -105,29 +109,34 @@ export async function GET(request: Request) {
         examResults = {}
       }
     }
+    if (!examResults || typeof examResults !== 'object' || Array.isArray(examResults)) {
+      examResults = {}
+    }
+
+    const examResultsObj = examResults as Record<string, unknown>
 
     // Determine stream from examResults
-    const hasPhysics = examResults.physics !== undefined
-    const hasHistory = examResults.history !== undefined
+    const hasPhysics = Object.prototype.hasOwnProperty.call(examResultsObj, 'physics') && examResultsObj.physics != null
+    const hasHistory = Object.prototype.hasOwnProperty.call(examResultsObj, 'history') && examResultsObj.history != null
     
     let stream = 'Unknown'
-    let subjects = []
+    let subjects: { name: string; score: unknown; }[] = []
     let totalScore = 0
+
+    const mapSubjects = (definitions: { name: string; key: string }[]) => {
+      return definitions.map(subj => {
+        const score = examResultsObj[subj.key] ?? null
+        if (typeof score === 'number') totalScore += score
+        return { name: subj.name, score }
+      })
+    }
     
     if (hasPhysics) {
       stream = 'Natural Science'
-      subjects = subjectDefinitions.Natural.map(subj => {
-        const score = examResults[subj.key] ?? null
-        if (score !== null && typeof score === 'number') totalScore += score
-        return { name: subj.name, score }
-      })
+      subjects = mapSubjects(subjectDefinitions.Natural)
     } else if (hasHistory) {
       stream = 'Social Science'
-      subjects = subjectDefinitions.Social.map(subj => {
-        const score = examResults[subj.key] ?? null
-        if (score !== null && typeof score === 'number') totalScore += score
-        return { name: subj.name, score }
-      })
+      subjects = mapSubjects(subjectDefinitions.Social)
     }
 
     const computedAge = student.dateOfBirth ? calculateAge(student.dateOfBirth) : student.age || null
@@ -222,7 +231,7 @@ export async function GET(request: Request) {
 
     const formattedApplications = preferences.map(pref => ({
       id: pref.id,
-      rank: pref.rank,
+     
       status: pref.status,
       decisionDate: pref.decisionDate,
       confirmationDeadline: pref.confirmationDeadline,
@@ -345,6 +354,7 @@ export async function GET(request: Request) {
         // Timestamps
         createdAt: student.createdAt,
         updatedAt: student.updatedAt,
+        customAttributes: student.customAttributes,
       },
     })
     

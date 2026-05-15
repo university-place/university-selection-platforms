@@ -71,3 +71,65 @@ export async function sendVerificationEmail(
     html,
   });
 }
+
+export async function sendPasswordResetEmail(
+  to: string, 
+  token: string, 
+  name: string,
+  userType: 'student' | 'admin' = 'admin'
+) {
+  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+  const resetLink = `${baseUrl}/${userType}/reset-password?token=${token}`;
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #dc2626; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background: #f9f9f9; }
+        .button {
+          display: inline-block;
+          padding: 12px 24px;
+          background: #dc2626;
+          color: white;
+          text-decoration: none;
+          border-radius: 5px;
+          margin: 20px 0;
+        }
+        .footer { text-align: center; padding: 20px; font-size: 12px; color: #666; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h2>Password Reset Request</h2>
+        </div>
+        <div class="content">
+          <p>Hello ${name},</p>
+          <p>We received a request to reset your password. Click the button below to choose a new password:</p>
+          <div style="text-align: center;">
+            <a href="${resetLink}" class="button">Reset Password</a>
+          </div>
+          <p>Or copy and paste this link in your browser:</p>
+          <p><small>${resetLink}</small></p>
+          <p><strong>Note:</strong> This link will expire in 1 hour.</p>
+          <p>If you didn't request this, please ignore this email.</p>
+        </div>
+        <div class="footer">
+          <p>&copy; 2025 University Selection Platform. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  await transporter.sendMail({
+    from: `"University Platform" <${process.env.SMTP_FROM}>`,
+    to,
+    subject: 'Password Reset Request',
+    html,
+  });
+}

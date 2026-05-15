@@ -134,7 +134,7 @@ export async function GET(
 
     const flattenedPreferences = student.applications
       .flatMap((a) => a.preferences)
-      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
     const allUniversityIds = new Set<number>();
     
@@ -200,6 +200,7 @@ export async function GET(
         school: student.school,
         stream: student.stream,
         academicYear: student.academicYear,
+        customAttributes: student.customAttributes,
         examResults,
         totalScore,
         isRegistered: student.isRegistered,

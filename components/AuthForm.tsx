@@ -22,6 +22,8 @@ interface AuthFormProps {
   submitButtonText?: string;
   footerText?: string;
   footerLink?: { text: string; href: string };
+  forgotPasswordLink?: { text: string; href: string };
+  successMessage?: string;
   theme?: 'blue' | 'purple' | 'green' | 'orange';
 }
 
@@ -57,6 +59,8 @@ export function AuthForm({
   submitButtonText = 'Submit',
   footerText,
   footerLink,
+  forgotPasswordLink,
+  successMessage,
   theme = 'blue',
 }: AuthFormProps) {
   const [formData, setFormData] = useState<Record<string, string>>(
@@ -107,6 +111,12 @@ export function AuthForm({
             <p className="text-destructive text-lg font-bold text-center">{error}</p>
           </div>
         )}
+        
+        {successMessage && (
+          <div className="mb-8 p-6 bg-green-500/10 border border-green-500/20 rounded-2xl animate-in slide-in-from-top-2">
+            <p className="text-green-600 text-lg font-bold text-center">{successMessage}</p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {fields.map((field) => (
@@ -144,6 +154,16 @@ export function AuthForm({
                   </button>
                 )}
               </div>
+              {field.type === 'password' && forgotPasswordLink && (
+                <div className="flex justify-end mt-2 mr-2">
+                  <a 
+                    href={forgotPasswordLink.href} 
+                    className="text-sm font-bold text-primary hover:underline transition-all"
+                  >
+                    {forgotPasswordLink.text}
+                  </a>
+                </div>
+              )}
               {formErrors[field.name] && (
                 <p className="mt-2 text-base font-bold text-destructive ml-2">{formErrors[field.name]}</p>
               )}
