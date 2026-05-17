@@ -3,6 +3,21 @@ import prisma from '@/prisma/client'
 import jwt from 'jsonwebtoken'
 
 // ============================================
+// CORS UTILITY
+// ============================================
+
+function withCors(response: NextResponse) {
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  return response;
+}
+
+export async function OPTIONS() {
+  return withCors(new NextResponse(null, { status: 200 }));
+}
+
+// ============================================
 // AUTHENTICATION UTILITY
 // ============================================
 
@@ -21,7 +36,7 @@ async function verifyStudent(request: Request) {
     }
     return { studentId: decoded.id }
   } catch (err: any) {
-    console.error('VerifyStudent: JWT error:', err.message);
+    console.error('VerifyStudent: JWT error:', err.message, 'Token used:', token.substring(0, 10) + '...');
     throw new Error(`Auth failed: ${err.message}`)
   }
 }
@@ -93,11 +108,12 @@ export async function GET(request: Request) {
         createdAt: true,
         updatedAt: true,
         customAttributes: true,
+        stream: true,
       },
     })
 
     if (!student) {
-      return NextResponse.json({ success: false, error: 'Student not found' }, { status: 404 })
+      return withCors(NextResponse.json({ success: false, error: 'Student not found' }, { status: 404 }))
     }
 
     // Parse examResults
@@ -115,28 +131,85 @@ export async function GET(request: Request) {
 
     const examResultsObj = examResults as Record<string, unknown>
 
-    // Determine stream from examResults
+    // Fetch dynamic subjects if available
+    const config = await prisma.systemConfig.findUnique({ where: { key: 'stream_subjects' } });
+    const dynamicSubjects = config?.value as { Natural: { name: string; key: string }[]; Social: { name: string; key: string }[] } | null;
+    const activeSubjects = dynamicSubjects || subjectDefinitions;
+
+    // Determine stream from student record or examResults
+    let stream = student.stream || 'Unknown'
+    let subjects: { name: string; score: unknown; }[] = []
+    let totalScore = 0
+    let maxScore = 0
+
     const hasPhysics = Object.prototype.hasOwnProperty.call(examResultsObj, 'physics') && examResultsObj.physics != null
     const hasHistory = Object.prototype.hasOwnProperty.call(examResultsObj, 'history') && examResultsObj.history != null
     
-    let stream = 'Unknown'
-    let subjects: { name: string; score: unknown; }[] = []
-    let totalScore = 0
-
-    const mapSubjects = (definitions: { name: string; key: string }[]) => {
-      return definitions.map(subj => {
-        const score = examResultsObj[subj.key] ?? null
-        if (typeof score === 'number') totalScore += score
-        return { name: subj.name, score }
-      })
+    if (stream === 'Unknown') {
+       if (hasPhysics) stream = 'Natural Science';
+       else if (hasHistory) stream = 'Social Science';
     }
     
-    if (hasPhysics) {
-      stream = 'Natural Science'
-      subjects = mapSubjects(subjectDefinitions.Natural)
-    } else if (hasHistory) {
-      stream = 'Social Science'
-      subjects = mapSubjects(subjectDefinitions.Social)
+    // Filter out internal keys and custom attributes from examResults
+    const subjectKeys = Object.keys(examResultsObj).filter(key => {
+      if (key.toLowerCase() === 'total' || key.toLowerCase() === 'totalscore') return false;
+      if (key.startsWith('__')) return false;
+      // Skip if it's already in customAttributes
+      if (student.customAttributes && (student.customAttributes as any)[key] !== undefined) return false;
+      return typeof examResultsObj[key] === 'number';
+    });
+
+    // Create a set of all subject keys to map
+    const allSubjectsToMap = new Set<string>();
+    const activeStreamSubjects = stream === 'Natural Science' ? (activeSubjects.Natural || []) : (activeSubjects.Social || []);
+    
+    // 1. Add subjects from definitions first (to ensure display names)
+    activeStreamSubjects.forEach(s => allSubjectsToMap.add(s.key));
+    
+    // 2. Add any other keys found in examResults
+    subjectKeys.forEach(k => allSubjectsToMap.add(k));
+
+    subjects = Array.from(allSubjectsToMap).map(key => {
+      const def = activeStreamSubjects.find(s => s.key === key);
+      let score = examResultsObj[key] ?? null;
+      
+      if (score === null) {
+        // Try fuzzy match if score is missing for a defined subject
+        const matchKey = Object.keys(examResultsObj).find(k => {
+          const cleanK = k.toLowerCase().replace(/[^a-z0-9]/g, '').replace('score', '');
+          const cleanKey = key.toLowerCase().replace(/[^a-z0-9]/g, '').replace('score', '').replace('id', '');
+          return cleanK === cleanKey;
+        });
+        if (matchKey) score = examResultsObj[matchKey];
+      }
+
+      // 3. Last resort: Check customAttributes (in case it was uploaded as a custom attr)
+      if (score === null && student.customAttributes) {
+        const customAttr = student.customAttributes as any;
+        const matchKey = Object.keys(customAttr).find(k => {
+          const cleanK = k.toLowerCase().replace(/[^a-z0-9]/g, '').replace('score', '');
+          const cleanKey = key.toLowerCase().replace(/[^a-z0-9]/g, '').replace('score', '').replace('id', '');
+          return cleanK === cleanKey;
+        });
+        if (matchKey && typeof customAttr[matchKey] === 'number') {
+          score = customAttr[matchKey];
+        }
+      }
+
+      if (typeof score === 'number') totalScore += score;
+      
+      return { 
+        name: def?.name || (key.charAt(0).toUpperCase() + key.slice(1).replace('Score', '')), 
+        score 
+      };
+    }).filter(s => s.score !== null); // Only include subjects where we actually have a score
+
+    maxScore = subjects.length * 100;
+    
+    // Fallback stream detection if still Unknown
+    if (stream === 'Unknown') {
+       if (Object.keys(examResultsObj).some(k => k.toLowerCase().includes('physics'))) stream = 'Natural Science';
+       else if (Object.keys(examResultsObj).some(k => k.toLowerCase().includes('history'))) stream = 'Social Science';
     }
 
     const computedAge = student.dateOfBirth ? calculateAge(student.dateOfBirth) : student.age || null
@@ -231,7 +304,6 @@ export async function GET(request: Request) {
 
     const formattedApplications = preferences.map(pref => ({
       id: pref.id,
-     
       status: pref.status,
       decisionDate: pref.decisionDate,
       confirmationDeadline: pref.confirmationDeadline,
@@ -310,7 +382,7 @@ export async function GET(request: Request) {
     }
 
     // ========== RETURN COMPLETE PROFILE ==========
-    return NextResponse.json({
+    const responseData = {
       success: true,
       profile: {
         // Basic Info
@@ -335,6 +407,7 @@ export async function GET(request: Request) {
         stream,
         subjects,
         totalScore,
+        maxScore,
         examResults: examResults,
         
         // University Communications
@@ -356,12 +429,18 @@ export async function GET(request: Request) {
         updatedAt: student.updatedAt,
         customAttributes: student.customAttributes,
       },
-    })
+    }
+    
+    return withCors(NextResponse.json(responseData))
     
   } catch (error: any) {
-    console.error('GET profile error:', error)
+    console.error('GET profile error:', error.message)
     const status = error.message === 'Forbidden' ? 403 : 401
-    return NextResponse.json({ success: false, error: error.message }, { status })
+    return withCors(NextResponse.json({ 
+      success: false, 
+      error: error.message,
+      debug: process.env.NODE_ENV === 'development' ? error.stack : undefined 
+    }, { status }))
   }
 }
 
@@ -377,10 +456,10 @@ export async function PUT(request: Request) {
 
     // Validate email if provided
     if (email !== undefined && !/^\S+@\S+\.\S+$/.test(email)) {
-      return NextResponse.json(
+      return withCors(NextResponse.json(
         { success: false, error: 'Invalid email format' },
         { status: 400 }
-      )
+      ))
     }
 
     // Update student profile
@@ -419,15 +498,15 @@ export async function PUT(request: Request) {
       },
     })
 
-    return NextResponse.json({
+    return withCors(NextResponse.json({
       success: true,
       message: 'Profile updated successfully',
       profile: updated,
-    })
-    
+    }))
+
   } catch (error: any) {
     console.error('PUT profile error:', error)
     const status = error.message === 'Forbidden' ? 403 : 401
-    return NextResponse.json({ success: false, error: error.message }, { status })
+    return withCors(NextResponse.json({ success: false, error: error.message }, { status }))
   }
-} 
+}

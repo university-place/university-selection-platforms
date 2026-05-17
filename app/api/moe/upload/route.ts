@@ -36,20 +36,36 @@ async function ensureAcademicYearRecord(year: string, activate = false) {
 }
 
 // ========== NEW: Helper function to determine stream ==========
-function determineStream(examResults: any): string | null {
-  // Check for Natural Science subjects
-  const hasNatural = examResults.physics !== undefined || 
-                     examResults.chemistry !== undefined || 
-                     examResults.biology !== undefined
+function determineStream(examResults: any, streamSubjectsConfig: any): string | null {
+  const keys = Object.keys(examResults).map(k => k.toLowerCase());
   
-  // Check for Social Science subjects
-  const hasSocial = examResults.history !== undefined || 
-                    examResults.geography !== undefined || 
-                    examResults.economics !== undefined
+  // 1. Check for "Signature" subjects that are unique to each stream
+  const isNatural = keys.some(k => k.includes('physics') || k.includes('bio') || k.includes('chem'));
+  const isSocial = keys.some(k => k.includes('history') || k.includes('geo') || k.includes('econ'));
+
+  if (isNatural && !isSocial) return 'Natural Science';
+  if (isSocial && !isNatural) return 'Social Science';
   
-  if (hasNatural) return 'Natural Science'
-  if (hasSocial) return 'Social Science'
-  return null
+  // 2. Fallback: Count matches against configured subjects
+  let naturalScoreCount = 0;
+  let socialScoreCount = 0;
+
+  streamSubjectsConfig.Natural?.forEach((s: any) => {
+    if (keys.some(k => k === s.key.toLowerCase() || k.replace('score', '') === s.key.toLowerCase().replace('score', ''))) {
+      naturalScoreCount++;
+    }
+  });
+
+  streamSubjectsConfig.Social?.forEach((s: any) => {
+    if (keys.some(k => k === s.key.toLowerCase() || k.replace('score', '') === s.key.toLowerCase().replace('score', ''))) {
+      socialScoreCount++;
+    }
+  });
+
+  if (naturalScoreCount > socialScoreCount) return 'Natural Science';
+  if (socialScoreCount > naturalScoreCount) return 'Social Science';
+  
+  return isNatural ? 'Natural Science' : (isSocial ? 'Social Science' : null);
 }
 
 export async function POST(request: Request) {
@@ -121,6 +137,14 @@ export async function POST(request: Request) {
     const customAttrDefs = (customAttrConfig?.value as any[]) || []
     const customAttrKeys = customAttrDefs.map(d => d.name)
 
+    const subjectsConfig = await prisma.systemConfig.findUnique({
+      where: { key: 'stream_subjects' }
+    })
+    const streamSubjects = (subjectsConfig?.value as any) || {
+      Natural: [{ key: 'physics' }, { key: 'chemistry' }, { key: 'biology' }],
+      Social: [{ key: 'history' }, { key: 'geography' }, { key: 'economics' }]
+    }
+
     const BATCH_SIZE = 1000
     let totalInserted = 0
     let naturalCount = 0
@@ -136,40 +160,89 @@ export async function POST(request: Request) {
           
           // ========== BUILD EXAM RESULTS DYNAMICALLY ==========
           const examResults: any = {}
+          let recordTotalScore = 0
           
-          // Add any column ending in "Score" to examResults
-          Object.keys(r).forEach(key => {
-            if (key.toLowerCase().endsWith('score')) {
-              const subjectName = key.toLowerCase().replace('score', '');
-              examResults[subjectName] = Number(r[key]);
+          // 1. Get stream-specific subjects for this record
+          const studentStream = r.stream || (Object.keys(r).some(k => k.toLowerCase().includes('physics')) ? 'Natural Science' : 'Social Science');
+          const streamKey = studentStream === 'Natural Science' ? 'Natural' : 'Social';
+          const relevantSubjects = streamSubjects[streamKey] || [];
+          
+          const recordCustomAttributes: any = {}
+
+          // 2. Map subjects with fuzzy matching
+          relevantSubjects.forEach((subj: any) => {
+            const key = subj.key;
+            // Try exact match, then clean match
+            const csvKey = Object.keys(r).find(k => {
+              const cleanK = k.toLowerCase().replace(/[^a-z0-9]/g, '').replace('score', '');
+              const cleanKey = key.toLowerCase().replace(/[^a-z0-9]/g, '').replace('score', '').replace('id', '');
+              return cleanK === cleanKey || cleanK === key.toLowerCase();
+            });
+
+            if (csvKey && r[csvKey] !== undefined) {
+              const score = Number(r[csvKey]) || 0;
+              examResults[key] = score;
+              recordTotalScore += score;
+            }
+          });
+          
+          // ========== NEW: Dynamic Custom Attributes ==========
+          const studentCustomAttrs: any = {}
+          customAttrKeys.forEach(key => {
+            // 1. Try EXACT match first (case insensitive, ignoring symbols)
+            let csvKey = Object.keys(r).find(k => {
+               const cleanK = k.toLowerCase().replace(/[^a-z0-9]/g, '');
+               const cleanKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+               return cleanK === cleanKey;
+            });
+
+            // 2. Fallback to fuzzy match ONLY if it's not a subject column
+            if (!csvKey) {
+              csvKey = Object.keys(r).find(k => {
+                 if (k.toLowerCase().endsWith('score')) return false; // Skip subjects
+                 const cleanK = k.toLowerCase().replace(/[^a-z0-9]/g, '');
+                 const cleanKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+                 if (cleanK.length > 4 && cleanKey.length > 4 && (cleanK.startsWith(cleanKey.substring(0, 5)) || cleanKey.startsWith(cleanK.substring(0, 5)))) return true;
+                 return false;
+              });
+            }
+
+            if (csvKey && r[csvKey] !== undefined) {
+              const def = customAttrDefs.find(d => d.name === key)
+              if (def?.type === 'number') {
+                studentCustomAttrs[key] = Number(r[csvKey])
+              } else if (def?.type === 'boolean') {
+                studentCustomAttrs[key] = String(r[csvKey]).toLowerCase() === 'true' || String(r[csvKey]).toLowerCase() === 'yes'
+              } else {
+                studentCustomAttrs[key] = r[csvKey]
+              }
             }
           })
+
+          // 3. Fallback: Add any numeric column that isn't already handled as a subject or custom attribute
+          const knownMetadataKeys = ['examid', 'dateofbirth', 'studentnationalid', 'firstname', 'lastname', 'email', 'phone', 'region', 'total', 'gender', 'disability', 'photo', 'age', 'schoolname', 'school', 'stream', 'dataversion', 'lastsyncedat'];
           
-          // Total score
-          if (r.total) examResults.total = Number(r.total)
+          Object.keys(r).forEach(key => {
+            const cleanKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (knownMetadataKeys.includes(cleanKey)) return;
+            if (examResults[key] !== undefined) return;
+            if (studentCustomAttrs[key] !== undefined) return;
+
+            const score = Number(r[key]);
+            if (!isNaN(score) && typeof r[key] !== 'boolean') {
+              // It's a number and not a metadata field, treat as subject
+              examResults[key] = score;
+              recordTotalScore += score;
+            }
+          })
           
           // Legacy support (if CSV still uses scienceScore)
           if (r.scienceScore && !r.physicsScore) {
             examResults.science = Number(r.scienceScore)
           }
 
-          // ========== NEW: Dynamic Custom Attributes ==========
-          const customAttributes: any = {}
-          customAttrKeys.forEach(key => {
-            if (r[key] !== undefined) {
-              const def = customAttrDefs.find(d => d.name === key)
-              if (def?.type === 'number') {
-                customAttributes[key] = Number(r[key])
-              } else if (def?.type === 'boolean') {
-                customAttributes[key] = String(r[key]).toLowerCase() === 'true' || String(r[key]).toLowerCase() === 'yes'
-              } else {
-                customAttributes[key] = r[key]
-              }
-            }
-          })
-
           // ========== NEW: Determine stream based on exam results ==========
-          const stream = determineStream(examResults)
+          const stream = determineStream(examResults, streamSubjects) || studentStream
           if (stream === 'Natural Science') naturalCount++
           else if (stream === 'Social Science') socialCount++
 
@@ -190,10 +263,10 @@ export async function POST(request: Request) {
             NOW(),
             ${r.gender ? `'${String(r.gender).replace(/'/g, "''")}'` : 'NULL'},
             ${r.disability ? `'${String(r.disability).replace(/'/g, "''")}'` : 'NULL'},
-            ${r.school ? `'${String(r.school).replace(/'/g, "''")}'` : 'NULL'},
+            ${(r.school || r.schoolName) ? `'${String(r.school || r.schoolName).replace(/'/g, "''")}'` : 'NULL'},
             ${r.photo ? `'${String(r.photo).replace(/'/g, "''")}'` : 'NULL'},
             ${stream ? `'${stream.replace(/'/g, "''")}'` : 'NULL'},
-            '${JSON.stringify(customAttributes).replace(/'/g, "''")}'::jsonb
+            '${JSON.stringify(studentCustomAttrs).replace(/'/g, "''")}'::jsonb
           )`
         }).join(',')
 
@@ -233,20 +306,84 @@ export async function POST(request: Request) {
       } else {
         // Skip or replace mode
         const data = batch.map(r => {
+          // ========== BUILD EXAM RESULTS DYNAMICALLY ==========
           const examResults: any = {}
+          let recordTotalScore = 0
           
-          // Add any column ending in "Score" to examResults
+          // 1. Get stream-specific subjects
+          const studentStream = r.stream || (Object.keys(r).some(k => k.toLowerCase().includes('physics')) ? 'Natural Science' : 'Social Science');
+          const streamKey = studentStream === 'Natural Science' ? 'Natural' : 'Social';
+          const relevantSubjects = streamSubjects[streamKey] || [];
+          
+          const studentCustomAttrs: any = {}
+
+          // 2. Map subjects with fuzzy matching
+          relevantSubjects.forEach((subj: any) => {
+            const key = subj.key;
+            const csvKey = Object.keys(r).find(k => {
+              const cleanK = k.toLowerCase().replace(/[^a-z0-9]/g, '').replace('score', '');
+              const cleanKey = key.toLowerCase().replace(/[^a-z0-9]/g, '').replace('score', '').replace('id', '');
+              return cleanK === cleanKey || cleanK === key.toLowerCase();
+            });
+
+            if (csvKey && r[csvKey] !== undefined) {
+              const score = Number(r[csvKey]) || 0;
+              examResults[key] = score;
+              recordTotalScore += score;
+            }
+          });
+          
+          // ========== NEW: Dynamic Custom Attributes ==========
+          customAttrKeys.forEach(key => {
+            // 1. Try EXACT match first (case insensitive, ignoring symbols)
+            let csvKey = Object.keys(r).find(k => {
+               const cleanK = k.toLowerCase().replace(/[^a-z0-9]/g, '');
+               const cleanKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+               return cleanK === cleanKey;
+            });
+
+            // 2. Fallback to fuzzy match ONLY if it's not a subject column
+            if (!csvKey) {
+              csvKey = Object.keys(r).find(k => {
+                 if (k.toLowerCase().endsWith('score')) return false; // Skip subjects
+                 const cleanK = k.toLowerCase().replace(/[^a-z0-9]/g, '');
+                 const cleanKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+                 if (cleanK.length > 4 && cleanKey.length > 4 && (cleanK.startsWith(cleanKey.substring(0, 5)) || cleanKey.startsWith(cleanK.substring(0, 5)))) return true;
+                 return false;
+              });
+            }
+
+            if (csvKey && r[csvKey] !== undefined) {
+              const def = customAttrDefs.find(d => d.name === key)
+              if (def?.type === 'number') {
+                studentCustomAttrs[key] = Number(r[csvKey])
+              } else if (def?.type === 'boolean') {
+                studentCustomAttrs[key] = String(r[csvKey]).toLowerCase() === 'true' || String(r[csvKey]).toLowerCase() === 'yes'
+              } else {
+                studentCustomAttrs[key] = r[csvKey]
+              }
+            }
+          })
+
+          // 3. Fallback: Add any numeric column that isn't already handled as a subject or custom attribute
+          const knownMetadataKeys = ['examid', 'dateofbirth', 'studentnationalid', 'firstname', 'lastname', 'email', 'phone', 'region', 'total', 'gender', 'disability', 'photo', 'age', 'schoolname', 'school', 'stream', 'dataversion', 'lastsyncedat'];
+          
           Object.keys(r).forEach(key => {
-            if (key.toLowerCase().endsWith('score')) {
-              const subjectName = key.toLowerCase().replace('score', '');
-              examResults[subjectName] = Number(r[key]);
+            const cleanKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (knownMetadataKeys.includes(cleanKey)) return;
+            if (examResults[key] !== undefined) return;
+            if (studentCustomAttrs[key] !== undefined) return;
+
+            const score = Number(r[key]);
+            if (!isNaN(score) && typeof r[key] !== 'boolean') {
+              // It's a number and not a metadata field, treat as subject
+              examResults[key] = score;
+              recordTotalScore += score;
             }
           })
           
-          if (r.total) examResults.total = Number(r.total)
-          
           // Determine stream
-          const stream = determineStream(examResults)
+          const stream = determineStream(examResults, streamSubjects)
           if (stream === 'Natural Science') naturalCount++
           else if (stream === 'Social Science') socialCount++
           
@@ -266,10 +403,10 @@ export async function POST(request: Request) {
             lastSyncedAt: new Date(),
             gender: r.gender || null,
             disability: r.disability || null,
-            school: r.school || null,
+            school: r.school || r.schoolName || null,
             photo: r.photo || null,
-            stream: stream,
-            customAttributes: customAttributes
+            stream: stream || studentStream,
+            customAttributes: studentCustomAttrs
           }
         })
 

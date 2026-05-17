@@ -43,35 +43,25 @@ function calculateAge(dateOfBirth: string | Date | null): number {
 
 // Helper function to calculate total score from exam results (sum of all subjects)
 // Helper function to calculate total score from exam results
-function calculateTotalScore(examResults: any): number {
-  if (!examResults) return 0
+function calculateTotalScore(examResults: any): { total: number, max: number } {
+  if (!examResults) return { total: 0, max: 0 }
   
-  // Try to get stored total first (most reliable)
-  if (examResults.total !== undefined && examResults.total !== null) {
-    if (typeof examResults.total === 'number') {
-      return examResults.total
-    }
-    const parsedTotal = Number(examResults.total)
-    if (!isNaN(parsedTotal)) {
-      return parsedTotal
-    }
-  }
-  
-  // If no total field, calculate sum of all numeric values
   let total = 0
+  let count = 0
+  
   for (const [key, value] of Object.entries(examResults)) {
     // Skip non-subject fields
-    if (key === '__prisma_meta') continue
-    if (key === 'total') continue
+    if (key.toLowerCase() === 'total' || key.toLowerCase() === 'totalscore') continue
     if (key.startsWith('__')) continue
     
     const numericScore = Number(value)
-    if (!isNaN(numericScore) && numericScore > 0) {
+    if (!isNaN(numericScore)) {
       total += numericScore
+      count++
     }
   }
   
-  return total
+  return { total, max: count * 100 }
 }
 
 export async function GET(request: Request) {
@@ -149,6 +139,7 @@ export async function GET(request: Request) {
                 academicYear: true,
                 isRegistered: true,
                 emailVerified: true,
+                customAttributes: true,
                 documents: {
                   select: {
                     id: true,
@@ -217,8 +208,8 @@ export async function GET(request: Request) {
       const student = app.application?.student
       const documents = student?.documents || []
       
-      // Calculate total score from all exam results
-      const totalScore = calculateTotalScore(student?.examResults)
+      // Calculate total and max score from all exam results
+      const { total: totalScore, max: maxScore } = calculateTotalScore(student?.examResults)
       // ✅ Calculate age from dateOfBirth
       const calculatedAge = calculateAge(student?.dateOfBirth || null)
       
@@ -260,7 +251,13 @@ export async function GET(request: Request) {
           email: student.email,
           phone: student.phone,
           region: student.region,
-          stream: student.stream,
+          stream: (() => {
+            if (student.stream && student.stream !== 'Unknown' && student.stream !== 'Not specified') return student.stream;
+            const keys = Object.keys(student.examResults || {}).map(k => k.toLowerCase());
+            if (keys.some(k => k.includes('physics') || k.includes('bio'))) return 'Natural Science';
+            if (keys.some(k => k.includes('history') || k.includes('econ'))) return 'Social Science';
+            return student.stream || 'Not specified';
+          })(),
           dateOfBirth: student.dateOfBirth,
           age: calculatedAge,  // ✅ Use calculated age instead of stored age
           gender: student.gender,
@@ -271,6 +268,8 @@ export async function GET(request: Request) {
           photo: student.photo,
           examResults: student.examResults,
           totalScore: totalScore,
+          maxScore: maxScore,
+          customAttributes: student.customAttributes,
           documents: documents,
           documentCount: documents.length,
           documentsByType: {

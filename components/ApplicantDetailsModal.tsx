@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   X, FileText, Image, CheckCircle, XCircle, Clock, Download, 
   User, Mail, Phone, MapPin, Calendar, Award, BookOpen, 
@@ -42,6 +42,7 @@ interface Student {
     essay: Document[];
     other: Document[];
   };
+  school: string;
   customAttributes?: Record<string, any>;
 }
 
@@ -53,6 +54,22 @@ interface Props {
 
 export default function ApplicantDetailsModal({ student, isOpen, onClose }: Props) {
   const [activeTab, setActiveTab] = useState('profile');
+  const [streamSubjects, setStreamSubjects] = useState<any>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      async function fetchSubjects() {
+        try {
+          const res = await fetch('/api/common/settings?key=stream_subjects');
+          const data = await res.json();
+          if (data.success) setStreamSubjects(data.value);
+        } catch (err) {
+          console.error('Failed to fetch subjects:', err);
+        }
+      }
+      fetchSubjects();
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -185,6 +202,13 @@ export default function ApplicantDetailsModal({ student, isOpen, onClose }: Prop
                     <p className="font-medium text-sm">{student.disability || 'None'}</p>
                   </div>
                 </div>
+                <div className="p-3 bg-gray-50 rounded-lg flex items-start gap-3">
+                  <GraduationCap className="w-4 h-4 text-gray-400 mt-0.5" />
+                  <div>
+                    <p className="text-xs text-gray-500">School</p>
+                    <p className="font-medium text-sm">{student.school || 'Not specified'}</p>
+                  </div>
+                </div>
                 {/* ✅ STREAM FIELD ADDED HERE */}
                 <div className="p-3 bg-gray-50 rounded-lg flex items-start gap-3">
                   <GraduationCap className="w-4 h-4 text-gray-400 mt-0.5" />
@@ -312,28 +336,46 @@ export default function ApplicantDetailsModal({ student, isOpen, onClose }: Prop
             <div>
               <div className="mb-6 p-5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
                 <p className="text-sm text-gray-600">Total Score</p>
-                <p className="text-4xl font-bold text-blue-700">{student.totalScore}</p>
+                <p className="text-4xl font-bold text-blue-700">
+                  {student.totalScore} 
+                  <span className="text-lg font-normal text-gray-400 ml-1">
+                    / {student.maxScore || (() => {
+                      const subjects = streamSubjects?.[student.stream === 'Natural Science' ? 'Natural' : 'Social'];
+                      return (subjects?.length || 7) * 100;
+                    })()}
+                  </span>
+                </p>
                 <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
                   <div 
                     className="bg-blue-600 h-2 rounded-full" 
-                    style={{ width: `${Math.min(100, (student.totalScore / 700) * 100)}%` }}
+                    style={{ 
+                      width: `${Math.min(100, (student.totalScore / (
+                        student.maxScore || (streamSubjects?.[student.stream === 'Natural Science' ? 'Natural' : 'Social']?.length || 7) * 100
+                      )) * 100)}%` 
+                    }}
                   />
                 </div>
               </div>
-              
-              {student.examResults && Object.keys(student.examResults).length > 0 ? (
-                <div className="space-y-4">
-                  {Object.entries(student.examResults).map(([subject, score]) => (
-                    <div key={subject}>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="capitalize font-medium text-gray-700">{subject}</span>
-                        <span className="font-bold text-gray-900">{score}</span>
+                {student.examResults && Object.keys(student.examResults).length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {Object.entries(student.examResults)
+                    .filter(([key]) => {
+                      const k = key.toLowerCase();
+                      return k !== 'total' && k !== 'totalscore' && !k.startsWith('__');
+                    })
+                    .sort((a, b) => a[0].localeCompare(b[0])) // Sort alphabetically
+                    .map(([subject, score]) => (
+                    <div key={subject} className="p-3 bg-white border border-gray-100 rounded-lg shadow-sm flex justify-between items-center">
+                      <div className="flex flex-col">
+                        <span className="text-xs text-gray-400 uppercase tracking-wider font-semibold">
+                          {subject.replace('_id', '').replace('Score', '')}
+                        </span>
+                        <span className="font-bold text-gray-800 text-lg">
+                          {score}
+                        </span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2.5">
-                        <div
-                          className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
-                          style={{ width: `${(score / 100) * 100}%` }}
-                        />
+                      <div className="h-10 w-10 bg-blue-50 rounded-full flex items-center justify-center">
+                        <span className="text-blue-600 font-bold text-xs">PTS</span>
                       </div>
                     </div>
                   ))}

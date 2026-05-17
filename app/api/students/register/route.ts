@@ -2,6 +2,21 @@ import { NextResponse } from 'next/server';
 import prisma from '@/prisma/client';
 import bcrypt from 'bcrypt';
 
+// ============================================
+// ADD CORS OPTIONS HANDLER
+// ============================================
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
+}
+
 function isValidPassword(password: string): boolean {
   if (password.length < 6) return false;
   if (!/[A-Z]/.test(password)) return false;
@@ -21,29 +36,35 @@ export async function POST(request: Request) {
     email = email?.trim();
     phone = phone?.trim();
 
-    // ✅ Only require examID, firstName, lastName, password (email & phone are optional)
+    // Validation checks
     if (!examID || !firstName || !lastName || !password || !confirmPassword) {
-      return NextResponse.json(
+      const errorResponse = NextResponse.json(
         { success: false, message: 'Exam ID, Name, and Password are required' },
         { status: 400 }
       );
+      errorResponse.headers.set('Access-Control-Allow-Origin', '*');
+      return errorResponse;
     }
 
     if (password !== confirmPassword) {
-      return NextResponse.json(
+      const errorResponse = NextResponse.json(
         { success: false, message: 'Passwords do not match' },
         { status: 400 }
       );
+      errorResponse.headers.set('Access-Control-Allow-Origin', '*');
+      return errorResponse;
     }
 
     if (!isValidPassword(password)) {
-      return NextResponse.json(
+      const errorResponse = NextResponse.json(
         {
           success: false,
           message: 'Password must be at least 6 characters with uppercase, lowercase, and number',
         },
         { status: 400 }
       );
+      errorResponse.headers.set('Access-Control-Allow-Origin', '*');
+      return errorResponse;
     }
 
     const activeYear = await prisma.academicYear.findFirst({ 
@@ -51,10 +72,12 @@ export async function POST(request: Request) {
     });
     
     if (!activeYear) {
-      return NextResponse.json(
+      const errorResponse = NextResponse.json(
         { success: false, message: 'No active admission year' },
         { status: 400 }
       );
+      errorResponse.headers.set('Access-Control-Allow-Origin', '*');
+      return errorResponse;
     }
 
     const student = await prisma.student.findFirst({
@@ -65,37 +88,45 @@ export async function POST(request: Request) {
     });
 
     if (!student) {
-      return NextResponse.json(
+      const errorResponse = NextResponse.json(
         { success: false, message: 'Student not found. Please check your admission card number.' },
         { status: 404 }
       );
+      errorResponse.headers.set('Access-Control-Allow-Origin', '*');
+      return errorResponse;
     }
 
     if (student.firstName !== firstName || student.lastName !== lastName) {
-      return NextResponse.json(
+      const errorResponse = NextResponse.json(
         { success: false, message: 'Name does not match our records' },
         { status: 400 }
       );
+      errorResponse.headers.set('Access-Control-Allow-Origin', '*');
+      return errorResponse;
     }
 
-    // ✅ Only check email if provided
+    // Only check email if provided
     if (email && student.email?.toLowerCase() !== email.toLowerCase()) {
-      return NextResponse.json(
+      const errorResponse = NextResponse.json(
         { success: false, message: 'Email does not match our records' },
         { status: 400 }
       );
+      errorResponse.headers.set('Access-Control-Allow-Origin', '*');
+      return errorResponse;
     }
 
     if (student.isRegistered) {
-      return NextResponse.json(
+      const errorResponse = NextResponse.json(
         { success: false, message: 'Student already registered' },
         { status: 409 }
       );
+      errorResponse.headers.set('Access-Control-Allow-Origin', '*');
+      return errorResponse;
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // ✅ Prepare update data (email and phone are optional)
+    // Prepare update data
     const updateData: any = {
       password: hashedPassword,
       isRegistered: true,
@@ -117,7 +148,7 @@ export async function POST(request: Request) {
       data: updateData,
     });
 
-    // ✅ Send verification email only if email was provided
+    // Send verification email only if email was provided
     if (email) {
       try {
         const { sendVerificationEmail } = await import('@/lib/email');
@@ -126,11 +157,11 @@ export async function POST(request: Request) {
         await sendVerificationEmail(updated.email!, token, updated.firstName, 'student');
       } catch (emailError) {
         console.error('Email sending failed:', emailError);
-        // Don't fail registration if email fails
       }
     }
 
-    return NextResponse.json({
+    // Create success response with CORS headers
+    const successResponse = NextResponse.json({
       success: true,
       message: email 
         ? 'Registration successful! Please check your email to verify your account.'
@@ -142,11 +173,20 @@ export async function POST(request: Request) {
         email: updated.email || null,
       },
     });
+    
+    successResponse.headers.set('Access-Control-Allow-Origin', '*');
+    successResponse.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    successResponse.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    
+    return successResponse;
+    
   } catch (error) {
     console.error('Registration error:', error);
-    return NextResponse.json(
+    const errorResponse = NextResponse.json(
       { success: false, message: 'Internal server error' },
       { status: 500 }
     );
+    errorResponse.headers.set('Access-Control-Allow-Origin', '*');
+    return errorResponse;
   }
 }

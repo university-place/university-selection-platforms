@@ -20,7 +20,8 @@ interface WeightingSettings {
   };
   disabilityBonus: number;
   customCriteria?: {
-    attribute: string;
+    attribute?: string; // Legacy
+    key?: string;       // New
     value: any;
     operator: 'equals' | 'greater' | 'less' | 'contains';
     weight: number;
@@ -82,10 +83,13 @@ export function calculateWeightedScore(student: StudentData, settings: Weighting
   let customContribution = 0;
   if (settings.customCriteria && settings.customCriteria.length > 0) {
     settings.customCriteria.forEach(criteria => {
+      const attrKey = criteria.key || criteria.attribute;
+      if (!attrKey) return;
+
       // Check in customAttributes first, then in examResults (for new subjects), then in main student fields
-      let studentValue = (student.customAttributes && student.customAttributes[criteria.attribute]) ?? 
-                         (student.examResults && student.examResults[criteria.attribute]) ?? 
-                         (student as any)[criteria.attribute];
+      let studentValue = (student.customAttributes && student.customAttributes[attrKey]) ?? 
+                         (student.examResults && student.examResults[attrKey]) ?? 
+                         (student as any)[attrKey];
       
       let isMatch = false;
       if (studentValue !== undefined && studentValue !== null) {

@@ -25,10 +25,21 @@ export async function GET(request: Request) {
   try {
     const { universityId } = await verifyUniversityAdmin(request);
     
+    const { searchParams } = new URL(request.url);
+    const stream = searchParams.get('stream') || 'all';
+    const key = `weighting_${universityId}_${stream}`;
+    
     // Get or create default weighting settings
-    let settings = await prisma.systemConfig.findFirst({
-      where: { key: `weighting_${universityId}` }
+    let settings = await prisma.systemConfig.findUnique({
+      where: { key }
     });
+    
+    if (!settings && stream === 'all') {
+       // Fallback to old key for backward compatibility
+       settings = await prisma.systemConfig.findUnique({
+         where: { key: `weighting_${universityId}` }
+       });
+    }
     
     if (!settings) {
       // Default weight distribution
@@ -47,9 +58,9 @@ export async function GET(request: Request) {
       
       settings = await prisma.systemConfig.create({
         data: {
-          key: `weighting_${universityId}`,
+          key,
           value: defaultSettings,
-          description: 'University applicant weighting settings'
+          description: `University applicant weighting settings (${stream})`
         }
       });
     }
@@ -64,6 +75,10 @@ export async function GET(request: Request) {
 export async function PUT(request: Request) {
   try {
     const { universityId } = await verifyUniversityAdmin(request);
+    const { searchParams } = new URL(request.url);
+    const stream = searchParams.get('stream') || 'all';
+    const key = `weighting_${universityId}_${stream}`;
+
     const body = await request.json();
     const { examScoreWeight, regionWeight, genderWeight, disabilityWeight, regionPreferences, genderPreferences, disabilityPreferences, disabilityBonus, customCriteria } = body;
     
@@ -77,7 +92,7 @@ export async function PUT(request: Request) {
     }
     
     const settings = await prisma.systemConfig.upsert({
-      where: { key: `weighting_${universityId}` },
+      where: { key },
       update: {
         value: {
           examScoreWeight,
@@ -94,7 +109,7 @@ export async function PUT(request: Request) {
         updatedAt: new Date()
       },
       create: {
-        key: `weighting_${universityId}`,
+        key,
         value: {
           examScoreWeight: examScoreWeight || 70,
           regionWeight: regionWeight || 15,
@@ -107,7 +122,7 @@ export async function PUT(request: Request) {
           customCriteria: customCriteria || [],
           totalWeight: total
         },
-        description: 'University applicant weighting settings'
+        description: `University applicant weighting settings (${stream})`
       }
     });
     

@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     }
 
     // Only allow specific public keys
-    const allowedKeys = ['student_custom_attributes', 'system_maintenance'];
+    const allowedKeys = ['student_custom_attributes', 'system_maintenance', 'stream_subjects'];
     if (!allowedKeys.includes(key)) {
       return NextResponse.json({ success: false, error: 'Access denied' }, { status: 403 });
     }

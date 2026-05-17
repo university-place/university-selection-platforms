@@ -196,6 +196,7 @@ export default function StudentDashboardPage() {
   const [appealForm, setAppealForm] = useState({ type: 'placement', description: '', preferenceId: '' });
   const [showAppealModal, setShowAppealModal] = useState(false);
   const [uploadedDocuments, setUploadedDocuments] = useState<Document[]>([]);
+  const [streamSubjects, setStreamSubjects] = useState<any>(null);
   const [editingPref, setEditingPref] = useState<{
     id: number;
     programId: number;
@@ -335,6 +336,13 @@ export default function StudentDashboardPage() {
       const uniData2 = await uniRes2.json();
       if (uniData2.success) {
         setUniversities(uniData2.universities);
+      }
+
+      // Fetch stream subjects
+      const subjectsRes = await fetch('/api/common/settings?key=stream_subjects');
+      const subjectsData = await subjectsRes.json();
+      if (subjectsData.success) {
+        setStreamSubjects(subjectsData.value);
       }
 
     } catch (err) {
@@ -1713,7 +1721,7 @@ export default function StudentDashboardPage() {
                    <p className="text-blue-100 font-black uppercase tracking-widest text-xs mb-2">Total Score</p>
                    <div className="flex items-baseline gap-2">
                      <span className="text-6xl font-black tracking-tighter">{profile.totalScore}</span>
-                     <span className="text-blue-200 font-bold text-xl">/ 700</span>
+                     <span className="text-blue-200 font-bold text-xl">/ {profile.maxScore || 700}</span>
                    </div>
                  </div>
                </div>
@@ -1733,13 +1741,17 @@ export default function StudentDashboardPage() {
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Object.entries(profile.examResults).map(([subj, score]) => (
-                <div key={subj} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+              {(profile.subjects && profile.subjects.length > 0 ? profile.subjects : 
+                Object.entries(profile.examResults)
+                  .filter(([subj]) => subj.toLowerCase() !== 'total')
+                  .map(([name, score]) => ({ name, score }))
+              ).map((subj: any) => (
+                <div key={subj.name} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-full -mr-12 -mt-12 group-hover:scale-150 transition-transform duration-500"></div>
                   <div className="relative z-10">
-                    <p className="text-gray-400 font-black uppercase tracking-widest text-[10px] mb-1">{subj.charAt(0).toUpperCase() + subj.slice(1)}</p>
+                    <p className="text-gray-400 font-black uppercase tracking-widest text-[10px] mb-1">{subj.name}</p>
                     <div className="flex justify-between items-end">
-                      <span className="text-3xl font-black text-gray-900 tracking-tighter">{score}</span>
+                      <span className="text-3xl font-black text-gray-900 tracking-tighter">{subj.score}</span>
                       <span className="text-gray-300 font-bold text-sm mb-1">pts</span>
                     </div>
                   </div>

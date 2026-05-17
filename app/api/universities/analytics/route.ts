@@ -35,10 +35,26 @@ export async function GET(request: Request) {
   try {
     const { universityId } = await verifyUniversityAdmin(request);
     
-    // Get weighting settings
-    const settingsConfig = await prisma.systemConfig.findFirst({
-      where: { key: `weighting_${universityId}` }
+    const { searchParams } = new URL(request.url);
+    const selectedStream = searchParams.get('stream') || 'all';
+
+    // Get weighting settings for this stream
+    let settingsConfig = await prisma.systemConfig.findUnique({
+      where: { key: `weighting_${universityId}_${selectedStream}` }
     });
+    
+    // Fallback to 'all' or default
+    if (!settingsConfig && selectedStream !== 'all') {
+       settingsConfig = await prisma.systemConfig.findUnique({
+         where: { key: `weighting_${universityId}_all` }
+       });
+    }
+
+    if (!settingsConfig) {
+       settingsConfig = await prisma.systemConfig.findUnique({
+         where: { key: `weighting_${universityId}` }
+       });
+    }
     
     const defaultSettings = {
       examScoreWeight: 70,
@@ -47,19 +63,30 @@ export async function GET(request: Request) {
       disabilityWeight: 5,
       regionPreferences: [],
       genderPreferences: { male: 50, female: 50 },
-      disabilityBonus: 5
+      disabilityBonus: 5,
+      customCriteria: []
     };
     
     const settings = settingsConfig?.value || defaultSettings;
     const maxExamScore = 700; // Maximum possible exam score
     
     // Get all submitted applicants for this university
+    const where: any = {
+      universityId: universityId,
+      status: 'SUBMITTED',
+      isCancelled: false
+    };
+
+    if (selectedStream !== 'all') {
+      where.application = {
+        student: {
+          stream: selectedStream === 'natural' ? 'Natural Science' : 'Social Science'
+        }
+      };
+    }
+
     const applicants = await prisma.preference.findMany({
-      where: {
-        universityId: universityId,
-        status: 'SUBMITTED',
-        isCancelled: false
-      },
+      where,
       include: {
         application: {
           include: {

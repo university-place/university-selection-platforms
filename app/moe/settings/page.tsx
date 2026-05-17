@@ -35,6 +35,10 @@ export default function MOESettingsPage() {
   const [customAttributes, setCustomAttributes] = useState<{ name: string; label: string; type: 'string' | 'number' | 'boolean' }[]>([]);
   const [newAttr, setNewAttr] = useState({ name: '', label: '', type: 'string' as const });
 
+  // Stream subjects settings
+  const [streamSubjects, setStreamSubjects] = useState<{ Natural: { name: string; key: string }[]; Social: { name: string; key: string }[] }>({ Natural: [], Social: [] });
+  const [newSubject, setNewSubject] = useState({ stream: 'Natural' as 'Natural' | 'Social', name: '', key: '' });
+
   useEffect(() => {
     if (!moeAuthHelpers.isAuthenticated()) {
       router.push('/moe/login');
@@ -56,6 +60,9 @@ export default function MOESettingsPage() {
       }
       if (data.success && data.settings?.student_custom_attributes) {
         setCustomAttributes(data.settings.student_custom_attributes);
+      }
+      if (data.success && data.settings?.stream_subjects) {
+        setStreamSubjects(data.settings.stream_subjects);
       }
     } catch (err) {
       console.error('Fetch settings error:', err);
@@ -176,6 +183,61 @@ export default function MOESettingsPage() {
 
   const removeAttribute = (name: string) => {
     setCustomAttributes(customAttributes.filter(a => a.name !== name));
+  };
+
+  async function handleSaveStreamSubjects() {
+    setSaving(true);
+    try {
+      const token = moeAuthHelpers.getToken();
+      const res = await fetch('/api/moe/settings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          key: 'stream_subjects',
+          value: streamSubjects,
+          description: 'Definition of dynamic subjects for Natural and Social streams'
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMessage({ type: 'success', text: 'Stream subjects updated successfully' });
+      } else {
+        setMessage({ type: 'error', text: data.error || 'Failed to update stream subjects' });
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Network error' });
+    } finally {
+      setSaving(false);
+      setTimeout(() => setMessage(null), 3000);
+    }
+  }
+
+  const addSubject = () => {
+    if (!newSubject.name || !newSubject.key) return;
+    if (!/^[a-zA-Z0-9_]+$/.test(newSubject.key)) {
+      setMessage({ type: 'error', text: 'Subject key must be alphanumeric with underscores only' });
+      return;
+    }
+    const streamList = streamSubjects[newSubject.stream];
+    if (streamList.some(s => s.key === newSubject.key)) {
+      setMessage({ type: 'error', text: 'Subject key already exists in this stream' });
+      return;
+    }
+    setStreamSubjects({
+      ...streamSubjects,
+      [newSubject.stream]: [...streamList, { name: newSubject.name, key: newSubject.key }]
+    });
+    setNewSubject({ ...newSubject, name: '', key: '' });
+  };
+
+  const removeSubject = (stream: 'Natural' | 'Social', key: string) => {
+    setStreamSubjects({
+      ...streamSubjects,
+      [stream]: streamSubjects[stream].filter(s => s.key !== key)
+    });
   };
 
   return (
@@ -309,6 +371,109 @@ export default function MOESettingsPage() {
             >
               <Save className="w-5 h-5" />
               {saving ? 'Saving...' : 'Save All Attributes'}
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-sm p-8 border border-gray-100">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-green-100 p-3 rounded-xl text-green-600">
+              <ClipboardList className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Stream Subject Configuration</h2>
+              <p className="text-gray-500 text-sm">Define dynamic subjects for Natural and Social streams for score calculations</p>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end bg-gray-50 p-6 rounded-2xl border border-gray-100">
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Stream</label>
+                <select
+                  value={newSubject.stream}
+                  onChange={(e) => setNewSubject({ ...newSubject, stream: e.target.value as 'Natural' | 'Social' })}
+                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                >
+                  <option value="Natural">Natural Science</option>
+                  <option value="Social">Social Science</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Subject Key (ID)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. math_social"
+                  value={newSubject.key}
+                  onChange={(e) => setNewSubject({ ...newSubject, key: e.target.value.toLowerCase() })}
+                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Display Name</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Mathematics"
+                  value={newSubject.name}
+                  onChange={(e) => setNewSubject({ ...newSubject, name: e.target.value })}
+                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                />
+              </div>
+              <button
+                onClick={addSubject}
+                className="px-4 py-2 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition h-[42px]"
+              >
+                Add Subject
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {['Natural', 'Social'].map((stream) => (
+                <div key={stream} className="border border-gray-200 rounded-2xl overflow-hidden">
+                  <div className={`px-6 py-3 font-bold text-white ${stream === 'Natural' ? 'bg-blue-600' : 'bg-purple-600'}`}>
+                    {stream} Science Subjects
+                  </div>
+                  <table className="w-full text-left">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-xs font-bold text-gray-500 uppercase">Key</th>
+                        <th className="px-6 py-3 text-xs font-bold text-gray-500 uppercase">Name</th>
+                        <th className="px-6 py-3 text-xs font-bold text-gray-500 uppercase">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {streamSubjects[stream as 'Natural' | 'Social']?.map((subject) => (
+                        <tr key={subject.key}>
+                          <td className="px-6 py-3 font-mono text-xs text-gray-700">{subject.key}</td>
+                          <td className="px-6 py-3 text-sm font-medium text-gray-900">{subject.name}</td>
+                          <td className="px-6 py-3">
+                            <button
+                              onClick={() => removeSubject(stream as 'Natural' | 'Social', subject.key)}
+                              className="text-red-600 hover:text-red-800 font-bold text-xs"
+                            >
+                              Remove
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                      {(!streamSubjects[stream as 'Natural' | 'Social'] || streamSubjects[stream as 'Natural' | 'Social'].length === 0) && (
+                        <tr>
+                          <td colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500">No subjects defined</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={handleSaveStreamSubjects}
+              disabled={saving}
+              className="px-8 py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition flex items-center gap-2 disabled:opacity-50"
+            >
+              <Save className="w-5 h-5" />
+              {saving ? 'Saving...' : 'Save All Subjects'}
             </button>
           </div>
         </div>

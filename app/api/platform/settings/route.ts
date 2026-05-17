@@ -61,6 +61,19 @@ export async function POST(request: Request) {
       }
     });
 
+    if (key === 'maxSubmissionAttempts') {
+      try {
+        await prisma.preference.updateMany({
+          data: { submissionCount: 0 }
+        });
+        await prisma.application.updateMany({
+          data: { submissionCount: 0, lastSubmittedAt: null }
+        });
+      } catch (err) {
+        console.error('Failed to reset submission counts:', err);
+      }
+    }
+
     return NextResponse.json({ success: true, setting });
   } catch (error: any) {
     console.error('Update setting error:', error);

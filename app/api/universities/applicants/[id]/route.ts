@@ -51,6 +51,8 @@ export async function GET(
         gender: true,
         disability: true,
         age: true,
+        stream: true,
+        customAttributes: true,
       },
     });
 
@@ -78,15 +80,40 @@ export async function GET(
       try { examResults = JSON.parse(examResults); } catch { examResults = {}; }
     }
 
-    const calculateTotalScore = (results: any) => {
-      const natural = (results.mathematics || 0) + (results.english || 0) +
-                      (results.physics || 0) + (results.chemistry || 0) +
-                      (results.biology || 0);
-      const social = (results.mathematics || 0) + (results.english || 0) +
-                     (results.history || 0) + (results.geography || 0) +
-                     (results.economics || 0);
-      return results.total || Math.max(natural, social);
+    // Calculate total score dynamically (sum of all numeric values in examResults)
+    const calculateTotal = (results: any) => {
+      if (!results) return { total: 0, max: 0 };
+      let total = 0;
+      let count = 0;
+      for (const [key, value] of Object.entries(results)) {
+        if (key.toLowerCase() === 'total' || key.toLowerCase() === 'totalscore') continue;
+        if (key.startsWith('__')) continue;
+        const numeric = Number(value);
+        if (!isNaN(numeric)) {
+          total += numeric;
+          count++;
+        }
+      }
+      return { total, max: count * 100 };
     };
+
+    const { total: totalScore, max: maxScore } = calculateTotal(examResults);
+
+    // Auto-detect stream if missing or 'Unknown'
+    let stream = student.stream;
+    if (!stream || stream === 'Unknown' || stream === 'Not specified') {
+      const keys = Object.keys(examResults || {}).map(k => k.toLowerCase());
+      const hasPhysics = keys.some(k => k.includes('physics'));
+      const hasHistory = keys.some(k => k.includes('history'));
+      
+      if (hasPhysics) stream = 'Natural Science';
+      else if (hasHistory) stream = 'Social Science';
+      else if (keys.length > 0) {
+        // Fallback: search for other identifiers
+        if (keys.some(k => k.includes('bio') || k.includes('chem'))) stream = 'Natural Science';
+        else if (keys.some(k => k.includes('geo') || k.includes('econ'))) stream = 'Social Science';
+      }
+    }
 
     let age = student.age;
     if (!age && student.dateOfBirth && student.academicYear) {
@@ -113,7 +140,10 @@ export async function GET(
         photo: student.photo,
         academicYear: student.academicYear,
         examResults: examResults,
-        totalScore: calculateTotalScore(examResults),
+        totalScore: totalScore,
+        maxScore: maxScore,
+        stream: stream || student.stream || 'Not specified',
+        customAttributes: student.customAttributes,
         // ✅ Return ONLY the latest application (not history)
         application: latestPreference ? {
           id: latestPreference.id,
