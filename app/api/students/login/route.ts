@@ -92,7 +92,7 @@ export async function POST(request: Request) {
         role: 'STUDENT',
       },
       process.env.JWT_SECRET!,
-      { expiresIn: '30d' }
+      { expiresIn: '365d' }
     );
 
     // Create success response with CORS headers

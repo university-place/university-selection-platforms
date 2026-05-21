@@ -70,7 +70,13 @@ export default function UniversityPublicPage() {
   useEffect(() => {
     const id = params.id;
     if (id) {
-      fetchUniversityData(parseInt(id as string));
+      const parsedId = parseInt(id as string);
+      if (isNaN(parsedId)) {
+        setError('Invalid university ID');
+        setLoading(false);
+      } else {
+        fetchUniversityData(parsedId);
+      }
     }
   }, [params.id]);
 
@@ -80,7 +86,10 @@ export default function UniversityPublicPage() {
     try {
       // Fetch university basic info with all new fields
       const uniRes = await fetch(`/api/universities/${universityId}`);
-      if (!uniRes.ok) throw new Error('University not found');
+      if (!uniRes.ok) {
+        const errData = await uniRes.json().catch(() => ({}));
+        throw new Error(errData.error || 'University not found');
+      }
       const uniData = await uniRes.json();
       setUniversity(uniData);
 
@@ -90,9 +99,9 @@ export default function UniversityPublicPage() {
       if (programsData.success) {
         setPrograms(programsData.programs);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error:', err);
-      setError('Failed to load university data');
+      setError(err.message || 'Failed to load university data');
     } finally {
       setLoading(false);
     }

@@ -95,8 +95,13 @@ export async function PUT(request: Request) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { searchParams } = new URL(request.url);
+    const queryId = parseInt(searchParams.get('id') || '0');
+
     const body = await request.json();
-    const { id, name, code, description, intakeCapacity, isActive } = body;
+    const { id: bodyId, name, code, description, intakeCapacity, isActive } = body;
+
+    const id = (bodyId ? parseInt(bodyId.toString()) : 0) || queryId;
 
     if (!id) {
       return NextResponse.json({ success: false, error: 'Program ID is required' }, { status: 400 });

@@ -164,6 +164,7 @@ export default function UniversityDashboardPage() {
     { label: 'Analytics', href: '/university/analytics', icon: TrendingUp },
     { label: 'Appeals', href: '/university/appeals', icon: AlertCircle },
     { label: 'Weighting Settings', href: '/university/weighting-settings', icon: Sliders },
+    { label: 'Placement Invitation', href: '/university/placement-invitation', icon: Zap },
     { label: 'Placement Policy', href: '/university/placement-policy', icon: Shield },
     { label: 'Settings', href: '/university/settings', icon: Settings },
     { label: 'Batch Placement', href: '/university/placement-batch', icon: Zap },

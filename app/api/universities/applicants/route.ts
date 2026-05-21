@@ -282,6 +282,8 @@ export async function GET(request: Request) {
           hasEssay: documents.some(d => d.type === 'ESSAY'),
           hasTranscript: documents.some(d => d.type === 'TRANSCRIPT'),
         } : null,
+        programName: app.program?.name || 'Not specified',
+        programId: app.programId || undefined,
         program: app.program,
         admissionTrack: app.admissionTrack,
         university: app.university,

@@ -154,6 +154,7 @@ export async function GET(request: Request) {
         email: student.email || 'N/A',
         phone: student.phone || 'N/A',
         region: student.region || 'N/A',
+        stream: student.stream || 'N/A',
         programName: pref.program?.name || 'Unknown',
         programCode: pref.program?.code || '',
         interviewType: invitation?.type || 'BATCH_PLACEMENT',

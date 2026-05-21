@@ -144,7 +144,7 @@ export async function POST(request: Request) {
         name: admin.name || admin.email?.split('@')[0] || 'MOE Admin',
       },
       process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '24h' }
+      { expiresIn: '365d' }
     );
 
     console.log('MOE Login successful for:', email);

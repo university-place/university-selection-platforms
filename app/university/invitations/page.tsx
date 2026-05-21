@@ -102,7 +102,8 @@ export default function UniversityInvitationsPage() {
     result: 'PASS',
     resultNotes: '',
     acceptanceMessage: '',
-    confirmationDeadline: ''
+    confirmationDeadline: '',
+    invitationScore: ''
   });
 
   useEffect(() => {
@@ -386,7 +387,8 @@ export default function UniversityInvitationsPage() {
           result: resultForm.result,
           resultNotes: resultForm.resultNotes,
           acceptanceMessage: resultForm.acceptanceMessage,
-          confirmationDeadline: resultForm.confirmationDeadline || undefined
+          confirmationDeadline: resultForm.confirmationDeadline || undefined,
+          invitationScore: resultForm.invitationScore ? parseFloat(resultForm.invitationScore) : null
         })
       });
       
@@ -400,7 +402,8 @@ export default function UniversityInvitationsPage() {
           result: 'PASS',
           resultNotes: '',
           acceptanceMessage: '',
-          confirmationDeadline: ''
+          confirmationDeadline: '',
+          invitationScore: ''
         });
         fetchInvitations();
       } else {
@@ -797,6 +800,20 @@ export default function UniversityInvitationsPage() {
                   <option value="FAIL">❌ Fail - Reject Student</option>
                   <option value="PENDING">⏳ Pending - No Decision Yet</option>
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Invitation/Interview Score (out of 100)</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={resultForm.invitationScore}
+                  onChange={(e) => setResultForm({ ...resultForm, invitationScore: e.target.value })}
+                  placeholder="e.g., 85.5"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white"
+                />
               </div>
               
               {(resultForm.result === 'PASS' || resultForm.result === 'FAIL') && (

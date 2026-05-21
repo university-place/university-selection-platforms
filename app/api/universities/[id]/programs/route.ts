@@ -16,8 +16,7 @@ export async function GET(
     const programs = await prisma.program.findMany({
       where: { 
         universityId: universityId,
-        isActive: true,
-        isVerified: true
+        isActive: true
       },
       select: {
         id: true,
@@ -25,6 +24,19 @@ export async function GET(
         code: true,
         description: true,
         intakeCapacity: true,
+        admissionTracks: {
+          where: {
+            isActive: true
+          },
+          select: {
+            id: true,
+            name: true,
+            intakeCapacity: true,
+            targetAudience: true,
+            description: true,
+            isActive: true
+          }
+        }
       },
       orderBy: { name: 'asc' }
     });

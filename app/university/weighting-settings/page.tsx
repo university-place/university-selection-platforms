@@ -10,6 +10,7 @@ interface WeightingSettings {
   regionWeight: number;
   genderWeight: number;
   disabilityWeight: number;
+  invitationScoreWeight?: number; // ADDED
   regionPreferences: { region: string; weight: number }[];
   genderPreferences: { male: number; female: number };
   disabilityPreferences: { visual: number; hearing: number; physical: number; learning: number; none: number };
@@ -19,8 +20,9 @@ interface WeightingSettings {
     weight: number; 
     key?: string; 
     source?: 'system' | 'manual';
-    operator?: 'equals' | 'greater' | 'less' | 'contains';
+    operator?: 'equals' | 'greater' | 'less' | 'contains' | 'value_map';
     value?: string | number | boolean;
+    mappings?: { value: string; percent: number }[];
   }[];
 }
 
@@ -30,6 +32,7 @@ export default function WeightingSettingsPage() {
     regionWeight: 15,
     genderWeight: 10,
     disabilityWeight: 5,
+    invitationScoreWeight: 0, // ADDED
     regionPreferences: [],
     genderPreferences: { male: 50, female: 50 },
     disabilityPreferences: { visual: 100, hearing: 100, physical: 100, learning: 100, none: 0 },
@@ -43,12 +46,42 @@ export default function WeightingSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [attributeOptions, setAttributeOptions] = useState<Record<string, string[]>>({});
 
   useEffect(() => {
     fetchSettings();
     fetchRegions();
     fetchCustomAttrDefs();
   }, [selectedStream]);
+
+  useEffect(() => {
+    if (settings.customCriteria) {
+      settings.customCriteria.forEach(c => {
+        if (c.source === 'system' && c.key) {
+          fetchOptionsForAttribute(c.key);
+        }
+      });
+    }
+  }, [settings.customCriteria]);
+
+  const fetchOptionsForAttribute = async (key: string) => {
+    if (!key || attributeOptions[key]) return;
+    const token = authHelpers.getToken();
+    try {
+      const res = await fetch(`/api/universities/applicants/attribute-values?key=${key}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success && data.values) {
+        setAttributeOptions(prev => ({
+          ...prev,
+          [key]: data.values
+        }));
+      }
+    } catch (err) {
+      console.error('Failed to fetch dynamic options for attribute:', key);
+    }
+  };
 
   const fetchCustomAttrDefs = async () => {
     try {
@@ -69,7 +102,10 @@ export default function WeightingSettingsPage() {
       });
       const data = await res.json();
       if (data.success && data.settings) {
-        setSettings(data.settings);
+        setSettings({
+          ...data.settings,
+          invitationScoreWeight: data.settings.invitationScoreWeight || 0
+        });
       } else {
         // Reset to default if no settings found for this stream
         setSettings({
@@ -77,6 +113,7 @@ export default function WeightingSettingsPage() {
           regionWeight: 15,
           genderWeight: 10,
           disabilityWeight: 5,
+          invitationScoreWeight: 0,
           regionPreferences: [],
           genderPreferences: { male: 50, female: 50 },
           disabilityPreferences: { visual: 100, hearing: 100, physical: 100, learning: 100, none: 0 },
@@ -100,7 +137,7 @@ export default function WeightingSettingsPage() {
       const data = await res.json();
       if (data.applicants) {
         const regions = [...new Set(data.applicants.map((a: any) => a.student?.region).filter(Boolean))];
-        setAvailableRegions(regions);
+        setAvailableRegions(regions as string[]);
       }
     } catch (err) {
       console.error('Failed to load regions');
@@ -138,7 +175,7 @@ export default function WeightingSettingsPage() {
   };
 
   const customCriteriaTotal = settings.customCriteria?.reduce((sum, c) => sum + (c.weight || 0), 0) || 0;
-  const totalWeight = settings.examScoreWeight + settings.regionWeight + settings.genderWeight + settings.disabilityWeight + customCriteriaTotal;
+  const totalWeight = settings.examScoreWeight + settings.regionWeight + settings.genderWeight + settings.disabilityWeight + (settings.invitationScoreWeight || 0) + customCriteriaTotal;
 
   const navLinks = [
     { label: 'Dashboard', href: '/university/dashboard' },
@@ -148,49 +185,52 @@ export default function WeightingSettingsPage() {
 
   if (loading) {
     return (
-      <DashboardLayout title="Weighting Settings" navLinks={navLinks} theme="green">
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-green-600 border-t-transparent"></div>
+      <DashboardLayout title="Weighting Settings" navLinks={navLinks}>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
       </DashboardLayout>
     );
   }
 
   return (
-    <DashboardLayout title="Applicant Weighting Settings" navLinks={navLinks} theme="green">
-      <div className="max-w-3xl mx-auto pb-12">
+    <DashboardLayout title="Weighting Settings" navLinks={navLinks}>
+      <div className="max-w-4xl mx-auto p-4">
         {/* Stream Selector */}
-        <div className="mb-8 flex items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-          <label className="font-bold text-gray-700">Configure for Stream:</label>
-          <div className="flex gap-2">
-            {(['all', 'natural', 'social'] as const).map((stream) => (
-              <button
-                key={stream}
-                onClick={() => setSelectedStream(stream)}
-                className={`px-4 py-2 rounded-lg font-semibold transition capitalize ${
-                  selectedStream === stream
-                    ? 'bg-green-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                {stream}
-              </button>
-            ))}
-          </div>
+        <div className="mb-6 flex gap-2 bg-gray-100 p-1 rounded-lg w-fit">
+          <button
+            onClick={() => setSelectedStream('all')}
+            className={`px-4 py-2 rounded-md text-sm font-semibold transition ${selectedStream === 'all' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+          >
+            All Students
+          </button>
+          <button
+            onClick={() => setSelectedStream('natural')}
+            className={`px-4 py-2 rounded-md text-sm font-semibold transition ${selectedStream === 'natural' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+          >
+            Natural Science
+          </button>
+          <button
+            onClick={() => setSelectedStream('social')}
+            className={`px-4 py-2 rounded-md text-sm font-semibold transition ${selectedStream === 'social' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+          >
+            Social Science
+          </button>
         </div>
-        {/* Total Weight Indicator */}
-        <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Percent className="w-5 h-5 text-blue-600" />
-              <span className="font-semibold text-blue-800">Total Weight Distribution</span>
+
+        {/* Global Progress Bar */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+          <div className="flex justify-between items-center mb-2">
+            <div>
+              <h2 className="text-lg font-bold text-gray-900">Total Assigned Weight</h2>
+              <p className="text-xs text-gray-500">All criteria must add up to exactly 100%</p>
             </div>
-            <span className={`text-xl font-bold ${totalWeight === 100 ? 'text-green-600' : 'text-red-600'}`}>
+            <span className={`text-2xl font-black ${totalWeight === 100 ? 'text-green-600' : 'text-red-500'}`}>
               {totalWeight}%
             </span>
           </div>
           <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div className="h-full bg-blue-500 rounded-full" style={{ width: `${totalWeight}%` }}></div>
+            <div className="h-full bg-blue-500 rounded-full" style={{ width: `${Math.min(totalWeight, 100)}%` }}></div>
           </div>
           {totalWeight !== 100 && (
             <p className="text-sm text-red-600 mt-2 flex items-center gap-1">
@@ -274,7 +314,7 @@ export default function WeightingSettingsPage() {
                     ...settings,
                     genderPreferences: { ...settings.genderPreferences, male: parseInt(e.target.value) }
                   })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white"
                 />
               </div>
               <div>
@@ -288,7 +328,7 @@ export default function WeightingSettingsPage() {
                     ...settings,
                     genderPreferences: { ...settings.genderPreferences, female: parseInt(e.target.value) }
                   })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white"
                 />
               </div>
             </div>
@@ -328,7 +368,7 @@ export default function WeightingSettingsPage() {
                     ...settings,
                     disabilityPreferences: { ...settings.disabilityPreferences, visual: parseInt(e.target.value) || 0 }
                   })}
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm"
+                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm bg-white"
                 />
               </div>
               <div>
@@ -342,7 +382,7 @@ export default function WeightingSettingsPage() {
                     ...settings,
                     disabilityPreferences: { ...settings.disabilityPreferences, hearing: parseInt(e.target.value) || 0 }
                   })}
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm"
+                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm bg-white"
                 />
               </div>
               <div>
@@ -356,7 +396,7 @@ export default function WeightingSettingsPage() {
                     ...settings,
                     disabilityPreferences: { ...settings.disabilityPreferences, physical: parseInt(e.target.value) || 0 }
                   })}
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm"
+                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm bg-white"
                 />
               </div>
               <div>
@@ -370,13 +410,33 @@ export default function WeightingSettingsPage() {
                     ...settings,
                     disabilityPreferences: { ...settings.disabilityPreferences, learning: parseInt(e.target.value) || 0 }
                   })}
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm"
+                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm bg-white"
                 />
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-2">
               Percentage of the maximum disability bonus allocated to each type.
             </p>
+          </div>
+
+          {/* Interview/Invitation Score Weight - ADDED */}
+          <div className="mb-6">
+            <div className="flex justify-between mb-2">
+              <label className="flex items-center gap-2 text-gray-700 font-medium">
+                <Percent className="w-4 h-4 text-orange-600" />
+                Interview / Entrance Exam Score Weight
+              </label>
+              <span className="text-orange-600 font-bold">{settings.invitationScoreWeight || 0}%</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={settings.invitationScoreWeight || 0}
+              onChange={(e) => setSettings({ ...settings, invitationScoreWeight: parseInt(e.target.value) || 0 })}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-orange-600"
+            />
+            <p className="text-xs text-gray-500 mt-1">Weight allocated to the candidate's interview or entrance exam score</p>
           </div>
         </div>
 
@@ -405,127 +465,209 @@ export default function WeightingSettingsPage() {
               No custom criteria added yet.
             </p>
           ) : (
-            settings.customCriteria.map((criterion, index) => (
-              <div key={index} className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-3">
-                  <div>
-                    <label className="text-xs font-bold text-gray-500 block mb-1 uppercase">Source</label>
-                    <select
-                      value={criterion.source || 'manual'}
-                      onChange={(e) => {
-                        const newCriteria = [...settings.customCriteria];
-                        newCriteria[index].source = e.target.value as any;
-                        if (e.target.value === 'system') {
-                          newCriteria[index].name = customAttrDefs[0]?.label || 'New Criterion';
-                          newCriteria[index].key = customAttrDefs[0]?.name || '';
-                          newCriteria[index].operator = 'equals';
-                          newCriteria[index].value = '';
-                        }
-                        setSettings({ ...settings, customCriteria: newCriteria });
-                      }}
-                      className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm"
-                    >
-                      <option value="manual">Manual Input</option>
-                      <option value="system">System Attribute (MOE)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-xs font-bold text-gray-500 block mb-1 uppercase">Field / Attribute</label>
-                    {criterion.source === 'system' ? (
+            settings.customCriteria.map((criterion, index) => {
+              const def = customAttrDefs.find(d => d.name === criterion.key);
+              const isString = criterion.source === 'system' && (
+                def?.type === 'string' || 
+                ['economicStatus', 'gender', 'region', 'disability'].includes(criterion.key || '')
+              );
+
+              return (
+                <div key={index} className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-3">
+                    <div>
+                      <label className="text-xs font-bold text-gray-500 block mb-1 uppercase">Source</label>
                       <select
-                        value={criterion.key || ''}
+                        value={criterion.source || 'manual'}
                         onChange={(e) => {
-                          const def = customAttrDefs.find(d => d.name === e.target.value);
                           const newCriteria = [...settings.customCriteria];
-                          newCriteria[index].key = e.target.value;
-                          newCriteria[index].name = def?.label || e.target.value;
+                          newCriteria[index].source = e.target.value as any;
+                          if (e.target.value === 'system') {
+                            newCriteria[index].name = customAttrDefs[0]?.label || 'New Criterion';
+                            newCriteria[index].key = customAttrDefs[0]?.name || '';
+                            newCriteria[index].operator = 'equals';
+                            newCriteria[index].value = '';
+                            newCriteria[index].mappings = [];
+                          }
                           setSettings({ ...settings, customCriteria: newCriteria });
                         }}
                         className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm"
                       >
-                        <option value="">Select Attribute</option>
-                        {customAttrDefs.map(def => (
-                          <option key={def.name} value={def.name}>{def.label}</option>
-                        ))}
+                        <option value="manual">Manual Input</option>
+                        <option value="system">System Attribute (MOE)</option>
                       </select>
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-gray-500 block mb-1 uppercase">Field / Attribute</label>
+                      {criterion.source === 'system' ? (
+                        <select
+                          value={criterion.key || ''}
+                          onChange={async (e) => {
+                            const selectedKey = e.target.value;
+                            const def = customAttrDefs.find(d => d.name === selectedKey);
+                            const newCriteria = [...settings.customCriteria];
+                            newCriteria[index].key = selectedKey;
+                            newCriteria[index].name = def?.label || selectedKey;
+                            const isStr = def?.type === 'string' || ['economicStatus', 'gender', 'region', 'disability'].includes(selectedKey);
+                            if (isStr) {
+                              newCriteria[index].operator = 'value_map';
+                              
+                              let opts = ['High', 'Medium', 'Low'];
+                              if (selectedKey === 'gender') opts = ['Male', 'Female'];
+                              else if (selectedKey === 'disability') opts = ['Visual', 'Hearing', 'Physical', 'Learning', 'None'];
+                              
+                              const token = authHelpers.getToken();
+                              try {
+                                const res = await fetch(`/api/universities/applicants/attribute-values?key=${selectedKey}`, {
+                                  headers: { Authorization: `Bearer ${token}` }
+                                });
+                                const data = await res.json();
+                                if (data.success && data.values && data.values.length > 0) {
+                                  opts = data.values;
+                                  setAttributeOptions(prev => ({ ...prev, [selectedKey]: opts }));
+                                }
+                              } catch (err) {
+                                console.error(err);
+                              }
+
+                              newCriteria[index].mappings = opts.map((opt, i) => ({
+                                value: opt,
+                                percent: i === 0 ? 100 : i === 1 ? 75 : i === 2 ? 50 : 0
+                              }));
+                            } else {
+                              newCriteria[index].operator = 'equals';
+                              newCriteria[index].value = '';
+                              newCriteria[index].mappings = [];
+                            }
+                            setSettings({ ...settings, customCriteria: newCriteria });
+                          }}
+                          className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm"
+                        >
+                          <option value="">Select Attribute</option>
+                          {customAttrDefs.map(def => (
+                            <option key={def.name} value={def.name}>{def.label}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          type="text"
+                          value={criterion.name}
+                          onChange={(e) => {
+                            const newCriteria = [...settings.customCriteria];
+                            newCriteria[index].name = e.target.value;
+                            setSettings({ ...settings, customCriteria: newCriteria });
+                          }}
+                          className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm"
+                          placeholder="e.g. Extra Curricular"
+                        />
+                      )}
+                    </div>
+
+                    {isString ? (
+                      <div className="col-span-2">
+                        <label className="text-xs font-bold text-gray-500 block mb-1 uppercase">Option Percentages</label>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                          {(attributeOptions[criterion.key || ''] || (criterion.key === 'gender' ? ['Male', 'Female'] : criterion.key === 'disability' ? ['Visual', 'Hearing', 'Physical', 'Learning', 'None'] : ['High', 'Medium', 'Low'])).map(opt => {
+                            const existingMap = criterion.mappings?.find((m: any) => m.value.toLowerCase() === opt.toLowerCase());
+                            const pct = existingMap ? existingMap.percent : 100;
+                            return (
+                              <div key={opt} className="bg-white p-2 rounded border border-gray-200">
+                                <label className="text-[10px] text-gray-600 block truncate font-bold" title={opt}>{opt} (%)</label>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  max="100"
+                                  value={pct}
+                                  onChange={(e) => {
+                                    const newCriteria = [...settings.customCriteria];
+                                    const val = parseInt(e.target.value) || 0;
+                                    let maps = [...(criterion.mappings || [])];
+                                    const idx = maps.findIndex((m: any) => m.value.toLowerCase() === opt.toLowerCase());
+                                    if (idx >= 0) {
+                                      maps[idx].percent = val;
+                                    } else {
+                                      maps.push({ value: opt, percent: val });
+                                    }
+                                    newCriteria[index].mappings = maps;
+                                    newCriteria[index].operator = 'value_map';
+                                    setSettings({ ...settings, customCriteria: newCriteria });
+                                  }}
+                                  className="w-full border border-gray-300 rounded px-2 py-1 text-sm bg-white"
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
                     ) : (
-                      <input
-                        type="text"
-                        value={criterion.name}
-                        onChange={(e) => {
-                          const newCriteria = [...settings.customCriteria];
-                          newCriteria[index].name = e.target.value;
-                          setSettings({ ...settings, customCriteria: newCriteria });
-                        }}
-                        className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm"
-                        placeholder="e.g. Extra Curricular"
-                      />
+                      <>
+                        <div>
+                          <label className="text-xs font-bold text-gray-500 block mb-1 uppercase">Condition</label>
+                          <select
+                            value={criterion.operator || 'equals'}
+                            onChange={(e) => {
+                              const newCriteria = [...settings.customCriteria];
+                              newCriteria[index].operator = e.target.value as any;
+                              setSettings({ ...settings, customCriteria: newCriteria });
+                            }}
+                            className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm"
+                          >
+                            <option value="equals">Equals</option>
+                            <option value="greater">Greater Than</option>
+                            <option value="less">Less Than</option>
+                            <option value="contains">Contains</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-xs font-bold text-gray-500 block mb-1 uppercase">Value</label>
+                          <input
+                            type="text"
+                            value={String(criterion.value || '')}
+                            onChange={(e) => {
+                              const newCriteria = [...settings.customCriteria];
+                              newCriteria[index].value = e.target.value;
+                              setSettings({ ...settings, customCriteria: newCriteria });
+                            }}
+                            className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm"
+                            placeholder="Match value"
+                          />
+                        </div>
+                      </>
                     )}
                   </div>
-                  <div>
-                    <label className="text-xs font-bold text-gray-500 block mb-1 uppercase">Condition</label>
-                    <select
-                      value={criterion.operator || 'equals'}
-                      onChange={(e) => {
-                        const newCriteria = [...settings.customCriteria];
-                        newCriteria[index].operator = e.target.value as any;
-                        setSettings({ ...settings, customCriteria: newCriteria });
-                      }}
-                      className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm"
-                    >
-                      <option value="equals">Equals</option>
-                      <option value="greater">Greater Than</option>
-                      <option value="less">Less Than</option>
-                      <option value="contains">Contains</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-xs font-bold text-gray-500 block mb-1 uppercase">Value</label>
-                    <input
-                      type="text"
-                      value={String(criterion.value || '')}
-                      onChange={(e) => {
-                        const newCriteria = [...settings.customCriteria];
-                        newCriteria[index].value = e.target.value;
-                        setSettings({ ...settings, customCriteria: newCriteria });
-                      }}
-                      className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm"
-                      placeholder="Match value"
-                    />
-                  </div>
-                </div>
 
-                <div className="flex justify-between items-center mb-3">
-                   <div className="flex items-center gap-2">
-                     <span className="text-xs font-bold text-gray-500 uppercase">Weight</span>
-                   </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-blue-600 font-bold">{criterion.weight}%</span>
-                    <button
-                      onClick={() => {
-                        const newCriteria = settings.customCriteria.filter((_, i) => i !== index);
-                        setSettings({ ...settings, customCriteria: newCriteria });
-                      }}
-                      className="text-red-500 hover:text-red-700 text-sm font-medium"
-                    >
-                      Remove
-                    </button>
+                  <div className="flex justify-between items-center mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-gray-500 uppercase">Weight</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="text-blue-600 font-bold">{criterion.weight}%</span>
+                      <button
+                        onClick={() => {
+                          const newCriteria = settings.customCriteria.filter((_, i) => i !== index);
+                          setSettings({ ...settings, customCriteria: newCriteria });
+                        }}
+                        className="text-red-500 hover:text-red-700 text-sm font-medium"
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={criterion.weight}
+                    onChange={(e) => {
+                      const newCriteria = [...settings.customCriteria];
+                      newCriteria[index].weight = parseInt(e.target.value) || 0;
+                      setSettings({ ...settings, customCriteria: newCriteria });
+                    }}
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                  />
                 </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={criterion.weight}
-                  onChange={(e) => {
-                    const newCriteria = [...settings.customCriteria];
-                    newCriteria[index].weight = parseInt(e.target.value) || 0;
-                    setSettings({ ...settings, customCriteria: newCriteria });
-                  }}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
-                />
-              </div>
-            ))
+              );
+            })
           )}
         </div>
 

@@ -20,6 +20,7 @@ interface PlacedStudent {
   email: string;
   phone: string;
   region: string;
+  stream: string;
   programName: string;
   programCode: string;
   interviewType: string;
@@ -104,6 +105,45 @@ export default function UniversityPlacementsPage() {
     }
   };
 
+  const exportPlacements = (streamType: 'Natural Science' | 'Social Science') => {
+    const streamFiltered = students.filter(s => s.stream?.toLowerCase() === streamType.toLowerCase());
+    if (streamFiltered.length === 0) {
+      alert(`No placed students found for ${streamType}`);
+      return;
+    }
+
+    const csvHeaders = ['Exam ID', 'First Name', 'Last Name', 'Email', 'Phone', 'Region', 'Stream', 'Program Name', 'Program Code', 'Interview Type', 'Status', 'Deadline', 'Confirmed At'];
+    const csvRows = [csvHeaders.join(',')];
+
+    for (const s of streamFiltered) {
+      const row = [
+        s.examID,
+        s.firstName,
+        s.lastName,
+        s.email,
+        s.phone,
+        s.region,
+        s.stream,
+        s.programName,
+        s.programCode,
+        s.interviewType,
+        s.status,
+        s.confirmationDeadline ? new Date(s.confirmationDeadline).toLocaleDateString() : '',
+        s.confirmedAt ? new Date(s.confirmedAt).toLocaleDateString() : ''
+      ];
+      csvRows.push(row.map(val => `"${String(val).replace(/"/g, '""')}"`).join(','));
+    }
+
+    const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${streamType.toLowerCase().replace(' ', '_')}_placements_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'CONFIRMED':
@@ -181,6 +221,22 @@ export default function UniversityPlacementsPage() {
           >
             <RefreshCw className="w-4 h-4" />
             Refresh
+          </button>
+          
+          <button
+            onClick={() => exportPlacements('Natural Science')}
+            className="px-3 py-2 bg-orange-50 border border-orange-200 text-orange-700 hover:bg-orange-100 rounded-lg text-sm flex items-center gap-1 font-medium transition"
+          >
+            <Download className="w-4 h-4" />
+            Export Natural
+          </button>
+          
+          <button
+            onClick={() => exportPlacements('Social Science')}
+            className="px-3 py-2 bg-purple-50 border border-purple-200 text-purple-700 hover:bg-purple-100 rounded-lg text-sm flex items-center gap-1 font-medium transition"
+          >
+            <Download className="w-4 h-4" />
+            Export Social
           </button>
         </div>
         

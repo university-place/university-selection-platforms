@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/prisma/client';
-import { verifyStudentToken } from '@/lib/auth-utils'; // Ensure correct export is picked up
+import { verifyStudentToken } from '@/lib/auth-utils';
 
 export async function POST(request: Request) {
   try {
@@ -9,7 +9,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { type, description, preferenceId } = await request.json();
+    const { type, description, preferenceId, target, universityId } = await request.json();
 
     if (!type || !description) {
       return NextResponse.json({ error: 'Type and description are required' }, { status: 400 });
@@ -19,8 +19,11 @@ export async function POST(request: Request) {
       data: {
         studentId,
         preferenceId: preferenceId ? parseInt(preferenceId) : null,
+        universityId: universityId ? parseInt(universityId) : null,
         type,
         description,
+        target: target || 'MOE',
+        senderRole: 'STUDENT',
         status: 'pending'
       }
     });
@@ -42,6 +45,9 @@ export async function GET(request: Request) {
     const appeals = await prisma.appeal.findMany({
       where: { studentId },
       include: {
+        university: {
+          select: { name: true }
+        },
         preference: {
           include: {
             university: { select: { name: true } },

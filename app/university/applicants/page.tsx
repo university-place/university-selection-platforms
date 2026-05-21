@@ -9,7 +9,7 @@ import {
   Search, Filter, X, Calendar, MapPin, Users, Award, 
   ChevronDown, ChevronUp, GraduationCap, SortAsc, SortDesc,
   BookOpen, Eye, RefreshCw, CheckCircle, XCircle, Clock, AlertCircle,
-  UserCheck, UserX, BarChart3, Bell, Settings
+  UserCheck, UserX, BarChart3, Bell, Settings, Download
 } from 'lucide-react';
 
 interface Document {
@@ -287,6 +287,42 @@ export default function UniversityApplicantsPage() {
     setQuickStatusFilter('all');
   };
 
+  const exportApplicants = (streamType: 'Natural Science' | 'Social Science') => {
+    const streamFiltered = applicants.filter(app => app.student?.stream?.toLowerCase() === streamType.toLowerCase());
+    if (streamFiltered.length === 0) {
+      alert(`No applicants found for ${streamType}`);
+      return;
+    }
+
+    const csvHeaders = ['Exam ID', 'Student Name', 'Stream', 'Program Name', 'Region', 'Gender', 'Age', 'Score', 'Status', 'Submitted At'];
+    const csvRows = [csvHeaders.join(',')];
+
+    for (const app of streamFiltered) {
+      const row = [
+        app.student?.examID || app.examID || '',
+        app.student?.fullName || app.fullName || '',
+        app.student?.stream || '',
+        app.programName || '',
+        app.student?.region || '',
+        app.student?.gender || '',
+        app.student?.age || '',
+        app.student?.totalScore || app.score || 0,
+        app.finalStatus || app.status || '',
+        app.submittedAt ? new Date(app.submittedAt).toLocaleDateString() : ''
+      ];
+      csvRows.push(row.map(val => `"${String(val).replace(/"/g, '""')}"`).join(','));
+    }
+
+    const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${streamType.toLowerCase().replace(' ', '_')}_applicants_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // Calculate statistics
   const stats = {
     total: applicants.length,
@@ -374,6 +410,22 @@ export default function UniversityApplicantsPage() {
                 >
                   <RefreshCw className="w-4 h-4" />
                   Reset
+                </button>
+
+                <button
+                  onClick={() => exportApplicants('Natural Science')}
+                  className="flex items-center gap-2 px-4 py-2 bg-orange-50 border border-orange-200 text-orange-700 hover:bg-orange-100 rounded-lg font-medium transition text-sm"
+                >
+                  <Download className="w-4 h-4" />
+                  Export Natural
+                </button>
+
+                <button
+                  onClick={() => exportApplicants('Social Science')}
+                  className="flex items-center gap-2 px-4 py-2 bg-purple-50 border border-purple-200 text-purple-700 hover:bg-purple-100 rounded-lg font-medium transition text-sm"
+                >
+                  <Download className="w-4 h-4" />
+                  Export Social
                 </button>
               </div>
             </div>
@@ -758,7 +810,7 @@ export default function UniversityApplicantsPage() {
                         <span className="text-gray-400 text-xs">—</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-sm max-w-[200px] truncate">{applicant.programName || '—'}</td>
+                    <td className="px-6 py-4 text-sm max-w-[200px] truncate">{applicant.programName || applicant.program?.name || '—'}</td>
                     <td className="px-6 py-4 text-sm">{applicant.student?.region || '—'}</td>
                     <td className="px-6 py-4 text-sm">{applicant.student?.gender || '—'}</td>
                     <td className="px-6 py-4 text-sm">{applicant.student?.age || '—'}</td>

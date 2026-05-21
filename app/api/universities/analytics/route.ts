@@ -61,6 +61,7 @@ export async function GET(request: Request) {
       regionWeight: 15,
       genderWeight: 10,
       disabilityWeight: 5,
+      invitationScoreWeight: 0,
       regionPreferences: [],
       genderPreferences: { male: 50, female: 50 },
       disabilityBonus: 5,
@@ -110,6 +111,18 @@ export async function GET(request: Request) {
       const examScore = calculateTotalScore(student.examResults);
       const hasDisability = student.disability && student.disability !== 'none' && student.disability !== 'No';
       
+      // Fetch invitation score if any
+      const invitation = await prisma.interviewInvitation.findFirst({
+        where: {
+          studentId: student.id,
+          universityId: universityId
+        },
+        select: {
+          invitationScore: true
+        }
+      });
+      const invitationScore = invitation?.invitationScore || null;
+
       const result = calculateWeightedScore({
         examScore: examScore,
         maxExamScore: maxExamScore,
@@ -118,8 +131,9 @@ export async function GET(request: Request) {
         hasDisability: hasDisability,
         disabilityType: student.disability,
         customAttributes: (student as any).customAttributes || {},
-        examResults: student.examResults as any
-      }, settings);
+        examResults: student.examResults as any,
+        invitationScore: invitationScore
+      }, settings as any);
       
       weightedApplicants.push({
         id: student.id,
@@ -189,11 +203,20 @@ export async function GET(request: Request) {
       }
     });
     
+    const customCriteriaSum = ((settings as any).customCriteria || []).reduce((sum: number, c: any) => sum + (c.weight || 0), 0);
+    const totalWeightCalculated = 
+      (settings.examScoreWeight || 0) + 
+      (settings.regionWeight || 0) + 
+      (settings.genderWeight || 0) + 
+      (settings.disabilityWeight || 0) + 
+      ((settings as any).invitationScoreWeight || 0) + 
+      customCriteriaSum;
+
     return NextResponse.json({
       success: true,
       settings: {
         ...settings,
-        totalWeight: settings.examScoreWeight + settings.regionWeight + settings.genderWeight + settings.disabilityWeight
+        totalWeight: totalWeightCalculated
       },
       summary: {
         totalApplicants,

@@ -57,7 +57,7 @@ export async function POST(request: Request) {
         role: 'UNIVERSITY_ADMIN',
       },
       process.env.JWT_SECRET!,
-      { expiresIn: '30d' }
+      { expiresIn: '365d' }
     );
 
     return NextResponse.json({

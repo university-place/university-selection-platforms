@@ -3,6 +3,7 @@ interface WeightingSettings {
   regionWeight: number;
   genderWeight: number;
   disabilityWeight: number;
+  invitationScoreWeight?: number; // ADDED
   regionPreferences: {
     region: string;
     weight: number;
@@ -23,7 +24,8 @@ interface WeightingSettings {
     attribute?: string; // Legacy
     key?: string;       // New
     value: any;
-    operator: 'equals' | 'greater' | 'less' | 'contains';
+    operator: 'equals' | 'greater' | 'less' | 'contains' | 'value_map'; // UPDATED
+    mappings?: { value: string; percent: number }[]; // ADDED
     weight: number;
   }[];
 }
@@ -37,6 +39,7 @@ interface StudentData {
   disabilityType?: string;
   customAttributes?: Record<string, any>;
   examResults?: Record<string, number>;
+  invitationScore?: number | null; // ADDED
 }
 
 export function calculateWeightedScore(student: StudentData, settings: WeightingSettings): {
@@ -46,6 +49,8 @@ export function calculateWeightedScore(student: StudentData, settings: Weighting
     regionContribution: number;
     genderContribution: number;
     disabilityContribution: number;
+    customContribution: number;
+    invitationScoreContribution: number; // ADDED
     maxPossible: number;
   };
 } {
@@ -91,31 +96,46 @@ export function calculateWeightedScore(student: StudentData, settings: Weighting
                          (student.examResults && student.examResults[attrKey]) ?? 
                          (student as any)[attrKey];
       
-      let isMatch = false;
       if (studentValue !== undefined && studentValue !== null) {
-        switch (criteria.operator) {
-          case 'equals':
-            isMatch = String(studentValue).toLowerCase() === String(criteria.value).toLowerCase();
-            break;
-          case 'greater':
-            isMatch = Number(studentValue) > Number(criteria.value);
-            break;
-          case 'less':
-            isMatch = Number(studentValue) < Number(criteria.value);
-            break;
-          case 'contains':
-            isMatch = String(studentValue).toLowerCase().includes(String(criteria.value).toLowerCase());
-            break;
+        if (criteria.operator === 'value_map' && criteria.mappings) {
+          const match = criteria.mappings.find(
+            m => String(m.value).toLowerCase() === String(studentValue).toLowerCase()
+          );
+          if (match) {
+            const percent = Number(match.percent) || 0;
+            customContribution += (percent / 100) * criteria.weight;
+          }
+        } else {
+          let isMatch = false;
+          switch (criteria.operator) {
+            case 'equals':
+              isMatch = String(studentValue).toLowerCase() === String(criteria.value).toLowerCase();
+              break;
+            case 'greater':
+              isMatch = Number(studentValue) > Number(criteria.value);
+              break;
+            case 'less':
+              isMatch = Number(studentValue) < Number(criteria.value);
+              break;
+            case 'contains':
+              isMatch = String(studentValue).toLowerCase().includes(String(criteria.value).toLowerCase());
+              break;
+          }
+          if (isMatch) {
+            customContribution += criteria.weight;
+          }
         }
-      }
-      
-      if (isMatch) {
-        customContribution += criteria.weight;
       }
     });
   }
+
+  // 6. Invitation Score Contribution
+  let invitationScoreContribution = 0;
+  if (settings.invitationScoreWeight && student.invitationScore !== undefined && student.invitationScore !== null) {
+    invitationScoreContribution = (student.invitationScore / 100) * settings.invitationScoreWeight;
+  }
   
-  const weightedScore = examScoreContribution + regionContribution + genderContribution + disabilityContribution + customContribution;
+  const weightedScore = examScoreContribution + regionContribution + genderContribution + disabilityContribution + customContribution + invitationScoreContribution;
   
   return {
     weightedScore,
@@ -124,7 +144,8 @@ export function calculateWeightedScore(student: StudentData, settings: Weighting
       regionContribution,
       genderContribution,
       disabilityContribution,
-      customContribution, // ADDED
+      customContribution,
+      invitationScoreContribution,
       maxPossible: 100
     }
   };

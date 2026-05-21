@@ -102,8 +102,11 @@ interface Appeal {
   type: string;
   description: string;
   status: 'pending' | 'resolved' | 'rejected';
+  target?: string;
+  resolvedBy?: string;
   resolution?: string;
   createdAt: string;
+  university?: { name: string };
   preference?: {
     university: { name: string };
     program: { name: string };
@@ -169,7 +172,7 @@ const [submittingPref, setSubmittingPref] = useState<number | null>(null);
   const [availablePrograms, setAvailablePrograms] = useState<{ id: number; name: string }[]>([]);
   const [availableTracks, setAvailableTracks] = useState<{ id: number; name: string }[]>([]);
   const [editingPreferenceId, setEditingPreferenceId] = useState<number | null>(null);
-  const [appealForm, setAppealForm] = useState({ type: 'placement', description: '', preferenceId: '' });
+  const [appealForm, setAppealForm] = useState({ type: 'placement', description: '', preferenceId: '', target: 'MOE', universityId: '' });
   const [showAppealModal, setShowAppealModal] = useState(false);
 
   // Fetch all data on load
@@ -234,6 +237,19 @@ async function fetchDashboardData() {
     const uniData = await uniRes.json();
     if (uniData.success) {
       setUniversities(uniData.universities);
+    }
+
+    // Fetch live appeals and resolutions
+    try {
+      const appealsRes = await fetch('/api/students/appeals', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const appealsData = await appealsRes.json();
+      if (appealsData.success) {
+        setAppeals(appealsData.data || []);
+      }
+    } catch (e) {
+      console.error('Failed to fetch appeals:', e);
     }
 
   } catch (err) {
@@ -638,14 +654,16 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
         body: JSON.stringify({
           type: appealForm.type,
           description: appealForm.description,
-          preferenceId: appealForm.preferenceId || null
+          preferenceId: appealForm.preferenceId || null,
+          target: appealForm.target,
+          universityId: appealForm.target === 'UNIVERSITY' ? parseInt(appealForm.universityId) : null
         }),
       });
       const data = await res.json();
       if (data.success) {
         setShowAppealModal(false);
-        setAppealForm({ type: 'placement', description: '', preferenceId: '' });
-        alert('Appeal submitted successfully to the Ministry of Education.');
+        setAppealForm({ type: 'placement', description: '', preferenceId: '', target: 'MOE', universityId: '' });
+        alert('Appeal submitted successfully.');
         
         // Refresh appeals
         const appealsRes = await fetch('/api/students/appeals', {
@@ -1560,10 +1578,12 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
                     <div key={ap.id} className="p-4 border rounded-lg hover:shadow-md transition">
                       <div className="flex items-start justify-between mb-3">
                         <div>
-                          <h3 className="font-bold text-gray-900 uppercase text-xs tracking-wider">Appeal #{ap.id} • {ap.type}</h3>
+                          <h3 className="font-bold text-gray-900 uppercase text-xs tracking-wider">
+                            Appeal #{ap.id} • {ap.type} • Target: {ap.target === 'MOE' ? 'Ministry of Education' : (ap.university?.name || 'University')}
+                          </h3>
                           {ap.preference && (
                             <p className="text-xs text-blue-600 font-medium mt-1">
-                              Target: {ap.preference.university.name} - {ap.preference.program.name}
+                              Related Preference: {ap.preference.university.name} - {ap.preference.program.name}
                             </p>
                           )}
                         </div>
@@ -1581,7 +1601,9 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
                       <p className="text-[10px] text-gray-400">Submitted on {new Date(ap.createdAt).toLocaleString()}</p>
                       {ap.resolution && (
                         <div className="mt-3 p-3 bg-green-50 rounded border border-green-100">
-                          <p className="text-xs font-bold text-green-800 mb-1 uppercase tracking-tighter">MOE Resolution:</p>
+                          <p className="text-xs font-bold text-green-800 mb-1 uppercase tracking-tighter">
+                            {ap.resolvedBy === 'UNIVERSITY' ? 'University Response:' : 'MOE Resolution:'}
+                          </p>
                           <p className="text-sm text-green-700">{ap.resolution}</p>
                         </div>
                       )}
@@ -1596,10 +1618,45 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
               <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
                 <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
                   <div className="p-8 bg-gradient-to-r from-orange-500 to-red-600 text-white">
-                    <h3 className="text-2xl font-black tracking-tight">File an Appeal to MoE</h3>
-                    <p className="text-orange-100 text-sm mt-1 opacity-90">Your appeal will be reviewed by the Ministry of Education.</p>
+                    <h3 className="text-2xl font-black tracking-tight">File an Appeal</h3>
+                    <p className="text-orange-100 text-sm mt-1 opacity-90">File an appeal to either the MoE or a specific preferred university.</p>
                   </div>
                   <div className="p-8 space-y-6">
+                    <div>
+                      <label className="text-xs font-black uppercase tracking-widest text-gray-400 block mb-3">Submit Appeal To *</label>
+                      <select 
+                        className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-500 transition-all"
+                        value={appealForm.target}
+                        onChange={e => {
+                          const val = e.target.value;
+                          setAppealForm({ 
+                            ...appealForm, 
+                            target: val, 
+                            universityId: val === 'UNIVERSITY' && preferences.length > 0 ? String(preferences[0].universityId) : '' 
+                          });
+                        }}
+                      >
+                        <option value="MOE">Ministry of Education (MOE)</option>
+                        <option value="UNIVERSITY">University</option>
+                      </select>
+                    </div>
+
+                    {appealForm.target === 'UNIVERSITY' && (
+                      <div>
+                        <label className="text-xs font-black uppercase tracking-widest text-gray-400 block mb-3">Select Target University *</label>
+                        <select 
+                          className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-500 transition-all"
+                          value={appealForm.universityId}
+                          onChange={e => setAppealForm({ ...appealForm, universityId: e.target.value })}
+                        >
+                          <option value="">Select University...</option>
+                          {Array.from(new Map(preferences.map(p => [p.universityId, p.universityName])).entries()).map(([id, name]) => (
+                            <option key={id} value={String(id)}>{name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+
                     <div>
                       <label className="text-xs font-black uppercase tracking-widest text-gray-400 block mb-3">Appeal Type *</label>
                       <select 

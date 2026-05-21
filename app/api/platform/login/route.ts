@@ -46,7 +46,7 @@ export async function POST(request: Request) {
         role: admin.role
       },
       process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '30d' }
+      { expiresIn: '365d' }
     )
 
     // Return admin data without password

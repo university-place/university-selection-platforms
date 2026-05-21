@@ -254,14 +254,14 @@ export async function PATCH(request: Request) {
   try {
     const { universityId } = await verifyUniversityAdmin(request);
     const body = await request.json();
-    const { invitationId, result, resultNotes, acceptanceMessage, confirmationDeadline } = body;
+    const { invitationId, result, resultNotes, acceptanceMessage, confirmationDeadline, invitationScore } = body;
 
     if (!invitationId) {
       return NextResponse.json({ error: 'Invitation ID required' }, { status: 400 });
     }
 
     // ✅ Log the received data for debugging
-    console.log('PATCH Request:', { invitationId, result, resultNotes });
+    console.log('PATCH Request:', { invitationId, result, resultNotes, invitationScore });
 
     // Find the invitation
     const existing = await prisma.interviewInvitation.findFirst({
@@ -289,6 +289,7 @@ export async function PATCH(request: Request) {
       data: {
         result: result,
         resultNotes: resultNotes,  // ✅ Make sure resultNotes is saved
+        invitationScore: invitationScore !== undefined && invitationScore !== null ? parseFloat(invitationScore) : undefined,
         status: result === 'PASS' ? 'COMPLETED' : result === 'FAIL' ? 'COMPLETED' : existing.status,
         updatedAt: new Date()
       }

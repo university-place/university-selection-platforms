@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/prisma/client';
-import { verifyStudent } from '@/lib/auth-utils'; // or define verifyStudent inside
+import jwt from 'jsonwebtoken';
 
 async function verifyStudent(request: Request) {
   const authHeader = request.headers.get('authorization');

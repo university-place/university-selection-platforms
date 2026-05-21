@@ -69,7 +69,10 @@ export async function POST(request: Request) {
           region: row.region,
           nationality: row.nationality || 'Foreign',
           isForeign: true,
-          examResults: JSON.stringify({ ... }),
+          examResults: JSON.stringify({
+            mathematics: Number(row.mathScore || 0),
+            english: Number(row.englishScore || 0),
+          }),
           stream: 'Social Science',
           isActive: true,
         },

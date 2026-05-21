@@ -146,6 +146,7 @@ model University {
   DepartmentPlacement       DepartmentPlacement[]
   documents                 Document[]
   InterviewInvitation       InterviewInvitation[]
+  appeals                   Appeal[]
   placements                Placement[]
   preferences               Preference[]
   programs                  Program[]
@@ -303,8 +304,9 @@ model Preference {
 
 model Appeal {
   id           Int         @id @default(autoincrement())
-  studentId    Int
+  studentId    Int?
   preferenceId Int?
+  universityId Int?
   type         String
   description  String
   evidence     Json?
@@ -314,8 +316,11 @@ model Appeal {
   resolvedAt   DateTime?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
+  senderRole   String      @default("STUDENT")
+  target       String      @default("MOE")
   preference   Preference? @relation(fields: [preferenceId], references: [id])
-  student      Student     @relation(fields: [studentId], references: [id])
+  student      Student?    @relation(fields: [studentId], references: [id])
+  university   University? @relation(fields: [universityId], references: [id])
 }
 
 model Placement {
@@ -450,6 +455,7 @@ model InterviewInvitation {
   date             DateTime
   location         String?
   instructions     String?
+  invitationScore  Float?
   status           String          @default("PENDING")
   studentResponse  String?
   respondedAt      DateTime?
