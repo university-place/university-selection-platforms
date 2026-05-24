@@ -162,6 +162,7 @@ export default function UniversityDashboardPage() {
     { label: 'Invitations', href: '/university/invitations', icon: Bell },
     { label: 'Placements', href: '/university/placements', icon: TargetIcon },
     { label: 'Analytics', href: '/university/analytics', icon: TrendingUp },
+    { label: 'Document Evaluation', href: '/university/documents-evaluation', icon: FileText },
     { label: 'Appeals', href: '/university/appeals', icon: AlertCircle },
     { label: 'Weighting Settings', href: '/university/weighting-settings', icon: Sliders },
     { label: 'Placement Invitation', href: '/university/placement-invitation', icon: Zap },

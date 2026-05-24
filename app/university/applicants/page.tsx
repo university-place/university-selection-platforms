@@ -9,7 +9,9 @@ import {
   Search, Filter, X, Calendar, MapPin, Users, Award, 
   ChevronDown, ChevronUp, GraduationCap, SortAsc, SortDesc,
   BookOpen, Eye, RefreshCw, CheckCircle, XCircle, Clock, AlertCircle,
-  UserCheck, UserX, BarChart3, Bell, Settings, Download
+  UserCheck, UserX, BarChart3, Bell, Settings, Download,
+  TrendingUp,
+  FileText
 } from 'lucide-react';
 
 interface Document {
@@ -339,9 +341,11 @@ export default function UniversityApplicantsPage() {
   const navLinks = [
     { label: 'Dashboard', href: '/university/dashboard', icon: BarChart3 },
     { label: 'Applicants', href: '/university/applicants', icon: Users },
+    { label: 'Programs', href: '/university/programs', icon: BookOpen },
     { label: 'Invitations', href: '/university/invitations', icon: Bell },
     { label: 'Placements', href: '/university/placements', icon: Award },
-    { label: 'Programs', href: '/university/programs', icon: BookOpen },
+    { label: 'Analytics', href: '/university/analytics', icon: TrendingUp },
+    { label: 'Document Evaluation', href: '/university/documents-evaluation', icon: FileText },
     { label: 'Appeals', href: '/university/appeals', icon: AlertCircle },
     { label: 'Settings', href: '/university/settings', icon: Settings },
   ];
@@ -404,14 +408,6 @@ export default function UniversityApplicantsPage() {
                   {showFilters ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                 </button>
                 
-                <button
-                  onClick={resetFilters}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                  Reset
-                </button>
-
                 <button
                   onClick={() => exportApplicants('Natural Science')}
                   className="flex items-center gap-2 px-4 py-2 bg-orange-50 border border-orange-200 text-orange-700 hover:bg-orange-100 rounded-lg font-medium transition text-sm"

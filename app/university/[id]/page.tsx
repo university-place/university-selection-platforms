@@ -64,7 +64,7 @@ export default function UniversityPublicPage() {
   const [programs, setPrograms] = useState<Program[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [selectedProgram, setSelectedProgram] = useState<number | null>(null);
+  const [isBookmarking, setIsBookmarking] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
 
   useEffect(() => {
@@ -562,89 +562,37 @@ export default function UniversityPublicPage() {
           </div>
         </div>
 
-        {/* Programs and Tracks */}
+        {/* Academic Programs */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <GraduationCap className="w-6 h-6 text-blue-600" />
-            Academic Programs & Admission Tracks
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+            <GraduationCap className="w-7 h-7 text-blue-600" />
+            Academic Programs
           </h2>
 
           {programs.length === 0 ? (
-            <div className="text-center py-8 bg-gray-50 rounded-lg">
-              <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-              <p className="text-gray-500">No programs available for this university yet.</p>
+            <div className="text-center py-10 bg-blue-50 rounded-2xl border border-blue-100">
+              <BookOpen className="w-16 h-16 text-blue-300 mx-auto mb-3" />
+              <p className="text-blue-800 font-medium">No programs available for this university yet.</p>
             </div>
           ) : (
-            <>
-              <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Select Program</label>
-                <select
-                  value={selectedProgram || ''}
-                  onChange={(e) => setSelectedProgram(parseInt(e.target.value))}
-                  className="w-full md:w-96 border-2 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">-- Select a program --</option>
-                  {programs.map(program => (
-                    <option key={program.id} value={program.id}>{program.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              {selectedProgram && (
-                <>
-                  {(() => {
-                    const program = programs.find(p => p.id === selectedProgram);
-                    if (!program) return null;
-                    return (
-                      <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                        <h3 className="text-lg font-bold text-gray-900">{program.name}</h3>
-                        <p className="text-gray-600 mt-1">{program.description || 'No description available'}</p>
-                      </div>
-                    );
-                  })()}
-
-                  <div className="space-y-4">
-                    <h3 className="font-bold text-gray-900 text-lg">Admission Tracks</h3>
-                    {(() => {
-                      const program = programs.find(p => p.id === selectedProgram);
-                      if (!program || !program.admissionTracks?.length) {
-                        return (
-                          <div className="text-center py-8 bg-gray-50 rounded-lg">
-                            <Target className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                            <p className="text-gray-500">No admission tracks found for this program</p>
-                          </div>
-                        );
-                      }
-                      return (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {program.admissionTracks.map(track => (
-                            <div key={track.id} className="border-2 border-gray-200 rounded-lg p-4 hover:shadow-md transition">
-                              <div className="flex justify-between items-start">
-                                <h4 className="text-lg font-bold text-gray-900">{track.name}</h4>
-                                <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                                  track.targetAudience === 'LOCAL' ? 'bg-green-100 text-green-700' :
-                                  track.targetAudience === 'FOREIGN' ? 'bg-blue-100 text-blue-700' :
-                                  'bg-purple-100 text-purple-700'
-                                }`}>
-                                  {track.targetAudience === 'LOCAL' ? 'Local Only' :
-                                   track.targetAudience === 'FOREIGN' ? 'Foreign Only' : 'Both'}
-                                </span>
-                              </div>
-                              <p className="text-gray-600 text-sm mt-2">{track.description || 'No description available'}</p>
-                              <div className="mt-3 flex items-center gap-4 text-sm text-gray-500">
-                                <span className="flex items-center gap-1">
-                                  <Users className="w-4 h-4" /> Capacity: {track.intakeCapacity}
-                                </span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      );
-                    })()}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {programs.map(program => (
+                <div key={program.id} className="bg-white border-2 border-gray-100 rounded-2xl p-6 hover:shadow-lg hover:border-blue-200 transition-all duration-300 group flex flex-col h-full">
+                  <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <BookOpen className="w-6 h-6" />
                   </div>
-                </>
-              )}
-            </>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                    {program.name}
+                  </h3>
+                  <p className="text-gray-600 text-sm line-clamp-3 mb-4 flex-grow">
+                    {program.description || 'No description available for this program.'}
+                  </p>
+                  <div className="flex items-center text-sm font-medium text-blue-600 mt-auto">
+                    <span className="bg-blue-50 px-3 py-1 rounded-full border border-blue-100">Code: {program.code || 'N/A'}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
 

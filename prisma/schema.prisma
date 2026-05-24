@@ -293,6 +293,7 @@ model Preference {
   isCancelled          Boolean?        @default(false)
   cancelledAt          DateTime?       @db.Timestamp(6)
   cancelledReason      String?
+  documentScore        Float?
   appeals              Appeal[]
   documents            Document[]
   admissionTrack       AdmissionTrack? @relation(fields: [admissionTrackId], references: [id])

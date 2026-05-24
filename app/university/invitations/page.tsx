@@ -498,13 +498,7 @@ export default function UniversityInvitationsPage() {
             <option value="Natural Science">Natural Science</option>
             <option value="Social Science">Social Science</option>
           </select>
-          <button
-            onClick={() => fetchInvitations()}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-1"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Refresh
-          </button>
+         
         </div>
         
         <div className="flex gap-2">

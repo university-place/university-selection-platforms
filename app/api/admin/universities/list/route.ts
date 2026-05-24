@@ -56,15 +56,23 @@ export async function GET(request: Request) {
           website: true,
           description: true,
           createdAt: true,
+          isRegistered: true,
+          admins: {
+            select: { id: true },
+          },
         },
       }),
       prisma.university.count({ where }),
     ]);
 
-    const normalized = universities.map((u) => ({
-      ...u,
-      domain: u.allowedDomains?.[0] || null,
-    }));
+    const normalized = universities.map((u) => {
+      const { admins, ...rest } = u;
+      return {
+        ...rest,
+        domain: rest.allowedDomains?.[0] || null,
+        status: rest.isRegistered ? 'active' : 'inactive',
+      };
+    });
 
     return NextResponse.json({ success: true, data: normalized, total, page, limit });
   } catch (error: any) {

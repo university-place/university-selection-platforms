@@ -173,6 +173,7 @@ const [submittingPref, setSubmittingPref] = useState<number | null>(null);
   const [availableTracks, setAvailableTracks] = useState<{ id: number; name: string }[]>([]);
   const [editingPreferenceId, setEditingPreferenceId] = useState<number | null>(null);
   const [appealForm, setAppealForm] = useState({ type: 'placement', description: '', preferenceId: '', target: 'MOE', universityId: '' });
+  const [appealSubTab, setAppealSubTab] = useState<'MOE' | 'UNIVERSITY'>('MOE');
   const [showAppealModal, setShowAppealModal] = useState(false);
 
   // Fetch all data on load
@@ -1557,58 +1558,133 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
             {/* Appeals Section */}
             <div className="bg-white rounded-xl shadow-sm p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-bold">My Appeals to MoE</h2>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">My Appeals Portal</h2>
+                  <p className="text-sm text-gray-500 mt-1">Track and submit your petitions to the Ministry or specific Universities.</p>
+                </div>
                 <button 
                   onClick={() => setShowAppealModal(true)}
-                  className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-semibold transition"
+                  className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-5 py-2.5 rounded-xl font-bold transition shadow-lg shadow-orange-600/20 active:scale-95"
                 >
                   <Plus className="w-4 h-4" />
                   File New Appeal
                 </button>
               </div>
+
+              {/* Sub-tabs to filter appeals clearly */}
+              <div className="flex border-b border-gray-100 mb-6">
+                <button
+                  onClick={() => setAppealSubTab('MOE')}
+                  className={`pb-4 px-6 text-sm font-bold transition-all relative ${
+                    appealSubTab === 'MOE'
+                      ? 'text-purple-600 border-b-2 border-purple-600'
+                      : 'text-gray-500 hover:text-gray-800'
+                  }`}
+                >
+                  Ministry of Education ({appeals.filter(a => a.target === 'MOE').length})
+                </button>
+                <button
+                  onClick={() => setAppealSubTab('UNIVERSITY')}
+                  className={`pb-4 px-6 text-sm font-bold transition-all relative ${
+                    appealSubTab === 'UNIVERSITY'
+                      ? 'text-blue-600 border-b-2 border-blue-600'
+                      : 'text-gray-500 hover:text-gray-800'
+                  }`}
+                >
+                  University Appeals ({appeals.filter(a => a.target === 'UNIVERSITY').length})
+                </button>
+              </div>
               
-              {appeals.length === 0 ? (
-                <div className="text-center py-8">
+              {appeals.filter(a => appealSubTab === 'MOE' ? a.target === 'MOE' : a.target === 'UNIVERSITY').length === 0 ? (
+                <div className="text-center py-12">
                   <MessageCircle className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                  <p className="text-gray-500">No appeals submitted yet</p>
+                  <p className="text-gray-500 font-medium">No appeals in this category yet</p>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {appeals.map(ap => (
-                    <div key={ap.id} className="p-4 border rounded-lg hover:shadow-md transition">
-                      <div className="flex items-start justify-between mb-3">
-                        <div>
-                          <h3 className="font-bold text-gray-900 uppercase text-xs tracking-wider">
-                            Appeal #{ap.id} • {ap.type} • Target: {ap.target === 'MOE' ? 'Ministry of Education' : (ap.university?.name || 'University')}
-                          </h3>
-                          {ap.preference && (
-                            <p className="text-xs text-blue-600 font-medium mt-1">
-                              Related Preference: {ap.preference.university.name} - {ap.preference.program.name}
-                            </p>
+                  {appeals
+                    .filter(a => appealSubTab === 'MOE' ? a.target === 'MOE' : a.target === 'UNIVERSITY')
+                    .map(ap => {
+                      const isMoe = ap.target === 'MOE';
+                      return (
+                        <div key={ap.id} className="p-5 border rounded-2xl hover:shadow-md transition-all duration-300 border-gray-100">
+                          <div className="flex items-start justify-between mb-4">
+                            <div>
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${
+                                  isMoe ? 'text-purple-600 bg-purple-50' : 'text-blue-600 bg-blue-50'
+                                }`}>
+                                  Appeal #{ap.id} • {ap.type}
+                                </span>
+                                <span className="text-[10px] text-gray-400 font-medium">
+                                  {new Date(ap.createdAt).toLocaleString()}
+                                </span>
+                              </div>
+                              {ap.preference && (
+                                <p className="text-xs text-blue-600 font-semibold mt-1">
+                                  Related Preference: {ap.preference.university.name} - {ap.preference.program.name}
+                                </p>
+                              )}
+                              {!ap.preference && ap.university?.name && (
+                                <p className="text-xs text-blue-600 font-semibold mt-1">
+                                  Target University: {ap.university.name}
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                                ap.status === 'resolved' ? 'bg-green-100 text-green-700' : 
+                                ap.status === 'rejected' ? 'bg-red-100 text-red-700' : 
+                                'bg-yellow-100 text-yellow-700'
+                              }`}>
+                                {ap.status}
+                              </span>
+                            </div>
+                          </div>
+                          <p className="text-gray-600 text-sm italic bg-gray-50 p-3 rounded-xl border border-gray-100 mb-2">"{ap.description}"</p>
+
+                          {/* Yellow pending review system */}
+                          {ap.status === 'pending' && (
+                            <div className="mt-3 p-3 bg-yellow-50 rounded-xl border border-yellow-100 flex items-center gap-2">
+                              <Clock className="w-4 h-4 text-yellow-600 animate-pulse" />
+                              <p className="text-xs font-semibold text-yellow-800">
+                                Pending: This appeal is currently being reviewed by the {isMoe ? 'Ministry of Education' : 'University'}.
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Purple MoE Response */}
+                          {ap.status === 'resolved' && ap.resolution && isMoe && (
+                            <div className="mt-3 p-4 bg-purple-50 rounded-xl border border-purple-100 text-purple-700">
+                              <p className="text-xs font-bold text-purple-800 mb-1 uppercase tracking-wider flex items-center gap-1">
+                                <CheckCircle size={12} /> MOE Resolution:
+                              </p>
+                              <p className="text-sm font-medium">{ap.resolution}</p>
+                            </div>
+                          )}
+
+                          {/* Blue University Response */}
+                          {ap.status === 'resolved' && ap.resolution && !isMoe && (
+                            <div className="mt-3 p-4 bg-blue-50 rounded-xl border border-blue-100 text-blue-700">
+                              <p className="text-xs font-bold text-blue-800 mb-1 uppercase tracking-wider flex items-center gap-1">
+                                <CheckCircle size={12} /> {ap.university?.name || 'University'} Response:
+                              </p>
+                              <p className="text-sm font-medium">{ap.resolution}</p>
+                            </div>
+                          )}
+
+                          {/* Red Rejection system */}
+                          {ap.status === 'rejected' && ap.resolution && (
+                            <div className="mt-3 p-4 bg-red-50 rounded-xl border border-red-100 text-red-700">
+                              <p className="text-xs font-bold text-red-800 mb-1 uppercase tracking-wider flex items-center gap-1">
+                                <XCircle size={12} /> Rejection Decision ({isMoe ? 'MOE' : 'University'}):
+                              </p>
+                              <p className="text-sm font-medium">{ap.resolution}</p>
+                            </div>
                           )}
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
-                            ap.status === 'resolved' ? 'bg-green-100 text-green-700' : 
-                            ap.status === 'rejected' ? 'bg-red-100 text-red-700' : 
-                            'bg-yellow-100 text-yellow-700'
-                          }`}>
-                            {ap.status}
-                          </span>
-                        </div>
-                      </div>
-                      <p className="text-gray-600 text-sm italic mb-2">"{ap.description}"</p>
-                      <p className="text-[10px] text-gray-400">Submitted on {new Date(ap.createdAt).toLocaleString()}</p>
-                      {ap.resolution && (
-                        <div className="mt-3 p-3 bg-green-50 rounded border border-green-100">
-                          <p className="text-xs font-bold text-green-800 mb-1 uppercase tracking-tighter">
-                            {ap.resolvedBy === 'UNIVERSITY' ? 'University Response:' : 'MOE Resolution:'}
-                          </p>
-                          <p className="text-sm text-green-700">{ap.resolution}</p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                      );
+                    })}
                 </div>
               )}
             </div>

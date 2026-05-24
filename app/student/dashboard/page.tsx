@@ -190,10 +190,17 @@ export default function StudentDashboardPage() {
   // UI states
   const [uploading, setUploading] = useState(false);
   const [newPreference, setNewPreference] = useState({ universityId: 0, programId: 0, admissionTrackId: 0 });
+  
+  // Password change states
+  const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState({ text: '', type: '' });
+  
   const [availablePrograms, setAvailablePrograms] = useState<{ id: number; name: string }[]>([]);
   const [availableTracks, setAvailableTracks] = useState<{ id: number; name: string }[]>([]);
   const [editingPreferenceId, setEditingPreferenceId] = useState<number | null>(null);
-  const [appealForm, setAppealForm] = useState({ type: 'placement', description: '', preferenceId: '' });
+  const [appealForm, setAppealForm] = useState({ type: 'placement', description: '', preferenceId: '', target: 'MOE', universityId: '' });
+  const [appealSubTab, setAppealSubTab] = useState<'MOE' | 'UNIVERSITY'>('MOE');
   const [showAppealModal, setShowAppealModal] = useState(false);
   const [uploadedDocuments, setUploadedDocuments] = useState<Document[]>([]);
   const [streamSubjects, setStreamSubjects] = useState<any>(null);
@@ -432,6 +439,48 @@ export default function StudentDashboardPage() {
       }
     } catch (err) {
       console.error('Error fetching general documents:', err);
+    }
+  }
+
+  async function handlePasswordChange(e: React.FormEvent) {
+    e.preventDefault();
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordMessage({ text: 'New passwords do not match', type: 'error' });
+      return;
+    }
+    if (passwordForm.newPassword.length < 6) {
+      setPasswordMessage({ text: 'Password must be at least 6 characters long', type: 'error' });
+      return;
+    }
+
+    setPasswordLoading(true);
+    setPasswordMessage({ text: '', type: '' });
+
+    try {
+      const token = authHelpers.getToken();
+      const res = await fetch('/api/students/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          currentPassword: passwordForm.currentPassword,
+          newPassword: passwordForm.newPassword
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setPasswordMessage({ text: 'Password updated successfully!', type: 'success' });
+        setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      } else {
+        setPasswordMessage({ text: data.error || 'Failed to update password', type: 'error' });
+      }
+    } catch (err) {
+      setPasswordMessage({ text: 'Network error. Please try again.', type: 'error' });
+    } finally {
+      setPasswordLoading(false);
     }
   }
 
@@ -1187,13 +1236,15 @@ export default function StudentDashboardPage() {
         body: JSON.stringify({
           type: appealForm.type,
           description: appealForm.description,
-          preferenceId: appealForm.preferenceId || null
+          preferenceId: appealForm.preferenceId || null,
+          target: appealForm.target || 'MOE',
+          universityId: appealForm.target === 'UNIVERSITY' ? parseInt(appealForm.universityId) : null
         }),
       });
       const data = await res.json();
       if (data.success) {
-        setAppealForm({ type: 'placement', description: '', preferenceId: '' });
-        alert('Appeal submitted successfully to the Ministry of Education.');
+        setAppealForm({ type: 'placement', description: '', preferenceId: '', target: 'MOE', universityId: '' });
+        alert('Appeal submitted successfully.');
 
         // Refresh appeals
         const appealsRes = await fetch('/api/students/appeals', {
@@ -1590,6 +1641,62 @@ export default function StudentDashboardPage() {
               <CustomAttributes attributes={profile.customAttributes} theme="blue" />
             </div>
 
+            {/* Security Section */}
+            <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+              <h2 className="text-lg font-bold mb-6 flex items-center gap-2">
+                <Shield className="w-5 h-5 text-gray-700" />
+                Security
+              </h2>
+              <div className="max-w-md">
+                <form onSubmit={handlePasswordChange} className="space-y-4">
+                  {passwordMessage.text && (
+                    <div className={`p-3 rounded-md text-sm font-medium ${
+                      passwordMessage.type === 'error' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-green-50 text-green-700 border border-green-200'
+                    }`}>
+                      {passwordMessage.text}
+                    </div>
+                  )}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Current Password</label>
+                    <input
+                      type="password"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      value={passwordForm.currentPassword}
+                      onChange={e => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">New Password</label>
+                    <input
+                      type="password"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      value={passwordForm.newPassword}
+                      onChange={e => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Confirm New Password</label>
+                    <input
+                      type="password"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      value={passwordForm.confirmPassword}
+                      onChange={e => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={passwordLoading}
+                    className="mt-4 px-6 py-2 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800 transition-colors disabled:opacity-70 flex items-center justify-center min-w-[140px]"
+                  >
+                    {passwordLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Change Password'}
+                  </button>
+                </form>
+              </div>
+            </div>
+
             {/* Documents Section */}
             <div className="bg-white rounded-xl shadow-sm p-6">
               <h2 className="text-lg font-bold mb-6">Required Documents</h2>
@@ -1963,71 +2070,136 @@ export default function StudentDashboardPage() {
           </div>
         )}
 
-        {/* Appeals to MoE */}
+        {/* Appeals to MoE or Universities */}
         {activeTab === 'appeal' && (
           <div>
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">My Appeals to MoE</h1>
-              <p className="text-gray-600 mt-1">Submit and track your appeals directly with the Ministry of Education</p>
+              <h1 className="text-3xl font-bold text-gray-900">My Appeals Portal</h1>
+              <p className="text-gray-600 mt-1">Submit and track your appeals directly with the Ministry of Education or specific Universities</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Appeals List */}
               <div className="lg:col-span-2 space-y-4">
                 <div className="bg-white rounded-xl shadow-sm p-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-lg font-bold">Appeal History</h2>
-                    <span className="text-xs font-medium text-gray-500">{appeals.length} Total</span>
+                  {/* Category sub-tabs */}
+                  <div className="flex border-b border-gray-150 mb-6">
+                    <button
+                      onClick={() => setAppealSubTab('MOE')}
+                      className={`pb-4 px-6 text-sm font-bold transition-all relative ${
+                        appealSubTab === 'MOE'
+                          ? 'text-purple-600 border-b-2 border-purple-600'
+                          : 'text-gray-500 hover:text-gray-800'
+                      }`}
+                    >
+                      Ministry of Education ({appeals.filter(a => a.target === 'MOE').length})
+                    </button>
+                    <button
+                      onClick={() => setAppealSubTab('UNIVERSITY')}
+                      className={`pb-4 px-6 text-sm font-bold transition-all relative ${
+                        appealSubTab === 'UNIVERSITY'
+                          ? 'text-blue-600 border-b-2 border-blue-600'
+                          : 'text-gray-500 hover:text-gray-800'
+                      }`}
+                    >
+                      University Appeals ({appeals.filter(a => a.target === 'UNIVERSITY').length})
+                    </button>
                   </div>
 
-                  {appeals.length === 0 ? (
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-lg font-bold">
+                      {appealSubTab === 'MOE' ? 'MoE Appeals' : 'University Appeals'} History
+                    </h2>
+                    <span className="text-xs font-medium text-gray-500">
+                      {appeals.filter(a => appealSubTab === 'MOE' ? a.target === 'MOE' : a.target === 'UNIVERSITY').length} Total
+                    </span>
+                  </div>
+
+                  {appeals.filter(a => appealSubTab === 'MOE' ? a.target === 'MOE' : a.target === 'UNIVERSITY').length === 0 ? (
                     <div className="text-center py-12">
                       <MessageCircle className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-                      <p className="text-gray-500 font-medium">No appeals submitted yet</p>
-                      <p className="text-xs text-gray-400 mt-1">Need help? File an appeal using the form on the right.</p>
+                      <p className="text-gray-500 font-medium">No appeals in this category yet</p>
+                      <p className="text-xs text-gray-400 mt-1">Need help? File a new appeal using the form on the right.</p>
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {appeals.map(ap => (
-                        <div key={ap.id} className="p-5 border rounded-2xl hover:shadow-md transition-all duration-300 group border-gray-100 hover:border-orange-200">
-                          <div className="flex items-start justify-between mb-4">
-                            <div>
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-orange-600 bg-orange-50 px-2 py-0.5 rounded">
-                                  #{ap.id} • {ap.type}
-                                </span>
-                                <span className="text-[10px] text-gray-400 font-medium">
-                                  {new Date(ap.createdAt).toLocaleString()}
+                      {appeals
+                        .filter(a => appealSubTab === 'MOE' ? a.target === 'MOE' : a.target === 'UNIVERSITY')
+                        .map(ap => {
+                          const isMoe = ap.target === 'MOE';
+                          return (
+                            <div key={ap.id} className="p-5 border rounded-2xl hover:shadow-md transition-all duration-300 group border-gray-100 hover:border-orange-200">
+                              <div className="flex items-start justify-between mb-4">
+                                <div>
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${
+                                      isMoe ? 'text-purple-600 bg-purple-50' : 'text-blue-600 bg-blue-50'
+                                    }`}>
+                                      #{ap.id} • {ap.type}
+                                    </span>
+                                    <span className="text-[10px] text-gray-400 font-medium">
+                                      {new Date(ap.createdAt).toLocaleString()}
+                                    </span>
+                                  </div>
+                                  {ap.preference && (
+                                    <p className="text-sm font-bold text-gray-800">
+                                      Target: {ap.preference.university?.name || 'N/A'}
+                                      <span className="mx-2 text-gray-300">|</span>
+                                      <span className="text-gray-500 font-medium">{ap.preference.program?.name || 'General Appeal'}</span>
+                                    </p>
+                                  )}
+                                  {!ap.preference && ap.university?.name && (
+                                    <p className="text-sm font-bold text-gray-800">
+                                      Target University: <span className="text-blue-600 font-semibold">{ap.university.name}</span>
+                                    </p>
+                                  )}
+                                </div>
+                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                                  ap.status === 'resolved' ? 'bg-green-100 text-green-700' :
+                                  ap.status === 'rejected' ? 'bg-red-100 text-red-700' :
+                                  'bg-yellow-100 text-yellow-700'
+                                }`}>
+                                  {ap.status}
                                 </span>
                               </div>
-                              {ap.preference && (
-                                <p className="text-sm font-bold text-gray-800">
-                                  Target: {ap.preference.university?.name || 'N/A'}
-                                  <span className="mx-2 text-gray-300">|</span>
-                                  <span className="text-gray-500 font-medium">{ap.preference.program?.name || 'General Appeal'}</span>
-                                </p>
+                              <p className="text-gray-600 text-sm italic bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                "{ap.description}"
+                              </p>
+
+                              {/* Resolutions display based on colors requested */}
+                              {ap.status === 'pending' && (
+                                <div className="mt-4 p-4 bg-yellow-50 rounded-xl border border-yellow-100 animate-in fade-in slide-in-from-top-1 flex items-center gap-2">
+                                  <Clock size={14} className="text-yellow-600 animate-pulse" />
+                                  <p className="text-xs font-semibold text-yellow-800">
+                                    Pending: This appeal is currently being reviewed by the {isMoe ? 'Ministry of Education' : 'University'}.
+                                  </p>
+                                </div>
+                              )}
+
+                              {ap.status === 'resolved' && ap.resolution && (
+                                <div className={`mt-4 p-4 rounded-xl border animate-in fade-in slide-in-from-top-1 ${
+                                  isMoe ? 'bg-purple-50 border-purple-100 text-purple-700' : 'bg-blue-50 border-blue-100 text-blue-700'
+                                }`}>
+                                  <p className={`text-[10px] font-black mb-2 uppercase tracking-widest flex items-center gap-1 ${
+                                    isMoe ? 'text-purple-800' : 'text-blue-800'
+                                  }`}>
+                                    <CheckCircle size={12} /> {isMoe ? 'MoE Resolution' : `${ap.university?.name || 'University'} Response`}
+                                  </p>
+                                  <p className="text-sm font-medium">{ap.resolution}</p>
+                                </div>
+                              )}
+
+                              {ap.status === 'rejected' && ap.resolution && (
+                                <div className="mt-4 p-4 bg-red-50 rounded-xl border border-red-100 animate-in fade-in slide-in-from-top-1">
+                                  <p className="text-[10px] font-black text-red-800 mb-2 uppercase tracking-widest flex items-center gap-1">
+                                    <XCircle size={12} className="text-red-600" /> Rejection Notes ({isMoe ? 'Ministry of Education' : 'University'})
+                                  </p>
+                                  <p className="text-sm text-red-700 font-medium">{ap.resolution}</p>
+                                </div>
                               )}
                             </div>
-                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${ap.status === 'resolved' ? 'bg-green-100 text-green-700' :
-                              ap.status === 'rejected' ? 'bg-red-100 text-red-700' :
-                                'bg-yellow-100 text-yellow-700'
-                              }`}>
-                              {ap.status}
-                            </span>
-                          </div>
-                          <p className="text-gray-600 text-sm italic bg-gray-50 p-3 rounded-xl border border-gray-100">
-                            "{ap.description}"
-                          </p>
-                          {ap.resolution && (
-                            <div className="mt-4 p-4 bg-green-50 rounded-xl border border-green-100 animate-in fade-in slide-in-from-top-1">
-                              <p className="text-[10px] font-black text-green-800 mb-2 uppercase tracking-widest flex items-center gap-1">
-                                <CheckCircle size={12} /> MoE Resolution
-                              </p>
-                              <p className="text-sm text-green-700 font-medium">{ap.resolution}</p>
-                            </div>
-                          )}
-                        </div>
-                      ))}
+                          );
+                        })}
                     </div>
                   )}
                 </div>
@@ -2038,12 +2210,47 @@ export default function StudentDashboardPage() {
                 <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-3xl p-8 text-white shadow-xl shadow-orange-500/20">
                   <h2 className="text-xl font-black tracking-tight mb-2">New Appeal</h2>
                   <p className="text-orange-100 text-xs leading-relaxed opacity-90">
-                    If you encounter any issues with your placement, eligibility, or technical errors, please submit an appeal here.
+                    Submit your petition regarding placement decisions, eligibility requirements, or technical errors to MoE or a university.
                   </p>
                 </div>
 
                 <div className="bg-white rounded-3xl shadow-sm p-8 border border-gray-100">
                   <div className="space-y-6">
+                    <div>
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 block mb-3">Submit Appeal To</label>
+                      <select
+                        className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold focus:ring-2 focus:ring-orange-500 transition-all appearance-none cursor-pointer"
+                        value={appealForm.target || 'MOE'}
+                        onChange={e => {
+                          const val = e.target.value;
+                          setAppealForm({
+                            ...appealForm,
+                            target: val,
+                            universityId: val === 'UNIVERSITY' && preferences.length > 0 ? String(preferences[0].universityId) : ''
+                          });
+                        }}
+                      >
+                        <option value="MOE">Ministry of Education (MoE)</option>
+                        <option value="UNIVERSITY">University</option>
+                      </select>
+                    </div>
+
+                    {appealForm.target === 'UNIVERSITY' && (
+                      <div>
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 block mb-3">Select Target University</label>
+                        <select
+                          className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold focus:ring-2 focus:ring-orange-500 transition-all appearance-none cursor-pointer"
+                          value={appealForm.universityId}
+                          onChange={e => setAppealForm({ ...appealForm, universityId: e.target.value })}
+                        >
+                          <option value="">Select University...</option>
+                          {Array.from(new Map(preferences.map(p => [p.universityId, p.universityName])).entries()).map(([id, name]) => (
+                            <option key={id} value={String(id)}>{name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+
                     <div>
                       <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 block mb-3">Appeal Type</label>
                       <select
@@ -2086,10 +2293,12 @@ export default function StudentDashboardPage() {
 
                     <button
                       onClick={submitAppeal}
-                      disabled={!appealForm.description}
+                      disabled={!appealForm.description || (appealForm.target === 'UNIVERSITY' && !appealForm.universityId)}
                       className="w-full bg-orange-600 hover:bg-orange-700 disabled:bg-gray-200 disabled:text-gray-400 text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs transition-all active:scale-95 shadow-lg shadow-orange-600/20"
                     >
-                      Submit Appeal to MoE
+                      {appealForm.target === 'UNIVERSITY' 
+                        ? `Submit Appeal to ${preferences.find(p => String(p.universityId) === appealForm.universityId)?.universityName || 'University'}` 
+                        : 'Submit Appeal to MoE'}
                     </button>
                   </div>
                 </div>
@@ -2481,9 +2690,6 @@ export default function StudentDashboardPage() {
           </div>
         </div>
       )}
-
-
-
- </div>
+    </div>
   );
 }

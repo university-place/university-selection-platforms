@@ -3,14 +3,15 @@
 import { useEffect, useState } from 'react';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { authHelpers } from '@/lib/api';
-import { Save, AlertCircle, CheckCircle, Percent, MapPin, Users, Heart, GraduationCap } from 'lucide-react';
+import { Save, AlertCircle, CheckCircle, Percent, MapPin, Users, Heart, GraduationCap, FileText } from 'lucide-react';
 
 interface WeightingSettings {
   examScoreWeight: number;
   regionWeight: number;
   genderWeight: number;
   disabilityWeight: number;
-  invitationScoreWeight?: number; // ADDED
+  invitationScoreWeight?: number;
+  documentScoreWeight?: number;
   regionPreferences: { region: string; weight: number }[];
   genderPreferences: { male: number; female: number };
   disabilityPreferences: { visual: number; hearing: number; physical: number; learning: number; none: number };
@@ -32,7 +33,8 @@ export default function WeightingSettingsPage() {
     regionWeight: 15,
     genderWeight: 10,
     disabilityWeight: 5,
-    invitationScoreWeight: 0, // ADDED
+    invitationScoreWeight: 0,
+    documentScoreWeight: 0,
     regionPreferences: [],
     genderPreferences: { male: 50, female: 50 },
     disabilityPreferences: { visual: 100, hearing: 100, physical: 100, learning: 100, none: 0 },
@@ -47,6 +49,33 @@ export default function WeightingSettingsPage() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [attributeOptions, setAttributeOptions] = useState<Record<string, string[]>>({});
+
+  // Dynamic Abebe Kebede calculation
+  const abebeExam = 638;
+  const abebeMaxExam = 700;
+  const abebeRegion = 'Addis Ababa';
+  const abebeGender = 'Male';
+  const abebeDisability = 'hearing';
+  const abebeInterview = 90;
+  const abebeDocument = 85;
+
+  const abebeExamPct = (abebeExam / abebeMaxExam) * 100;
+  const abebeExamContribution = (abebeExamPct / 100) * (settings.examScoreWeight || 0);
+
+  const regionPref = settings.regionPreferences?.find(r => r.region === abebeRegion);
+  const regionPct = regionPref ? regionPref.weight : 0;
+  const abebeRegionContribution = (regionPct / 100) * (settings.regionWeight || 0);
+
+  const genderPct = abebeGender === 'Male' ? (settings.genderPreferences?.male || 50) : (settings.genderPreferences?.female || 50);
+  const abebeGenderContribution = (genderPct / 100) * (settings.genderWeight || 0);
+
+  const disabilityPct = settings.disabilityPreferences ? (settings.disabilityPreferences[abebeDisability as keyof typeof settings.disabilityPreferences] ?? 100) : 100;
+  const abebeDisabilityContribution = (disabilityPct / 100) * (settings.disabilityWeight || 0);
+
+  const abebeInvitationContribution = (settings.invitationScoreWeight || 0) > 0 ? (abebeInterview / 100) * (settings.invitationScoreWeight || 0) : 0;
+  const abebeDocumentContribution = (settings.documentScoreWeight || 0) > 0 ? (abebeDocument / 100) * (settings.documentScoreWeight || 0) : 0;
+
+  const abebeTotalScore = abebeExamContribution + abebeRegionContribution + abebeGenderContribution + abebeDisabilityContribution + abebeInvitationContribution + abebeDocumentContribution;
 
   useEffect(() => {
     fetchSettings();
@@ -104,7 +133,8 @@ export default function WeightingSettingsPage() {
       if (data.success && data.settings) {
         setSettings({
           ...data.settings,
-          invitationScoreWeight: data.settings.invitationScoreWeight || 0
+          invitationScoreWeight: data.settings.invitationScoreWeight || 0,
+          documentScoreWeight: data.settings.documentScoreWeight || 0
         });
       } else {
         // Reset to default if no settings found for this stream
@@ -114,6 +144,7 @@ export default function WeightingSettingsPage() {
           genderWeight: 10,
           disabilityWeight: 5,
           invitationScoreWeight: 0,
+          documentScoreWeight: 0,
           regionPreferences: [],
           genderPreferences: { male: 50, female: 50 },
           disabilityPreferences: { visual: 100, hearing: 100, physical: 100, learning: 100, none: 0 },
@@ -175,11 +206,12 @@ export default function WeightingSettingsPage() {
   };
 
   const customCriteriaTotal = settings.customCriteria?.reduce((sum, c) => sum + (c.weight || 0), 0) || 0;
-  const totalWeight = settings.examScoreWeight + settings.regionWeight + settings.genderWeight + settings.disabilityWeight + (settings.invitationScoreWeight || 0) + customCriteriaTotal;
+  const totalWeight = settings.examScoreWeight + settings.regionWeight + settings.genderWeight + settings.disabilityWeight + (settings.invitationScoreWeight || 0) + (settings.documentScoreWeight || 0) + customCriteriaTotal;
 
   const navLinks = [
     { label: 'Dashboard', href: '/university/dashboard' },
     { label: 'Analytics', href: '/university/analytics' },
+    { label: 'Document Evaluation', href: '/university/documents-evaluation' },
     { label: 'Weighting Settings', href: '/university/weighting-settings' }
   ];
 
@@ -309,10 +341,10 @@ export default function WeightingSettingsPage() {
                   type="number"
                   min="0"
                   max="100"
-                  value={settings.genderPreferences.male}
+                  value={Number.isNaN(settings.genderPreferences.male) ? '' : settings.genderPreferences.male}
                   onChange={(e) => setSettings({
                     ...settings,
-                    genderPreferences: { ...settings.genderPreferences, male: parseInt(e.target.value) }
+                    genderPreferences: { ...settings.genderPreferences, male: parseInt(e.target.value) || 0 }
                   })}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white"
                 />
@@ -323,10 +355,10 @@ export default function WeightingSettingsPage() {
                   type="number"
                   min="0"
                   max="100"
-                  value={settings.genderPreferences.female}
+                  value={Number.isNaN(settings.genderPreferences.female) ? '' : settings.genderPreferences.female}
                   onChange={(e) => setSettings({
                     ...settings,
-                    genderPreferences: { ...settings.genderPreferences, female: parseInt(e.target.value) }
+                    genderPreferences: { ...settings.genderPreferences, female: parseInt(e.target.value) || 0 }
                   })}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white"
                 />
@@ -419,7 +451,7 @@ export default function WeightingSettingsPage() {
             </p>
           </div>
 
-          {/* Interview/Invitation Score Weight - ADDED */}
+          {/* Interview/Invitation Score Weight */}
           <div className="mb-6">
             <div className="flex justify-between mb-2">
               <label className="flex items-center gap-2 text-gray-700 font-medium">
@@ -437,6 +469,68 @@ export default function WeightingSettingsPage() {
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-orange-600"
             />
             <p className="text-xs text-gray-500 mt-1">Weight allocated to the candidate's interview or entrance exam score</p>
+          </div>
+
+          {/* Document Score Weight */}
+          <div className="mb-6">
+            <div className="flex justify-between mb-2">
+              <label className="flex items-center gap-2 text-gray-700 font-medium">
+                <FileText className="w-4 h-4 text-teal-600" />
+                Document Evaluation Score Weight
+              </label>
+              <span className="text-teal-600 font-bold">{settings.documentScoreWeight || 0}%</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={settings.documentScoreWeight || 0}
+              onChange={(e) => setSettings({ ...settings, documentScoreWeight: parseInt(e.target.value) || 0 })}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-teal-600"
+            />
+            <p className="text-xs text-gray-500 mt-1">Weight allocated to the candidate's evaluated document score</p>
+          </div>
+          
+          {/* Sample Weight Calculation Example */}
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-8">
+            <h3 className="text-lg font-bold text-blue-900 mb-2">Analysis Example: Abebe Kebede's Total Weight</h3>
+            <p className="text-sm text-blue-800 mb-4">
+              This demonstrates how Abebe Kebede's final score is calculated dynamically using your current weight distribution settings, to assure examiners of the calculation's exactness.
+            </p>
+            <div className="bg-white rounded-lg p-4 font-mono text-sm shadow-sm space-y-2">
+              <div className="flex justify-between text-gray-600">
+                <span>Exam Score ({abebeExam}/{abebeMaxExam} - Weight: {settings.examScoreWeight}%):</span>
+                <span>{abebeExamContribution.toFixed(2)} pts</span>
+              </div>
+              <div className="flex justify-between text-gray-600">
+                <span>Region Match ({abebeRegion} - Pref: {regionPct}% - Weight: {settings.regionWeight}%):</span>
+                <span>{abebeRegionContribution.toFixed(2)} pts</span>
+              </div>
+              <div className="flex justify-between text-gray-600">
+                <span>Gender Balance ({abebeGender} - Pref: {genderPct}% - Weight: {settings.genderWeight}%):</span>
+                <span>{abebeGenderContribution.toFixed(2)} pts</span>
+              </div>
+              <div className="flex justify-between text-gray-600">
+                <span>Disability Status (Hearing - Pref: {disabilityPct}% - Weight: {settings.disabilityWeight}%):</span>
+                <span>{abebeDisabilityContribution.toFixed(2)} pts</span>
+              </div>
+              {((settings as any).invitationScoreWeight || 0) > 0 && (
+                <div className="flex justify-between text-gray-600">
+                  <span>Interview/Entrance (Score: {abebeInterview}% - Weight: {(settings as any).invitationScoreWeight}%):</span>
+                  <span>{abebeInvitationContribution.toFixed(2)} pts</span>
+                </div>
+              )}
+              {(settings.documentScoreWeight || 0) > 0 && (
+                <div className="flex justify-between text-gray-600">
+                  <span>Document Evaluation (Score: {abebeDocument}% - Weight: {settings.documentScoreWeight}%):</span>
+                  <span>{abebeDocumentContribution.toFixed(2)} pts</span>
+                </div>
+              )}
+              <div className="border-t pt-2 mt-2 font-bold text-gray-900 flex justify-between">
+                <span>Total Final Weight Score:</span>
+                <span>{abebeTotalScore.toFixed(2)}% / 100.00%</span>
+              </div>
+            </div>
           </div>
         </div>
 

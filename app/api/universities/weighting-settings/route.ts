@@ -48,6 +48,8 @@ export async function GET(request: Request) {
         regionWeight: 15,
         genderWeight: 10,
         disabilityWeight: 5,
+        invitationScoreWeight: 0,
+        documentScoreWeight: 0,
         totalWeight: 100,
         regionPreferences: [],
         genderPreferences: { male: 50, female: 50 },
@@ -80,11 +82,11 @@ export async function PUT(request: Request) {
     const key = `weighting_${universityId}_${stream}`;
 
     const body = await request.json();
-    const { examScoreWeight, regionWeight, genderWeight, disabilityWeight, regionPreferences, genderPreferences, disabilityPreferences, disabilityBonus, customCriteria } = body;
+    const { examScoreWeight, regionWeight, genderWeight, disabilityWeight, invitationScoreWeight, documentScoreWeight, regionPreferences, genderPreferences, disabilityPreferences, disabilityBonus, customCriteria } = body;
     
     // Validate total weight = 100%
     const customCriteriaSum = (customCriteria || []).reduce((sum: number, c: any) => sum + (c.weight || 0), 0);
-    const total = (examScoreWeight || 70) + (regionWeight || 15) + (genderWeight || 10) + (disabilityWeight || 5) + customCriteriaSum;
+    const total = (examScoreWeight || 70) + (regionWeight || 15) + (genderWeight || 10) + (disabilityWeight || 5) + (invitationScoreWeight || 0) + (documentScoreWeight || 0) + customCriteriaSum;
     if (total !== 100) {
       return NextResponse.json({ 
         error: `Total weight must equal 100%. Current total: ${total}%` 
@@ -99,6 +101,8 @@ export async function PUT(request: Request) {
           regionWeight,
           genderWeight,
           disabilityWeight,
+          invitationScoreWeight: invitationScoreWeight || 0,
+          documentScoreWeight: documentScoreWeight || 0,
           regionPreferences: regionPreferences || [],
           genderPreferences: genderPreferences || { male: 50, female: 50 },
           disabilityPreferences: disabilityPreferences || { visual: 100, hearing: 100, physical: 100, learning: 100, none: 0 },
@@ -115,6 +119,8 @@ export async function PUT(request: Request) {
           regionWeight: regionWeight || 15,
           genderWeight: genderWeight || 10,
           disabilityWeight: disabilityWeight || 5,
+          invitationScoreWeight: invitationScoreWeight || 0,
+          documentScoreWeight: documentScoreWeight || 0,
           regionPreferences: regionPreferences || [],
           genderPreferences: genderPreferences || { male: 50, female: 50 },
           disabilityPreferences: disabilityPreferences || { visual: 100, hearing: 100, physical: 100, learning: 100, none: 0 },

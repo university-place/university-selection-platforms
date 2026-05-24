@@ -61,7 +61,9 @@ export async function GET(request: Request) {
     }
 
     if (placementStatus) {
-      if (placementStatus === 'PLACED') {
+      if (placementStatus === 'NOT_REGISTERED') {
+        where.isRegistered = false
+      } else if (placementStatus === 'PLACED') {
         where.preferences = { some: { status: { in: ['ACCEPTED', 'PLACED', 'BATCH_PLACED'] } } }
       } else if (placementStatus === 'NOT_PLACED') {
         const notPlacedAnd = [

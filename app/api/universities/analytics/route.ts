@@ -62,6 +62,7 @@ export async function GET(request: Request) {
       genderWeight: 10,
       disabilityWeight: 5,
       invitationScoreWeight: 0,
+      documentScoreWeight: 0,
       regionPreferences: [],
       genderPreferences: { male: 50, female: 50 },
       disabilityBonus: 5,
@@ -103,6 +104,7 @@ export async function GET(request: Request) {
     let totalRegionPoints = 0;
     let totalGenderPoints = 0;
     let totalDisabilityPoints = 0;
+    let totalDocumentPoints = 0;
     
     for (const app of applicants) {
       const student = app.application?.student;
@@ -132,7 +134,8 @@ export async function GET(request: Request) {
         disabilityType: student.disability,
         customAttributes: (student as any).customAttributes || {},
         examResults: student.examResults as any,
-        invitationScore: invitationScore
+        invitationScore: invitationScore,
+        documentScore: app.documentScore
       }, settings as any);
       
       weightedApplicants.push({
@@ -151,6 +154,7 @@ export async function GET(request: Request) {
       totalRegionPoints += result.breakdown.regionContribution;
       totalGenderPoints += result.breakdown.genderContribution;
       totalDisabilityPoints += result.breakdown.disabilityContribution;
+      totalDocumentPoints += result.breakdown.documentContribution;
     }
     
     // Calculate statistics
@@ -210,6 +214,7 @@ export async function GET(request: Request) {
       (settings.genderWeight || 0) + 
       (settings.disabilityWeight || 0) + 
       ((settings as any).invitationScoreWeight || 0) + 
+      ((settings as any).documentScoreWeight || 0) + 
       customCriteriaSum;
 
     return NextResponse.json({
@@ -249,7 +254,8 @@ export async function GET(request: Request) {
         examScoreAvg: totalApplicants > 0 ? (totalExamPoints / totalApplicants).toFixed(2) : 0,
         regionAvg: totalApplicants > 0 ? (totalRegionPoints / totalApplicants).toFixed(2) : 0,
         genderAvg: totalApplicants > 0 ? (totalGenderPoints / totalApplicants).toFixed(2) : 0,
-        disabilityAvg: totalApplicants > 0 ? (totalDisabilityPoints / totalApplicants).toFixed(2) : 0
+        disabilityAvg: totalApplicants > 0 ? (totalDisabilityPoints / totalApplicants).toFixed(2) : 0,
+        documentAvg: totalApplicants > 0 ? (totalDocumentPoints / totalApplicants).toFixed(2) : 0
       },
       ranking: weightedApplicants.map((a, index) => ({
         rank: index + 1,

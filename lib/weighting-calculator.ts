@@ -3,7 +3,8 @@ interface WeightingSettings {
   regionWeight: number;
   genderWeight: number;
   disabilityWeight: number;
-  invitationScoreWeight?: number; // ADDED
+  invitationScoreWeight?: number;
+  documentScoreWeight?: number;
   regionPreferences: {
     region: string;
     weight: number;
@@ -39,7 +40,8 @@ interface StudentData {
   disabilityType?: string;
   customAttributes?: Record<string, any>;
   examResults?: Record<string, number>;
-  invitationScore?: number | null; // ADDED
+  invitationScore?: number | null;
+  documentScore?: number | null;
 }
 
 export function calculateWeightedScore(student: StudentData, settings: WeightingSettings): {
@@ -50,7 +52,8 @@ export function calculateWeightedScore(student: StudentData, settings: Weighting
     genderContribution: number;
     disabilityContribution: number;
     customContribution: number;
-    invitationScoreContribution: number; // ADDED
+    invitationScoreContribution: number;
+    documentContribution: number;
     maxPossible: number;
   };
 } {
@@ -134,8 +137,14 @@ export function calculateWeightedScore(student: StudentData, settings: Weighting
   if (settings.invitationScoreWeight && student.invitationScore !== undefined && student.invitationScore !== null) {
     invitationScoreContribution = (student.invitationScore / 100) * settings.invitationScoreWeight;
   }
+
+  // 7. Document Score Contribution
+  let documentContribution = 0;
+  if (settings.documentScoreWeight && student.documentScore !== undefined && student.documentScore !== null) {
+    documentContribution = (student.documentScore / 100) * settings.documentScoreWeight;
+  }
   
-  const weightedScore = examScoreContribution + regionContribution + genderContribution + disabilityContribution + customContribution + invitationScoreContribution;
+  const weightedScore = examScoreContribution + regionContribution + genderContribution + disabilityContribution + customContribution + invitationScoreContribution + documentContribution;
   
   return {
     weightedScore,
@@ -146,6 +155,7 @@ export function calculateWeightedScore(student: StudentData, settings: Weighting
       disabilityContribution,
       customContribution,
       invitationScoreContribution,
+      documentContribution,
       maxPossible: 100
     }
   };

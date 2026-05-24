@@ -316,24 +316,26 @@ export async function POST(request: Request) {
       for (const app of applications) {
         const { universityId, programId, admissionTrackId } = app;
 
-        const existingActivePreference = await prisma.preference.findFirst({
+        const existingPreference = await prisma.preference.findFirst({
           where: { 
             applicationId: application.id, 
-            universityId: universityId,
-            isCancelled: false
+            universityId: universityId
           }
         });
 
-        if (existingActivePreference) {
+        if (existingPreference) {
           await prisma.preference.update({
-            where: { id: existingActivePreference.id },
+            where: { id: existingPreference.id },
             data: {
-              programId: programId !== undefined ? programId : existingActivePreference.programId,
-              admissionTrackId: admissionTrackId !== undefined ? admissionTrackId : existingActivePreference.admissionTrackId,
+              programId: programId !== undefined ? programId : existingPreference.programId,
+              admissionTrackId: admissionTrackId !== undefined ? admissionTrackId : existingPreference.admissionTrackId,
+              isCancelled: false,
+              cancelledAt: null,
+              cancelledReason: null,
               updatedAt: new Date()
             }
           });
-          console.log('Updated existing active preference:', existingActivePreference.id);
+          console.log('Updated existing preference:', existingPreference.id);
         } else {
           await prisma.preference.create({
             data: {
@@ -422,32 +424,47 @@ export async function POST(request: Request) {
         });
       }
       
-      const existingActivePreference = await prisma.preference.findFirst({
+      const existingPreference = await prisma.preference.findFirst({
         where: { 
           applicationId: application.id, 
-          universityId: universityId,
-          isCancelled: false
+          universityId: universityId
         }
       });
       
-      if (existingActivePreference) {
+      if (existingPreference && !existingPreference.isCancelled) {
         return NextResponse.json({ 
           error: 'You already have an active preference for this university' 
         }, { status: 400 });
       }
       
-      const newPreference = await prisma.preference.create({
-        data: {
-          applicationId: application.id,
-          studentId: studentId,
-          universityId: universityId,
-          programId: programId || null,
-          admissionTrackId: admissionTrackId || null,
-          status: 'DRAFT',
-          isCancelled: false,
-          createdAt: new Date()
-        }
-      });
+      let newPreference;
+      if (existingPreference && existingPreference.isCancelled) {
+        newPreference = await prisma.preference.update({
+          where: { id: existingPreference.id },
+          data: {
+            isCancelled: false,
+            cancelledAt: null,
+            cancelledReason: null,
+            status: 'DRAFT',
+            programId: programId || null,
+            admissionTrackId: admissionTrackId || null,
+            updatedAt: new Date()
+          }
+        });
+      } else {
+        newPreference = await prisma.preference.create({
+          data: {
+            applicationId: application.id,
+            studentId: studentId,
+            universityId: universityId,
+            programId: programId || null,
+            admissionTrackId: admissionTrackId || null,
+            status: 'DRAFT',
+            isCancelled: false,
+            createdAt: new Date()
+          }
+        });
+      }
       
       return NextResponse.json({ 
         success: true, 

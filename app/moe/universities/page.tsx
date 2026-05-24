@@ -57,14 +57,14 @@ export default function MOEUniversitiesPage() {
         setUniversities(
           (response.data as any[]).map((u) => ({
             ...u,
-            status: u.isActive ? 'active' : 'inactive',
+            status: u.status || (u.isRegistered ? 'active' : 'inactive'),
           })) as University[]
         );
       } else if (response.success && response.data && 'universities' in response.data) {
         setUniversities(
           ((response.data as any).universities || []).map((u: any) => ({
             ...u,
-            status: u.isActive ? 'active' : 'inactive',
+            status: u.status || (u.isRegistered ? 'active' : 'inactive'),
           }))
         );
       } else {

@@ -37,12 +37,83 @@ export async function GET(
       return NextResponse.json({ success: false, error: 'University not found' }, { status: 404 });
     }
 
+    const { searchParams } = new URL(request.url);
+    const stream = searchParams.get('stream') || 'all';
+    const gender = searchParams.get('gender') || 'all';
+    const status = searchParams.get('status') || 'all';
+
+    const where: any = { universityId };
+
+    if (stream !== 'all') {
+      where.student = where.student || {};
+      where.student.stream = stream === 'natural' ? 'Natural Science' : 'Social Science';
+    }
+
+    if (gender !== 'all') {
+      where.student = where.student || {};
+      where.student.gender = gender === 'male' ? 'Male' : 'Female';
+    }
+
+    if (status !== 'all') {
+      switch (status) {
+        case 'SUBMITTED':
+          where.isCancelled = { not: true };
+          where.status = 'SUBMITTED';
+          break;
+        case 'CANCELLED':
+          where.isCancelled = true;
+          break;
+        case 'PLACED':
+          where.status = 'PLACED';
+          break;
+        case 'NOT_PLACED':
+          where.status = { not: 'PLACED' };
+          break;
+        case 'ACCEPTED_BY_STUDENT':
+          where.student = where.student || {};
+          where.student.StudentConfirmation = {
+            some: {
+              universityId,
+              status: 'CONFIRMED'
+            }
+          };
+          break;
+        case 'REJECTED_BY_STUDENT':
+          where.student = where.student || {};
+          where.student.StudentConfirmation = {
+            some: {
+              universityId,
+              status: 'DECLINED'
+            }
+          };
+          break;
+        case 'INVITATION_ACCEPTED':
+          where.student = where.student || {};
+          where.student.InterviewInvitation = {
+            some: {
+              universityId,
+              studentResponse: 'ACCEPTED'
+            }
+          };
+          break;
+        case 'INVITATION_REJECTED':
+          where.student = where.student || {};
+          where.student.InterviewInvitation = {
+            some: {
+              universityId,
+              studentResponse: 'DECLINED'
+            }
+          };
+          break;
+      }
+    }
+
     const [applications, placements, invitations] = await Promise.all([
       prisma.preference.findMany({
-        where: { universityId },
+        where,
         include: {
           student: {
-            select: { id: true, examID: true, firstName: true, lastName: true, email: true, phone: true, stream: true, region: true },
+            select: { id: true, examID: true, firstName: true, lastName: true, email: true, phone: true, stream: true, region: true, gender: true },
           },
           program: { select: { id: true, name: true, code: true } },
         },

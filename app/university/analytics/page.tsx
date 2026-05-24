@@ -36,6 +36,7 @@ export default function AnalyticsPage() {
   const navLinks = [
     { label: 'Dashboard', href: '/university/dashboard' },
     { label: 'Analytics', href: '/university/analytics' },
+    { label: 'Document Evaluation', href: '/university/documents-evaluation' },
     { label: 'Weighting Settings', href: '/university/weighting-settings' }
   ];
 

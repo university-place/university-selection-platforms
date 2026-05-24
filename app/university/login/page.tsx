@@ -74,6 +74,10 @@ export default function UniversityLoginPage() {
         text: 'Register your university',
         href: '/university/register',
       }}
+      forgotPasswordLink={{
+        text: 'Forgot Password?',
+        href: '/university/forgot-password',
+      }}
       theme="green"
     />
   );
