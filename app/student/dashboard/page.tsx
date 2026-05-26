@@ -319,7 +319,7 @@ export default function StudentDashboardPage() {
           };
         });
 
-        setPreferences(preferencesWithDates);
+        setPreferences(preferencesWithDates.filter((pref: any) => !pref.isCancelled));
 
         if (appsResult.submissionInfo) {
           setSubmissionInfo(appsResult.submissionInfo);
@@ -1311,7 +1311,7 @@ export default function StudentDashboardPage() {
     { id: 'invitations', label: 'My Invitations', icon: Mail },  // ✅ ADD THIS
     { id: 'my-placements', label: '📋 My Placement Offers', icon: Award },
     { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    // { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   return (
@@ -1940,7 +1940,9 @@ export default function StudentDashboardPage() {
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value={0}>Choose university...</option>
-                    {universities.map(u => (
+                    {universities
+                      .filter(u => !preferences.some(p => p.universityId === u.id))
+                      .map(u => (
                       <option key={u.id} value={u.id}>{u.name}</option>
                     ))}
                   </select>

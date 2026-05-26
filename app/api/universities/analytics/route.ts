@@ -69,9 +69,22 @@ export async function GET(request: Request) {
       customCriteria: []
     };
     
-    const settings = settingsConfig?.value || defaultSettings;
-    const maxExamScore = 700; // Maximum possible exam score
+    const streamSubjectsConfig = await prisma.systemConfig.findUnique({
+      where: { key: 'stream_subjects' }
+    });
+    const streamSubjects = streamSubjectsConfig?.value as any || {};
     
+    let maxExamScore = 600; // default to 600
+    if (selectedStream === 'all') {
+      const natCount = streamSubjects?.natural?.length || 6;
+      const socCount = streamSubjects?.social?.length || 6;
+      maxExamScore = Math.max(natCount, socCount) * 100;
+    } else {
+      const count = streamSubjects?.[selectedStream]?.length || 6;
+      maxExamScore = count * 100;
+    }
+
+    const settings = settingsConfig?.value || defaultSettings;
     // Get all submitted applicants for this university
     const where: any = {
       universityId: universityId,
@@ -225,6 +238,7 @@ export async function GET(request: Request) {
       },
       summary: {
         totalApplicants,
+        maxExamScore,
         avgWeightedScore: avgWeightedScore.toFixed(2),
         weightedScoreRange: {
           min: totalApplicants > 0 ? Math.min(...weightedApplicants.map(a => a.weightedScore)) : 0,

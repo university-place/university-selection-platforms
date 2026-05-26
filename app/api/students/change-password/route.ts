@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/prisma/client'
 import jwt from 'jsonwebtoken'
-import bcrypt from 'bcryptjs'
+import bcrypt from 'bcrypt'
 
 function withCors(response: NextResponse) {
   response.headers.set('Access-Control-Allow-Origin', '*');

@@ -315,36 +315,7 @@ export default function UniversityDashboardPage() {
             </div>
           </div>
 
-          <div className="bg-foreground text-background rounded-[3.5rem] p-16 shadow-2xl relative overflow-hidden group">
-            <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/20 rounded-full blur-[100px] group-hover:scale-125 transition-transform duration-1000"></div>
-            <h3 className="text-2xl font-black uppercase tracking-[0.3em] mb-12 text-muted-foreground/60">Operations</h3>
-            <div className="space-y-8">
-              <div className="flex items-center justify-between p-8 bg-background/5 rounded-3xl border border-background/10 hover:bg-background/10 transition-all duration-300 cursor-pointer group/item">
-                <div className="flex items-center gap-6">
-                  <BookOpen className="w-10 h-10 text-green-400" />
-                  <span className="text-2xl font-black">Active Programs</span>
-                </div>
-                <span className="text-4xl font-black text-green-400 group-hover/item:scale-110 transition-transform">{stats.totalPrograms}</span>
-              </div>
-              <div className="flex items-center justify-between p-8 bg-background/5 rounded-3xl border border-background/10 hover:bg-background/10 transition-all duration-300 cursor-pointer group/item">
-                <div className="flex items-center gap-6">
-                  <TargetIcon className="w-10 h-10 text-blue-400" />
-                  <span className="text-2xl font-black">Capacity Filled</span>
-                </div>
-                <span className="text-4xl font-black text-blue-400 group-hover/item:scale-110 transition-transform">{stats.intakeFilled}</span>
-              </div>
-              <div className="flex items-center justify-between p-8 bg-background/5 rounded-3xl border border-background/10 hover:bg-background/10 transition-all duration-300 cursor-pointer group/item">
-                <div className="flex items-center gap-6">
-                  <Bell className="w-10 h-10 text-yellow-400" />
-                  <span className="text-2xl font-black">Invitations</span>
-                </div>
-                <span className="text-4xl font-black text-yellow-400 group-hover/item:scale-110 transition-transform">{stats.invitationsSent}</span>
-              </div>
-            </div>
-            <button className="w-full mt-12 py-6 bg-green-500 text-gray-900 rounded-[2rem] font-black text-xl uppercase tracking-[0.2em] hover:bg-green-400 hover:shadow-2xl hover:shadow-green-500/40 transition-all duration-500 active:scale-95">
-              Launch Action
-            </button>
-          </div>
+
         </div>
 
         {/* Recent Applications Table */}

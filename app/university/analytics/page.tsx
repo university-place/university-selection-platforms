@@ -212,7 +212,7 @@ export default function AnalyticsPage() {
                   </td>
                   <td className="px-6 py-4 font-mono text-sm">{applicant.examID}</td>
                   <td className="px-6 py-4 font-medium">{applicant.name}</td>
-                  <td className="px-6 py-4">{applicant.examScore} / 700</td>
+                  <td className="px-6 py-4">{applicant.examScore} / {data.summary?.maxExamScore || 700}</td>
                   <td className="px-6 py-4 font-bold text-green-600">{applicant.weightedScore}%</td>
                 </tr>
               ))}

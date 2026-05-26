@@ -428,14 +428,7 @@ export default function DocumentEvaluationPage() {
               )}
             </div>
 
-            <button
-              type="button"
-              onClick={handleResetFilters}
-              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-gray-200 shadow-sm"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              Reset / Clear All Filters
-            </button>
+            
           </div>
         </div>
 

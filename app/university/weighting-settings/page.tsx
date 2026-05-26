@@ -44,6 +44,7 @@ export default function WeightingSettingsPage() {
   const [selectedStream, setSelectedStream] = useState<'all' | 'natural' | 'social'>('all');
   const [customAttrDefs, setCustomAttrDefs] = useState<any[]>([]);
   const [availableRegions, setAvailableRegions] = useState<string[]>([]);
+  const [streamSubjects, setStreamSubjects] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -51,8 +52,11 @@ export default function WeightingSettingsPage() {
   const [attributeOptions, setAttributeOptions] = useState<Record<string, string[]>>({});
 
   // Dynamic Abebe Kebede calculation
-  const abebeExam = 638;
-  const abebeMaxExam = 700;
+  const numSubjects = selectedStream === 'all' 
+    ? Math.max(streamSubjects?.natural?.length || 6, streamSubjects?.social?.length || 6)
+    : (streamSubjects?.[selectedStream]?.length || 6);
+  const abebeMaxExam = numSubjects * 100;
+  const abebeExam = Math.round(abebeMaxExam * 0.91); // approx 91%
   const abebeRegion = 'Addis Ababa';
   const abebeGender = 'Male';
   const abebeDisability = 'hearing';
@@ -81,6 +85,7 @@ export default function WeightingSettingsPage() {
     fetchSettings();
     fetchRegions();
     fetchCustomAttrDefs();
+    fetchStreamSubjects();
   }, [selectedStream]);
 
   useEffect(() => {
@@ -119,6 +124,18 @@ export default function WeightingSettingsPage() {
       if (data.success) setCustomAttrDefs(data.value || []);
     } catch (err) {
       console.error('Failed to fetch attribute definitions');
+    }
+  };
+
+  const fetchStreamSubjects = async () => {
+    try {
+      const res = await fetch('/api/common/settings?key=stream_subjects');
+      const data = await res.json();
+      if (data.success) {
+        setStreamSubjects(data.value);
+      }
+    } catch (e) {
+      console.error(e);
     }
   };
 

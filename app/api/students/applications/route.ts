@@ -156,7 +156,6 @@ export async function GET(request: Request) {
       where: { studentId, academicYear },
       include: {
         preferences: {
-          where: { isCancelled: false },
           include: {
             university: { 
               select: { 
@@ -244,6 +243,8 @@ export async function GET(request: Request) {
         isDeadlinePassed: pref.university?.applicationDeadline ? new Date(pref.university.applicationDeadline) < new Date() : false,
         totalCapacity: pref.university?.totalCapacity || 0,
         currentApplicants: pref.university?._count?.preferences || 0,
+        isCancelled: pref.isCancelled || false,
+        cancelledAt: pref.cancelledAt || null,
         createdAt: pref.createdAt,
         updatedAt: pref.updatedAt
       };
@@ -508,6 +509,17 @@ export async function POST(request: Request) {
           updatedAt: new Date()
         }
       });
+      
+      if (preference.applicationId) {
+        await prisma.application.update({
+          where: { id: preference.applicationId },
+          data: {
+            submissionCount: { increment: 1 },
+            lastSubmittedAt: new Date(),
+            updatedAt: new Date()
+          }
+        });
+      }
       
       const remainingAttempts = maxAttempts - (updatedPreference.submissionCount || 0);
       
