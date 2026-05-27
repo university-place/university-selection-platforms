@@ -1,5 +1,5 @@
 // API Client for Mobile App
-const API_BASE_URL = 'http://localhost:3000/api'; // Change to your backend URL
+const API_BASE_URL = 'http://192.168.137.97:3000/api'; // Change to your backend URL
 
 interface ApiResponse<T> {
   success: boolean;
