@@ -141,6 +141,12 @@ export async function GET(request: Request) {
                 emailVerified: true,
                 customAttributes: true,
                 documents: {
+                  where: {
+                    OR: [
+                      { scope: 'general' },
+                      { universityId: universityId }
+                    ]
+                  },
                   select: {
                     id: true,
                     type: true,
@@ -148,6 +154,8 @@ export async function GET(request: Request) {
                     fileUrl: true,
                     uploadDate: true,
                     verificationStatus: true,
+                    scope: true,
+                    universityId: true,
                   },
                   orderBy: { uploadDate: 'desc' },
                 },

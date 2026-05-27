@@ -41,9 +41,9 @@ export default function PlatformSettingsPage() {
 
   const navLinks = [
     { label: 'Dashboard', href: '/platform/dashboard' },
-    { label: 'Users', href: '/platform/users' },
-    { label: 'Students', href: '/platform/students' },
-    { label: 'Universities', href: '/platform/universities' },
+    // { label: 'Users', href: '/platform/users' },
+    // { label: 'Students', href: '/platform/students' },
+    // { label: 'Universities', href: '/platform/universities' },
     { label: 'Settings', href: '/platform/settings' },
   ];
 

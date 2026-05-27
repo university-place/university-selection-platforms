@@ -2,41 +2,30 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { AuthForm } from '@/components/AuthForm';
 
 export default function StudentRegisterPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
+  
+  // State for prefilling
+  const [prefillKey, setPrefillKey] = useState(0);
+  const [initialData, setInitialData] = useState<Record<string, string>>({
     examID: '',
     firstName: '',
     lastName: '',
-    email: '',        // ✅ Added email field
-    phone: '',        // ✅ Added phone field
+    email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
   });
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleRegister = async (formData: Record<string, string>) => {
     setLoading(true);
-    setMessage('');
     setError('');
-
-    // Validation - only examID, name, password are required
-    if (!formData.examID || !formData.firstName || !formData.lastName || !formData.password || !formData.confirmPassword) {
-      setError('Exam ID, Name, and Password are required');
-      setLoading(false);
-      return;
-    }
+    setSuccess('');
 
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
@@ -60,8 +49,8 @@ export default function StudentRegisterPage() {
           examID: formData.examID,
           firstName: formData.firstName,
           lastName: formData.lastName,
-          email: formData.email || undefined,      // ✅ Optional - send only if provided
-          phone: formData.phone || undefined,      // ✅ Optional - send only if provided
+          email: formData.email || undefined,
+          phone: formData.phone || undefined,
           password: formData.password,
           confirmPassword: formData.confirmPassword,
         }),
@@ -70,18 +59,7 @@ export default function StudentRegisterPage() {
       const data = await response.json();
 
       if (data.success) {
-        setMessage(data.message);
-        // Clear form
-        setFormData({
-          examID: '',
-          firstName: '',
-          lastName: '',
-          email: '',
-          phone: '',
-          password: '',
-          confirmPassword: '',
-        });
-        // Redirect to login after 2 seconds
+        setSuccess(data.message || 'Registration successful!');
         setTimeout(() => {
           router.push('/student/login');
         }, 2000);
@@ -95,9 +73,8 @@ export default function StudentRegisterPage() {
     }
   };
 
-  // Pre-fill for Almaz Getnet (EXM-2024-002) - with email
   const prefillAlmaz = () => {
-    setFormData({
+    setInitialData({
       examID: 'EXM-2024-002',
       firstName: 'Almaz',
       lastName: 'Getnet',
@@ -106,11 +83,11 @@ export default function StudentRegisterPage() {
       password: 'Almaz@123',
       confirmPassword: 'Almaz@123',
     });
+    setPrefillKey(prev => prev + 1);
   };
 
-  // Pre-fill for Habtamu Tadesse (EXM-2024-003) - without email (rural student)
   const prefillHabtamu = () => {
-    setFormData({
+    setInitialData({
       examID: 'EXM-2024-003',
       firstName: 'Habtamu',
       lastName: 'Tadesse',
@@ -119,162 +96,99 @@ export default function StudentRegisterPage() {
       password: 'Habtamu@123',
       confirmPassword: 'Habtamu@123',
     });
+    setPrefillKey(prev => prev + 1);
   };
 
+  const fields = [
+    {
+      name: 'examID',
+      label: 'Admission ID / Exam ID',
+      type: 'text',
+      placeholder: 'e.g., EXM-2024-002',
+      icon: 'shield' as const,
+    },
+    {
+      name: 'firstName',
+      label: 'First Name',
+      type: 'text',
+      placeholder: 'Enter first name',
+      icon: 'user' as const,
+    },
+    {
+      name: 'lastName',
+      label: 'Last Name',
+      type: 'text',
+      placeholder: 'Enter last name',
+      icon: 'user' as const,
+    },
+    {
+      name: 'email',
+      label: 'Email (Optional)',
+      type: 'email',
+      placeholder: 'your@email.com (optional)',
+      required: false,
+      icon: 'mail' as const,
+    },
+    {
+      name: 'phone',
+      label: 'Phone (Optional)',
+      type: 'tel',
+      placeholder: '09xxxxxxxx (optional)',
+      required: false,
+      icon: 'user' as const,
+    },
+    {
+      name: 'password',
+      label: 'Password',
+      type: 'password',
+      placeholder: 'Minimum 6 characters',
+      icon: 'lock' as const,
+    },
+    {
+      name: 'confirmPassword',
+      label: 'Confirm Password',
+      type: 'password',
+      placeholder: 'Confirm your password',
+      icon: 'lock' as const,
+    },
+  ];
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 p-4">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold text-center mb-2">Student Registration</h1>
-        <p className="text-center text-gray-600 mb-6">Ethiopian University Selection Platform</p>
-
-        {/* Quick fill buttons for testing */}
-        <div className="flex gap-2 mb-4">
-          <button
-            type="button"
-            onClick={prefillAlmaz}
-            className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded-lg transition text-sm"
-          >
-            📝 Almaz (With Email)
-          </button>
-          <button
-            type="button"
-            onClick={prefillHabtamu}
-            className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded-lg transition text-sm"
-          >
-            📝 Habtamu (No Email)
-          </button>
-        </div>
-
-        {message && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-            {message}
-          </div>
-        )}
-
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Admission ID / Exam ID *</label>
-            <input
-              type="text"
-              name="examID"
-              value={formData.examID}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="e.g., EXM-2024-002"
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-gray-700 mb-2">First Name *</label>
-              <input
-                type="text"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="First name"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 mb-2">Last Name *</label>
-              <input
-                type="text"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Last name"
-                required
-              />
-            </div>
-          </div>
-
-          {/* ✅ Optional Email Field */}
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">
-              Email 
-              <span className="text-gray-400 text-sm ml-1">(Optional)</span>
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="your@email.com (optional)"
-            />
-            <p className="text-xs text-gray-400 mt-1">Only needed if you want email verification</p>
-          </div>
-
-          {/* ✅ Optional Phone Field */}
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">
-              Phone 
-              <span className="text-gray-400 text-sm ml-1">(Optional)</span>
-            </label>
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="09xxxxxxxx (optional)"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Password *</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Minimum 6 characters"
-              required
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Password must have uppercase, lowercase, and number
-            </p>
-          </div>
-
-          <div className="mb-6">
-            <label className="block text-gray-700 mb-2">Confirm Password *</label>
-            <input
-              type="password"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Confirm your password"
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition disabled:opacity-50"
-          >
-            {loading ? 'Registering...' : 'Register'}
-          </button>
-        </form>
-
-        <div className="mt-4 text-center">
-          <a href="/student/login" className="text-blue-500 hover:underline">
-            Already have an account? Login here
-          </a>
-        </div>
+    <div className="relative min-h-screen">
+      {/* Floating Developer Test Controls */}
+      <div className="absolute top-4 left-4 z-50 flex gap-2">
+        <button
+          type="button"
+          onClick={prefillAlmaz}
+          className="bg-slate-800/80 border border-slate-700/50 hover:bg-slate-750 text-slate-200 py-1.5 px-3 rounded-lg text-xs transition"
+        >
+          📝 Prefill Almaz
+        </button>
+        <button
+          type="button"
+          onClick={prefillHabtamu}
+          className="bg-slate-800/80 border border-slate-700/50 hover:bg-slate-750 text-slate-200 py-1.5 px-3 rounded-lg text-xs transition"
+        >
+          📝 Prefill Habtamu
+        </button>
       </div>
+
+      <AuthForm
+        key={prefillKey}
+        title="Student Registration"
+        description="Ethiopian University Selection Platform"
+        fields={fields}
+        onSubmit={handleRegister}
+        loading={loading}
+        error={error}
+        successMessage={success}
+        submitButtonText="Register"
+        footerText="Already have an account?"
+        footerLink={{
+          text: 'Login here',
+          href: '/student/login',
+        }}
+      />
     </div>
   );
 }

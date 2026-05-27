@@ -165,6 +165,7 @@ export default function StudentDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [submittingPref, setSubmittingPref] = useState<number | null>(null);
+  const [darkMode, setDarkMode] = useState(false);
   // Data states
 
   const [profile, setProfile] = useState<StudentProfile | null>(null);
@@ -1315,7 +1316,82 @@ export default function StudentDashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className={`min-h-screen bg-gray-50 flex ${darkMode ? 'dark' : ''}`}>
+      {darkMode && (
+        <style dangerouslySetInnerHTML={{ __html: `
+          .dark {
+            background-color: #0B132B !important;
+            color: #F8FAFC !important;
+          }
+          .dark aside {
+            background-color: #131B2E !important;
+            border-right: 1px solid #1E293B !important;
+            box-shadow: none !important;
+          }
+          .dark aside h2, .dark aside span {
+            color: #F8FAFC !important;
+          }
+          .dark aside button {
+            color: #94A3B8 !important;
+          }
+          .dark aside button:hover {
+            background-color: #1E293B !important;
+            color: #F8FAFC !important;
+          }
+          .dark aside .bg-blue-50 {
+            background-color: #1E293B !important;
+            color: #38BDF8 !important;
+          }
+          .dark aside .bg-blue-50 span {
+            color: #38BDF8 !important;
+          }
+          .dark aside .border-b {
+            border-color: #1E293B !important;
+          }
+          .dark main {
+            background-color: #0B132B !important;
+          }
+          .dark main h1, .dark main h2, .dark main h3, .dark main h4, .dark main span:not(.text-blue-100):not(.text-green-700), .dark main p:not(.text-blue-800):not(.text-green-600) {
+            color: #F8FAFC !important;
+          }
+          .dark main .bg-white {
+            background-color: #131B2E !important;
+            border-color: #1E293B !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1) !important;
+          }
+          .dark main .border, .dark main .border-gray-100, .dark main .border-gray-200 {
+            border-color: #1E293B !important;
+          }
+          .dark main input, .dark main select {
+            background-color: #0B132B !important;
+            border-color: #1E293B !important;
+            color: #F8FAFC !important;
+          }
+          .dark main .bg-blue-50 {
+            background-color: #1E293B !important;
+            border-color: #1E293B !important;
+          }
+          .dark main .bg-blue-50 p {
+            color: #38BDF8 !important;
+          }
+          .dark main .bg-gray-50 {
+            background-color: #131B2E !important;
+            border-color: #1E293B !important;
+          }
+          .dark main .hover\:bg-gray-50:hover {
+            background-color: #1E293B !important;
+          }
+          .dark main .text-gray-900 {
+            color: #F8FAFC !important;
+          }
+          .dark main .text-gray-600 {
+            color: #94A3B8 !important;
+          }
+          .dark main .text-gray-500 {
+            color: #64748B !important;
+          }
+        `}} />
+      )}
       {/* Sidebar */}
       <aside className="w-72 bg-white shadow-lg fixed h-full overflow-y-auto z-10">
         <div className="p-8 border-b text-center">
@@ -1353,8 +1429,28 @@ export default function StudentDashboardPage() {
             </button>
           ))}
           <button
+            onClick={() => setDarkMode(!darkMode)}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 mt-8 dark:text-slate-300 dark:hover:bg-slate-800"
+          >
+            {darkMode ? (
+              <>
+                <svg className="w-5 h-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M6.343 17.657L5.636 18.364m12.728-12.728l-.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                </svg>
+                <span>Light Mode</span>
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+                <span>Dark Mode</span>
+              </>
+            )}
+          </button>
+          <button
             onClick={() => { authHelpers.removeToken(); router.push('/student/login'); }}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 mt-8"
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 mt-2"
           >
             <LogOut className="w-5 h-5" />
             <span>Logout</span>

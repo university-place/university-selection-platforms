@@ -79,7 +79,41 @@ export default function WeightingSettingsPage() {
   const abebeInvitationContribution = (settings.invitationScoreWeight || 0) > 0 ? (abebeInterview / 100) * (settings.invitationScoreWeight || 0) : 0;
   const abebeDocumentContribution = (settings.documentScoreWeight || 0) > 0 ? (abebeDocument / 100) * (settings.documentScoreWeight || 0) : 0;
 
-  const abebeTotalScore = abebeExamContribution + abebeRegionContribution + abebeGenderContribution + abebeDisabilityContribution + abebeInvitationContribution + abebeDocumentContribution;
+  // Custom Criteria contribution for Abebe Kebede
+  const customCriteriaContributions = (settings.customCriteria || []).map(criterion => {
+    let scorePct = 85; // default for manual input criteria
+    if (criterion.source === 'system') {
+      if (criterion.key === 'gender') {
+        const matchingMap = criterion.mappings?.find(m => m.value.toLowerCase() === 'male');
+        scorePct = matchingMap ? matchingMap.percent : 100;
+      } else if (criterion.key === 'region') {
+        const matchingMap = criterion.mappings?.find(m => m.value.toLowerCase() === 'addis ababa');
+        scorePct = matchingMap ? matchingMap.percent : 100;
+      } else if (criterion.key === 'disability') {
+        const matchingMap = criterion.mappings?.find(m => m.value.toLowerCase() === 'hearing');
+        scorePct = matchingMap ? matchingMap.percent : 100;
+      } else if (criterion.key === 'economicStatus') {
+        const matchingMap = criterion.mappings?.find(m => m.value.toLowerCase() === 'medium');
+        scorePct = matchingMap ? matchingMap.percent : 75;
+      } else if (criterion.mappings && criterion.mappings.length > 0) {
+        // Fallback: check first mapping or default
+        scorePct = criterion.mappings[0].percent || 80;
+      } else {
+        scorePct = 80;
+      }
+    }
+    const contribution = (scorePct / 100) * (criterion.weight || 0);
+    return {
+      name: criterion.name || 'Custom Criterion',
+      weight: criterion.weight || 0,
+      scorePct,
+      contribution
+    };
+  });
+
+  const abebeCustomTotal = customCriteriaContributions.reduce((sum, item) => sum + item.contribution, 0);
+
+  const abebeTotalScore = abebeExamContribution + abebeRegionContribution + abebeGenderContribution + abebeDisabilityContribution + abebeInvitationContribution + abebeDocumentContribution + abebeCustomTotal;
 
   useEffect(() => {
     fetchSettings();
@@ -507,6 +541,47 @@ export default function WeightingSettingsPage() {
             />
             <p className="text-xs text-gray-500 mt-1">Weight allocated to the candidate's evaluated document score</p>
           </div>
+
+          {/* Custom Criteria Weights inside the Weight Distribution border */}
+          {settings.customCriteria && settings.customCriteria.length > 0 && (
+            <div className="border-t border-gray-200 pt-6 mt-6 space-y-6">
+              <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide">Custom Criteria Weights</h3>
+              {settings.customCriteria.map((criterion, index) => (
+                <div key={index} className="mb-6">
+                  <div className="flex justify-between mb-2">
+                    <label className="flex items-center gap-2 text-gray-700 font-medium font-sans">
+                      <Percent className="w-4 h-4 text-indigo-600" />
+                      {criterion.name || 'Unnamed Criterion'} Weight
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <span className="text-indigo-600 font-bold">{criterion.weight || 0}%</span>
+                      <button
+                        onClick={() => {
+                          const newCriteria = settings.customCriteria.filter((_, i) => i !== index);
+                          setSettings({ ...settings, customCriteria: newCriteria });
+                        }}
+                        className="text-red-500 hover:text-red-700 text-xs font-bold uppercase transition"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={criterion.weight || 0}
+                    onChange={(e) => {
+                      const newCriteria = [...settings.customCriteria];
+                      newCriteria[index].weight = parseInt(e.target.value) || 0;
+                      setSettings({ ...settings, customCriteria: newCriteria });
+                    }}
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
           
           {/* Sample Weight Calculation Example */}
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-8">
@@ -543,6 +618,12 @@ export default function WeightingSettingsPage() {
                   <span>{abebeDocumentContribution.toFixed(2)} pts</span>
                 </div>
               )}
+              {customCriteriaContributions.map((item, i) => (
+                <div key={i} className="flex justify-between text-gray-600">
+                  <span>{item.name} (Assumed Score: {item.scorePct}% - Weight: {item.weight}%):</span>
+                  <span>{item.contribution.toFixed(2)} pts</span>
+                </div>
+              ))}
               <div className="border-t pt-2 mt-2 font-bold text-gray-900 flex justify-between">
                 <span>Total Final Weight Score:</span>
                 <span>{abebeTotalScore.toFixed(2)}% / 100.00%</span>
@@ -604,7 +685,7 @@ export default function WeightingSettingsPage() {
                         }}
                         className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm"
                       >
-                        <option value="manual">Manual Input</option>
+                        {/* <option value="manual">Manual Input</option> */}
                         <option value="system">System Attribute (MOE)</option>
                       </select>
                     </div>

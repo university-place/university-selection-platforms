@@ -1653,31 +1653,40 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
                             </div>
                           )}
 
-                          {/* Purple MoE Response */}
-                          {ap.status === 'resolved' && ap.resolution && isMoe && (
-                            <div className="mt-3 p-4 bg-purple-50 rounded-xl border border-purple-100 text-purple-700">
-                              <p className="text-xs font-bold text-purple-800 mb-1 uppercase tracking-wider flex items-center gap-1">
-                                <CheckCircle size={12} /> MOE Resolution:
-                              </p>
-                              <p className="text-sm font-medium">{ap.resolution}</p>
-                            </div>
-                          )}
-
-                          {/* Blue University Response */}
-                          {ap.status === 'resolved' && ap.resolution && !isMoe && (
-                            <div className="mt-3 p-4 bg-blue-50 rounded-xl border border-blue-100 text-blue-700">
-                              <p className="text-xs font-bold text-blue-800 mb-1 uppercase tracking-wider flex items-center gap-1">
-                                <CheckCircle size={12} /> {ap.university?.name || 'University'} Response:
-                              </p>
-                              <p className="text-sm font-medium">{ap.resolution}</p>
-                            </div>
+                           {/* Purple/Blue Resolution Response */}
+                          {ap.resolution && (ap.status?.toLowerCase() === 'resolved' || ap.status?.toLowerCase() === 'approved') && (
+                            isMoe ? (
+                              <div className="mt-3 p-4 bg-purple-50 rounded-xl border border-purple-100 text-purple-700">
+                                <p className="text-xs font-bold text-purple-800 mb-1 uppercase tracking-wider flex items-center gap-1">
+                                  <CheckCircle size={12} /> MOE Resolution:
+                                </p>
+                                <p className="text-sm font-medium">{ap.resolution}</p>
+                              </div>
+                            ) : (
+                              <div className="mt-3 p-4 bg-blue-50 rounded-xl border border-blue-100 text-blue-700">
+                                <p className="text-xs font-bold text-blue-800 mb-1 uppercase tracking-wider flex items-center gap-1">
+                                  <CheckCircle size={12} /> {ap.university?.name || 'University'} Response:
+                                </p>
+                                <p className="text-sm font-medium">{ap.resolution}</p>
+                              </div>
+                            )
                           )}
 
                           {/* Red Rejection system */}
-                          {ap.status === 'rejected' && ap.resolution && (
+                          {ap.resolution && ap.status?.toLowerCase() === 'rejected' && (
                             <div className="mt-3 p-4 bg-red-50 rounded-xl border border-red-100 text-red-700">
                               <p className="text-xs font-bold text-red-800 mb-1 uppercase tracking-wider flex items-center gap-1">
                                 <XCircle size={12} /> Rejection Decision ({isMoe ? 'MOE' : 'University'}):
+                              </p>
+                              <p className="text-sm font-medium">{ap.resolution}</p>
+                            </div>
+                          )}
+
+                          {/* Fallback for general response if status matches anything else but has a resolution */}
+                          {ap.resolution && ap.status?.toLowerCase() !== 'resolved' && ap.status?.toLowerCase() !== 'approved' && ap.status?.toLowerCase() !== 'rejected' && (
+                            <div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-150 text-gray-700">
+                              <p className="text-xs font-bold text-gray-800 mb-1 uppercase tracking-wider flex items-center gap-1">
+                                <CheckCircle size={12} /> {isMoe ? 'MOE' : (ap.university?.name || 'University')} Response ({ap.status}):
                               </p>
                               <p className="text-sm font-medium">{ap.resolution}</p>
                             </div>

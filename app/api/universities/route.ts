@@ -36,6 +36,8 @@ export async function GET(request: Request) {
         website: true,                // ✅ OPTIONAL - might be useful
         contactEmail: true,           // ✅ OPTIONAL - might be useful
         contactPhone: true,           // ✅ OPTIONAL - might be useful
+        totalCapacity: true,
+        keyFacts: true,
       },
     });
 

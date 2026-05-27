@@ -64,11 +64,11 @@ export default function PlatformDashboardPage() {
   }, [router]);
 
   const navLinks = [
-    { label: 'Users', href: '/platform/users', icon: Users },
-    { label: 'Students', href: '/platform/students', icon: GraduationCap },
-    { label: 'Universities', href: '/platform/universities', icon: School },
+    // { label: 'Users', href: '/platform/users', icon: Users },
+    // { label: 'Students', href: '/platform/students', icon: GraduationCap },
+    // { label: 'Universities', href: '/platform/universities', icon: School },
     { label: 'Settings', href: '/platform/settings', icon: Settings },
-    { label: 'Logs', href: '/platform/logs', icon: ClipboardList },
+    // { label: 'Logs', href: '/platform/logs', icon: ClipboardList },
   ];
 
   if (loading) {

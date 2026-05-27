@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { DataTable } from '@/components/DataTable';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { platformAPI, authHelpers } from '@/lib/api';
 import { PlatformUser } from '@/lib/types';
 
-export default function PlatformUsersPage() {
+function PlatformUsersList() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialRole = searchParams.get('role') || '';
@@ -280,5 +280,20 @@ export default function PlatformUsersPage() {
         )}
       </div>
     </DashboardLayout>
+  );
+}
+
+export default function PlatformUsersPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-flex h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-orange-500" />
+          <p className="mt-4 text-gray-600">Loading users management...</p>
+        </div>
+      </div>
+    }>
+      <PlatformUsersList />
+    </Suspense>
   );
 }

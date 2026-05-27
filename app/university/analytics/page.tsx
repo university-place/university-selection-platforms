@@ -11,15 +11,18 @@ import {
 export default function AnalyticsPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedApplicant, setSelectedApplicant] = useState<any>(null);
+  const [selectedStream, setSelectedStream] = useState<'all' | 'natural' | 'social'>('all');
 
   useEffect(() => {
     fetchAnalytics();
-  }, []);
+  }, [selectedStream]);
 
   const fetchAnalytics = async () => {
     const token = authHelpers.getToken();
+    setLoading(true);
     try {
-      const res = await fetch('/api/universities/analytics', {
+      const res = await fetch(`/api/universities/analytics?stream=${selectedStream}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const result = await res.json();
@@ -57,9 +60,30 @@ export default function AnalyticsPage() {
       </DashboardLayout>
     );
   }
-
   return (
     <DashboardLayout title="Applicant Analytics" navLinks={navLinks} theme="green">
+      {/* Stream Selector */}
+      <div className="mb-6 flex gap-2 bg-gray-100 p-1 rounded-lg w-fit">
+        <button
+          onClick={() => setSelectedStream('all')}
+          className={`px-4 py-2 rounded-md text-sm font-semibold transition ${selectedStream === 'all' ? 'bg-white shadow-sm text-green-600' : 'text-gray-600 hover:text-gray-900'}`}
+        >
+          All Streams
+        </button>
+        <button
+          onClick={() => setSelectedStream('natural')}
+          className={`px-4 py-2 rounded-md text-sm font-semibold transition ${selectedStream === 'natural' ? 'bg-white shadow-sm text-green-600' : 'text-gray-600 hover:text-gray-900'}`}
+        >
+          Natural Science
+        </button>
+        <button
+          onClick={() => setSelectedStream('social')}
+          className={`px-4 py-2 rounded-md text-sm font-semibold transition ${selectedStream === 'social' ? 'bg-white shadow-sm text-green-600' : 'text-gray-600 hover:text-gray-900'}`}
+        >
+          Social Science
+        </button>
+      </div>
+
       {/* Weight Distribution Card */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 mb-6 text-white">
         <h2 className="text-lg font-bold mb-3">Weight Distribution Formula</h2>
@@ -189,6 +213,7 @@ export default function AnalyticsPage() {
             <Medal className="w-5 h-5 text-yellow-500" />
             Top Ranked Applicants (Weighted Score)
           </h3>
+          <p className="text-xs text-gray-500 mt-1">Click on any candidate to inspect their detailed weighted score breakdown.</p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -203,7 +228,11 @@ export default function AnalyticsPage() {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {data.ranking.slice(0, 10).map((applicant: any, index: number) => (
-                <tr key={index} className="hover:bg-gray-50">
+                <tr 
+                  key={index} 
+                  onClick={() => setSelectedApplicant(applicant)}
+                  className="hover:bg-green-50/50 cursor-pointer transition-colors duration-150"
+                >
                   <td className="px-6 py-4">
                     {index === 0 && <Crown className="w-5 h-5 text-yellow-500" />}
                     {index === 1 && <Medal className="w-5 h-5 text-gray-400" />}
@@ -220,6 +249,144 @@ export default function AnalyticsPage() {
           </table>
         </div>
       </div>
+
+      {/* Score Breakdown Modal */}
+      {selectedApplicant && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all duration-300">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-gray-100 transform scale-100 transition-all">
+            <div className="bg-gradient-to-r from-green-600 to-teal-600 p-6 text-white relative">
+              <button 
+                onClick={() => setSelectedApplicant(null)}
+                className="absolute top-4 right-4 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <span className="text-xs font-bold uppercase tracking-wider bg-white/20 px-3 py-1 rounded-full">Applicant Score Breakdown</span>
+              <h4 className="text-2xl font-black mt-2">{selectedApplicant.name}</h4>
+              <p className="text-sm opacity-90 font-mono mt-1">Exam ID: {selectedApplicant.examID}</p>
+            </div>
+            
+            <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+              <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl">
+                <div>
+                  <p className="text-xs text-gray-500 font-bold uppercase">Raw Score</p>
+                  <p className="text-lg font-black text-gray-800">{selectedApplicant.examScore} <span className="text-xs text-gray-400 font-normal">/ {data.summary?.maxExamScore || 700}</span></p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 font-bold uppercase">Final Weighted Score</p>
+                  <p className="text-lg font-black text-green-600">{Number(selectedApplicant.weightedScore || 0).toFixed(2)}%</p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <h5 className="text-sm font-bold text-gray-700 uppercase tracking-wide">Weighted Contributions</h5>
+
+                {/* Exam Score */}
+                {data.settings.examScoreWeight > 0 && (
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-600 font-medium">Exam Performance ({data.settings.examScoreWeight}%)</span>
+                      <span className="font-bold text-gray-900">{Number(selectedApplicant.breakdown?.examScoreContribution || 0).toFixed(2)}%</span>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-blue-500 rounded-full" style={{ width: `${(Number(selectedApplicant.breakdown?.examScoreContribution || 0) / data.settings.examScoreWeight) * 100}%` }}></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Region */}
+                {data.settings.regionWeight > 0 && (
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-600 font-medium">Regional Preference ({selectedApplicant.region} - {data.settings.regionWeight}%)</span>
+                      <span className="font-bold text-gray-900">{Number(selectedApplicant.breakdown?.regionContribution || 0).toFixed(2)}%</span>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-green-500 rounded-full" style={{ width: `${(Number(selectedApplicant.breakdown?.regionContribution || 0) / data.settings.regionWeight) * 100}%` }}></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Gender */}
+                {data.settings.genderWeight > 0 && (
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-600 font-medium">Gender Balance ({selectedApplicant.gender} - {data.settings.genderWeight}%)</span>
+                      <span className="font-bold text-gray-900">{Number(selectedApplicant.breakdown?.genderContribution || 0).toFixed(2)}%</span>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-purple-500 rounded-full" style={{ width: `${(Number(selectedApplicant.breakdown?.genderContribution || 0) / data.settings.genderWeight) * 100}%` }}></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Disability */}
+                {data.settings.disabilityWeight > 0 && (
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-600 font-medium">Disability Bonus ({selectedApplicant.disability || 'None'} - {data.settings.disabilityWeight}%)</span>
+                      <span className="font-bold text-gray-900">{Number(selectedApplicant.breakdown?.disabilityContribution || 0).toFixed(2)}%</span>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-red-500 rounded-full" style={{ width: `${(Number(selectedApplicant.breakdown?.disabilityContribution || 0) / data.settings.disabilityWeight) * 100}%` }}></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Interview / Entrance Exam */}
+                {(data.settings.invitationScoreWeight || 0) > 0 && (
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-600 font-medium">Interview / Entrance Exam ({data.settings.invitationScoreWeight}%)</span>
+                      <span className="font-bold text-gray-900">{Number(selectedApplicant.breakdown?.invitationScoreContribution || 0).toFixed(2)}%</span>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-orange-500 rounded-full" style={{ width: `${(Number(selectedApplicant.breakdown?.invitationScoreContribution || 0) / data.settings.invitationScoreWeight) * 100}%` }}></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Document Evaluation */}
+                {(data.settings.documentScoreWeight || 0) > 0 && (
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-600 font-medium">Document Evaluation ({data.settings.documentScoreWeight}%)</span>
+                      <span className="font-bold text-gray-900">{Number(selectedApplicant.breakdown?.documentContribution || 0).toFixed(2)}%</span>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-teal-500 rounded-full" style={{ width: `${(Number(selectedApplicant.breakdown?.documentContribution || 0) / data.settings.documentScoreWeight) * 100}%` }}></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Custom Criteria */}
+                {Number(selectedApplicant.breakdown?.customContribution || 0) > 0 && (
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-600 font-medium">Custom Criteria Contributions</span>
+                      <span className="font-bold text-gray-900">{Number(selectedApplicant.breakdown?.customContribution || 0).toFixed(2)}%</span>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${100}%` }}></div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+              <button
+                onClick={() => setSelectedApplicant(null)}
+                className="px-5 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded-xl font-semibold transition shadow-sm"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 }

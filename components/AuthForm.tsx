@@ -1,9 +1,20 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Eye, EyeOff, Lock, User, ShieldCheck, Mail, GraduationCap } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { 
+  KeyRound, 
+  ShieldAlert, 
+  CheckCircle2, 
+  Loader2, 
+  User, 
+  Lock, 
+  Mail, 
+  ShieldCheck, 
+  GraduationCap, 
+  Eye, 
+  EyeOff 
+} from 'lucide-react';
 
 interface AuthFormProps {
   title: string;
@@ -27,20 +38,6 @@ interface AuthFormProps {
   theme?: 'blue' | 'purple' | 'green' | 'orange';
 }
 
-const themeClasses = {
-  blue: 'from-blue-50 to-blue-100 dark:from-blue-900/10 dark:to-blue-800/10 border-blue-200 dark:border-blue-800',
-  purple: 'from-purple-50 to-purple-100 dark:from-purple-900/10 dark:to-purple-800/10 border-purple-200 dark:border-purple-800',
-  green: 'from-green-50 to-green-100 dark:from-green-900/10 dark:to-green-800/10 border-green-200 dark:border-green-800',
-  orange: 'from-orange-50 to-orange-100 dark:from-orange-900/10 dark:to-orange-800/10 border-orange-200 dark:border-orange-800',
-};
-
-const themeButtonClasses = {
-  blue: 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/20',
-  purple: 'bg-purple-600 hover:bg-purple-700 shadow-purple-500/20',
-  green: 'bg-green-600 hover:bg-green-700 shadow-green-500/20',
-  orange: 'bg-orange-600 hover:bg-orange-700 shadow-orange-500/20',
-};
-
 const iconMap = {
   user: User,
   lock: Lock,
@@ -61,25 +58,17 @@ export function AuthForm({
   footerLink,
   forgotPasswordLink,
   successMessage,
-  theme = 'blue',
 }: AuthFormProps) {
+  const router = useRouter();
   const [formData, setFormData] = useState<Record<string, string>>(
     fields.reduce((acc, field) => ({ ...acc, [field.name]: '' }), {})
   );
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    if (formErrors[name]) {
-      setFormErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
-    }
   };
 
   const togglePasswordVisibility = (name: string) => {
@@ -98,42 +87,60 @@ export function AuthForm({
     }
   };
 
+  // Determine header icon dynamically based on title
+  const titleLower = title.toLowerCase();
+  let HeaderIcon = Lock;
+  if (titleLower.includes('register') || titleLower.includes('create') || titleLower.includes('sign up')) {
+    HeaderIcon = User;
+  } else if (titleLower.includes('reset') || titleLower.includes('forgot') || titleLower.includes('change')) {
+    HeaderIcon = KeyRound;
+  } else if (titleLower.includes('moe') || titleLower.includes('admin') || titleLower.includes('platform')) {
+    HeaderIcon = ShieldCheck;
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
-      <div className={`w-full max-w-2xl bg-gradient-to-br ${themeClasses[theme]} rounded-[3rem] shadow-2xl border p-12 lg:p-16 animate-in fade-in zoom-in duration-500`}>
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-black text-foreground mb-4 tracking-tighter">{title}</h1>
-          {description && <p className="text-xl font-medium text-muted-foreground">{description}</p>}
+    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col items-center justify-center p-4 relative overflow-hidden select-none">
+      {/* Background gradients */}
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-500/10 blur-[120px]" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-violet-500/10 blur-[120px]" />
+
+      <div className="w-full max-w-md bg-slate-800/50 border border-slate-700/50 backdrop-blur-xl rounded-3xl p-8 shadow-2xl relative z-10 animate-in fade-in zoom-in duration-300">
+        <div className="flex flex-col items-center text-center mb-8">
+          <div className="w-14 h-14 bg-gradient-to-tr from-blue-500 to-violet-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20 mb-4 animate-bounce">
+            <HeaderIcon className="w-6 h-6 text-white" />
+          </div>
+          <h1 className="text-2xl font-black bg-gradient-to-r from-blue-400 via-indigo-200 to-violet-400 bg-clip-text text-transparent">
+            {title}
+          </h1>
+          {description && (
+            <p className="text-slate-400 text-sm mt-2">
+              {description}
+            </p>
+          )}
         </div>
 
         {error && (
-          <div className="mb-8 p-6 bg-destructive/10 border border-destructive/20 rounded-2xl animate-in slide-in-from-top-2">
-            <p className="text-destructive text-lg font-bold text-center">{error}</p>
-          </div>
-        )}
-        
-        {successMessage && (
-          <div className="mb-8 p-6 bg-green-500/10 border border-green-500/20 rounded-2xl animate-in slide-in-from-top-2">
-            <p className="text-green-600 text-lg font-bold text-center">{successMessage}</p>
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-200 rounded-2xl flex items-start gap-3 text-sm">
+            <ShieldAlert className="w-5 h-5 shrink-0 text-red-400 mt-0.5" />
+            <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+        {successMessage && (
+          <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-200 rounded-2xl flex items-start gap-3 text-sm">
+            <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-400 mt-0.5" />
+            <span>{successMessage}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-5">
           {fields.map((field) => (
-            <div key={field.name} className="relative group">
-              <label htmlFor={field.name} className="block text-sm font-black text-muted-foreground uppercase tracking-widest mb-3 ml-2">
+            <div key={field.name} className="space-y-2">
+              <label htmlFor={field.name} className="block text-xs font-black uppercase tracking-wider text-slate-400">
                 {field.label}
               </label>
               <div className="relative">
-                {field.icon && (
-                  <div className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
-                    {(() => {
-                      const Icon = iconMap[field.icon];
-                      return <Icon size={24} />;
-                    })()}
-                  </div>
-                )}
-                <Input
+                <input
                   id={field.name}
                   name={field.name}
                   type={field.type === 'password' ? (showPassword[field.name] ? 'text' : 'password') : field.type}
@@ -142,56 +149,48 @@ export function AuthForm({
                   onChange={handleChange}
                   required={field.required !== false}
                   disabled={isSubmitting || loading}
-                  className={`h-20 text-xl font-bold rounded-3xl border-2 bg-background/50 backdrop-blur-sm px-6 ${field.icon ? 'pl-16' : ''} ${field.type === 'password' ? 'pr-16' : ''} focus:ring-4 focus:ring-primary/10 transition-all ${formErrors[field.name] ? 'border-destructive' : 'border-border group-hover:border-primary/50'}`}
+                  className="w-full bg-slate-900/60 border border-slate-700 focus:border-blue-500 rounded-2xl px-4 py-3.5 text-sm font-semibold outline-none transition text-slate-100 placeholder-slate-500"
                 />
                 {field.type === 'password' && (
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility(field.name)}
-                    className="absolute right-5 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-primary transition-colors focus:outline-none"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition focus:outline-none"
                   >
-                    {showPassword[field.name] ? <EyeOff size={24} /> : <Eye size={24} />}
+                    {showPassword[field.name] ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 )}
               </div>
               {field.type === 'password' && forgotPasswordLink && (
-                <div className="flex justify-end mt-2 mr-2">
+                <div className="flex justify-end mt-1">
                   <a 
                     href={forgotPasswordLink.href} 
-                    className="text-sm font-bold text-primary hover:underline transition-all"
+                    className="text-xs font-bold text-blue-400 hover:underline transition-all"
                   >
                     {forgotPasswordLink.text}
                   </a>
                 </div>
               )}
-              {formErrors[field.name] && (
-                <p className="mt-2 text-base font-bold text-destructive ml-2">{formErrors[field.name]}</p>
-              )}
             </div>
           ))}
 
-          <Button
+          <button
             type="submit"
             disabled={isSubmitting || loading}
-            className={`w-full h-20 text-white font-black text-xl uppercase tracking-[0.2em] rounded-3xl transition-all duration-500 shadow-2xl ${
-              themeButtonClasses[theme]
-            } disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-95`}
+            className="w-full mt-2 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white font-bold py-3.5 px-4 rounded-2xl text-sm transition shadow-lg shadow-blue-600/20 disabled:opacity-50 flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-95 cursor-pointer"
           >
             {isSubmitting || loading ? (
-              <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-6 w-6 border-4 border-white border-t-transparent mr-4"></div>
-                Processing...
-              </div>
+              <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
               submitButtonText
             )}
-          </Button>
+          </button>
         </form>
 
         {footerText && footerLink && (
-          <p className="mt-12 text-center text-muted-foreground text-lg font-bold">
+          <p className="mt-6 text-center text-slate-400 text-sm font-bold">
             {footerText}{' '}
-            <a href={footerLink.href} className="text-primary hover:underline underline-offset-8 decoration-2 transition-all">
+            <a href={footerLink.href} className="text-blue-400 hover:underline underline-offset-4 decoration-2 transition-all">
               {footerLink.text}
             </a>
           </p>

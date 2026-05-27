@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { AuthForm } from '@/components/AuthForm';
 
-export default function StudentResetPasswordPage() {
+function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get('token');
@@ -91,5 +91,20 @@ export default function StudentResetPasswordPage() {
       }}
       theme="blue"
     />
+  );
+}
+
+export default function StudentResetPasswordPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-900 text-slate-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-flex h-12 w-12 animate-spin rounded-full border-4 border-slate-800 border-t-blue-500" />
+          <p className="mt-4 text-slate-400">Loading password reset form...</p>
+        </div>
+      </div>
+    }>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }
