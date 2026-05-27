@@ -1,3 +1,20 @@
-﻿node_modules/
+node_modules/
 .next/
+.expo/
+
+# Environment files — NEVER commit these
 .env
+.env.local
+.env.production
+.env*.local
+.envs
+
+# Database backups — contain sensitive data
+*.dump
+*.sql
+render_backup.sql
+
+# Build outputs
+dist/
+build/
+out/
