@@ -99,7 +99,7 @@ export default function PlatformSettingsPage() {
       const res = await fetch('/api/admin/years/activate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ academicYear: year })
+        body: JSON.stringify({ academicYear: year, active: true })
       });
       const data = await res.json();
       if (data.success) {
@@ -107,6 +107,30 @@ export default function PlatformSettingsPage() {
         fetchYears();
       } else {
         setMessage({ type: 'error', text: data.error || 'Failed to activate year' });
+      }
+    } catch {
+      setMessage({ type: 'error', text: 'Network error' });
+    } finally {
+      setActivatingYear('');
+      setTimeout(() => setMessage(null), 4000);
+    }
+  }
+
+  async function handleDeactivateYear(year: string) {
+    setActivatingYear(year);
+    try {
+      const token = authHelpers.getToken();
+      const res = await fetch('/api/admin/years/activate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ academicYear: year, active: false })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMessage({ type: 'success', text: `Academic year ${year} deactivated successfully!` });
+        fetchYears();
+      } else {
+        setMessage({ type: 'error', text: data.error || 'Failed to deactivate year' });
       }
     } catch {
       setMessage({ type: 'error', text: 'Network error' });
@@ -296,7 +320,15 @@ export default function PlatformSettingsPage() {
                       </span>
                     )}
                   </div>
-                  {!year.isActive && (
+                  {year.isActive ? (
+                    <button
+                      onClick={() => handleDeactivateYear(year.year)}
+                      disabled={activatingYear === year.year}
+                      className="px-5 py-2 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition text-sm disabled:opacity-50"
+                    >
+                      {activatingYear === year.year ? 'Deactivating...' : 'Deactivate'}
+                    </button>
+                  ) : (
                     <button
                       onClick={() => handleActivateYear(year.year)}
                       disabled={activatingYear === year.year}

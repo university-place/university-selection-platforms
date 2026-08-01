@@ -95,6 +95,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: 'name, code, and type are required' }, { status: 400 });
     }
 
+    if (contactEmail && !contactEmail.toLowerCase().endsWith('.edu.et')) {
+      return NextResponse.json({ success: false, error: 'University contact email must use an official .edu.et domain.' }, { status: 400 });
+    }
+
     const university = await prisma.university.create({
       data: {
         name,

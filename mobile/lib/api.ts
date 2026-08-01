@@ -1,5 +1,31 @@
+
+
+
+import { Platform } from 'react-native';
+
 // API Client for Mobile App
-const API_BASE_URL = 'http://192.168.137.97:3000/api'; // Change to your backend URL
+// Current local Wi-Fi IPv4 is 10.46.46.141. For Web simulation, use localhost.
+const DEV_HOST = '10.46.46.141';
+
+const API_BASE_URL = Platform.select({
+  android: `http://${DEV_HOST}:3000/api`,
+  ios: `http://${DEV_HOST}:3000/api`,
+  default: 'http://localhost:3000/api',
+}) || 'http://localhost:3000/api';
+
+// Safe JSON parser: avoids "Unexpected token '<'" when server returns HTML error pages
+async function safeJsonParse(response: Response): Promise<any> {
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    const text = await response.text();
+    throw new Error(
+      `Server returned non-JSON response (HTTP ${response.status}). ` +
+      `This usually means the backend API server is down or the database is not connected. ` +
+      `Preview: ${text.substring(0, 120)}`
+    );
+  }
+  return response.json();
+}
 
 interface ApiResponse<T> {
   success: boolean;
@@ -23,7 +49,7 @@ export const apiClient = {
       });
 
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.message || 'Login failed');
       }
@@ -52,7 +78,7 @@ export const apiClient = {
       });
 
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.error || data.message || 'Failed to change password');
       }
@@ -88,7 +114,7 @@ export const apiClient = {
       });
 
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.message || 'Registration failed');
       }
@@ -175,21 +201,66 @@ export const apiClient = {
         },
       });
 
-      const data = await response.json();
+      const data = await safeJsonParse(response);
 
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to fetch universities');
+        throw new Error(data.message || data.error || 'Failed to fetch universities');
       }
 
+      // API returns: { success: true, universities: [...] }
+      // Normalize to { success: true, data: { universities: [...] } }
       return {
         success: true,
-        data: data,
+        data: {
+          universities: data.universities || data.data?.universities || [],
+        },
       };
     } catch (error: any) {
       return {
         success: false,
         message: error.message || 'Network error',
+        data: { universities: [] },
       };
+    }
+  },
+
+  // Get full university profile by ID (matches web /university/[id] page)
+  async getUniversityById(token: string, universityId: number) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/universities/${universityId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await safeJsonParse(response);
+      if (!response.ok) {
+        throw new Error(data.error || 'University not found');
+      }
+      return { success: true, university: data };
+    } catch (error: any) {
+      return { success: false, message: error.message || 'Network error', university: null };
+    }
+  },
+
+  // Get programs for a university (matches web /api/universities/[id]/programs)
+  async getUniversityPrograms(token: string, universityId: number) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/universities/${universityId}/programs`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await safeJsonParse(response);
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch programs');
+      }
+      return { success: true, programs: data.programs || [] };
+    } catch (error: any) {
+      return { success: false, message: error.message || 'Network error', programs: [] };
     }
   },
 

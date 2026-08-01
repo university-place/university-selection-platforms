@@ -91,7 +91,7 @@ export async function POST(request: Request) {
         examID: student.examID,
         role: 'STUDENT',
       },
-      process.env.JWT_SECRET!,
+      process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || "dXFzVnQzYUdMZkhNQVFwQjRyOHY2TzV4aTdqYjBlQ2M=",
       { expiresIn: '365d' }
     );
 

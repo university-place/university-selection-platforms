@@ -84,21 +84,29 @@ export default function UniversityPublicPage() {
     setLoading(true);
     setError('');
     try {
-      // Fetch university basic info with all new fields
+      // Fetch university basic info
       const uniRes = await fetch(`/api/universities/${universityId}`);
-      if (!uniRes.ok) {
-        const errData = await uniRes.json().catch(() => ({}));
-        throw new Error(errData.error || 'University not found');
+      
+      // Safe parse: handles HTML error pages (e.g. 500 from DB crash)
+      const uniData = await uniRes.json().catch(() => null);
+      
+      if (!uniRes.ok || !uniData) {
+        const msg = uniData?.error || `Failed to load university (HTTP ${uniRes.status})`;
+        throw new Error(
+          uniRes.status === 500
+            ? 'The server encountered an error. This usually means the database is not connected. Please try again later.'
+            : msg
+        );
       }
-      const uniData = await uniRes.json();
       setUniversity(uniData);
 
-      // Fetch programs with tracks
+      // Fetch programs with tracks — safe parse
       const programsRes = await fetch(`/api/universities/${universityId}/programs`);
-      const programsData = await programsRes.json();
-      if (programsData.success) {
+      const programsData = await programsRes.json().catch(() => null);
+      if (programsData?.success && programsData.programs) {
         setPrograms(programsData.programs);
       }
+      // Programs failing is non-fatal — page still renders with empty programs list
     } catch (err: any) {
       console.error('Error:', err);
       setError(err.message || 'Failed to load university data');

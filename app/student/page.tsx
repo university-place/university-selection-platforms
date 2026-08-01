@@ -185,27 +185,39 @@ const [submittingPref, setSubmittingPref] = useState<number | null>(null);
     }
     fetchDashboardData();
   }, []);
-// Fetch programs when university is selected
-useEffect(() => {
-  console.log('University changed to:', newPreference.universityId);
-  if (newPreference.universityId && newPreference.universityId !== 0) {
-    fetchUniversityPrograms(newPreference.universityId);
-  } else {
-    setAvailablePrograms([]);
-    setAvailableTracks([]);
-  }
-}, [newPreference.universityId]);
 
-
-  // ✅ ADD THIS - Fetch tracks when program is selected
+  // Re-fetch appeals every time the user opens the Placement & Appeals tab
   useEffect(() => {
-  console.log('Program changed to:', newPreference.programId);
-  if (newPreference.programId && newPreference.programId !== 0) {
-    fetchTracksForProgram(newPreference.programId);
-  } else {
-    setAvailableTracks([]);
-  }
-}, [newPreference.programId]);
+    if (activeTab === 'placement') {
+      const token = authHelpers.getToken();
+      if (!token) return;
+      fetch('/api/students/appeals', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then(r => r.json())
+        .then(d => { if (d.success) setAppeals(d.data || []); })
+        .catch(e => console.error('Failed to refresh appeals:', e));
+    }
+  }, [activeTab]);
+
+  // Fetch programs when university is selected
+  useEffect(() => {
+    if (newPreference.universityId && newPreference.universityId !== 0) {
+      fetchUniversityPrograms(newPreference.universityId);
+    } else {
+      setAvailablePrograms([]);
+      setAvailableTracks([]);
+    }
+  }, [newPreference.universityId]);
+
+  // Fetch tracks when program is selected
+  useEffect(() => {
+    if (newPreference.programId && newPreference.programId !== 0) {
+      fetchTracksForProgram(newPreference.programId);
+    } else {
+      setAvailableTracks([]);
+    }
+  }, [newPreference.programId]);
   // Replace your fetchDashboardData function with this:
 async function fetchDashboardData() {
   setLoading(true);
@@ -666,12 +678,16 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
         setAppealForm({ type: 'placement', description: '', preferenceId: '', target: 'MOE', universityId: '' });
         alert('Appeal submitted successfully.');
         
-        // Refresh appeals
-        const appealsRes = await fetch('/api/students/appeals', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const appealsData = await appealsRes.json();
-        if (appealsData.success) setAppeals(appealsData.data);
+        // Refresh appeals list immediately after submit
+        try {
+          const appealsRes = await fetch('/api/students/appeals', {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const appealsData = await appealsRes.json();
+          if (appealsData.success) setAppeals(appealsData.data || []);
+        } catch (e) {
+          console.error('Failed to refresh appeals:', e);
+        }
       } else {
         alert(data.error || 'Failed to submit appeal');
       }

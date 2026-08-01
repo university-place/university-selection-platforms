@@ -3,9 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
 }
 
 model Student {
@@ -15,8 +13,8 @@ model Student {
   studentNationalID         String
   firstName                 String
   lastName                  String
-  email                     String?                     // ✅ Made optional with ?
-  phone                     String?                     // ✅ Made optional with ?
+  email                     String?
+  phone                     String?
   region                    String?
   examResults               Json?
   dataVersion               String?
@@ -39,6 +37,7 @@ model Student {
   stream                    String?
   isForeign                 Boolean                     @default(false)
   nationality               String?
+  customAttributes          Json?
   appeal                    Appeal[]
   applications              Application[]
   DepartmentPlacement       DepartmentPlacement[]
@@ -49,8 +48,6 @@ model Student {
   StudentConfirmation       StudentConfirmation[]
   studentVerificationTokens StudentVerificationToken[]
   UniversityAdmissionResult UniversityAdmissionResult[]
-  customAttributes          Json?                       // ✅ Dynamic attributes from MOE admin
-
 
   @@unique([examID, academicYear])
   @@index([academicYear, isActive])
@@ -69,12 +66,12 @@ model AcademicYear {
 
 model PlatformAdmin {
   id        Int      @id @default(autoincrement())
-  username  String   @unique
-  password  String
   name      String?
   role      String   @default("PLATFORM_ADMIN")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  username  String   @unique
+  password  String
 }
 
 model User {
@@ -135,20 +132,20 @@ model University {
   allowedDomains            String[]
   isRegistered              Boolean                     @default(false)
   applicationDeadline       DateTime?
-  keyFacts                  Json?
   accreditation             String?
-  history                   String?
   achievements              String?
+  applicationStartDate      DateTime?                   @db.Timestamp(6)
   facilities                String?
+  history                   String?
+  isAutonomous              Boolean                     @default(false)
+  keyFacts                  Json?
   researchAreas             String?
   studentLife               String?
-  isAutonomous              Boolean                     @default(false)
   totalCapacity             Int                         @default(0)
-  applicationStartDate      DateTime?                   @db.Timestamp(6)
+  appeals                   Appeal[]
   DepartmentPlacement       DepartmentPlacement[]
   documents                 Document[]
   InterviewInvitation       InterviewInvitation[]
-  appeals                   Appeal[]
   placements                Placement[]
   preferences               Preference[]
   programs                  Program[]
@@ -247,9 +244,9 @@ model Document {
   verifiedAt         DateTime?
   createdAt          DateTime    @default(now())
   updatedAt          DateTime    @updatedAt
+  preferenceId       Int?
   scope              String?     @default("general")
   universityId       Int?
-  preferenceId       Int?
   preference         Preference? @relation(fields: [preferenceId], references: [id], onUpdate: NoAction)
   student            Student     @relation(fields: [studentId], references: [id])
   university         University? @relation(fields: [universityId], references: [id], onUpdate: NoAction)
@@ -280,21 +277,21 @@ model Preference {
   admissionTrackId     Int?
   status               String?         @default("PENDING")
   decisionDate         DateTime?
-  academicYear         String?         // ✅ ADD THIS LINE
   confirmationDeadline DateTime?
   confirmedAt          DateTime?
   remarks              String?
-  weightedScore        Float?
-  weightPercent        Float?
-  placementReason      String?
   createdAt            DateTime        @default(now())
   updatedAt            DateTime        @updatedAt
+  cancelledAt          DateTime?       @db.Timestamp(6)
+  cancelledReason      String?
+  isCancelled          Boolean?        @default(false)
   studentId            Int?
   submissionCount      Int             @default(0)
   submittedAt          DateTime?
-  isCancelled          Boolean?        @default(false)
-  cancelledAt          DateTime?       @db.Timestamp(6)
-  cancelledReason      String?
+  academicYear         String?
+  placementReason      String?
+  weightPercent        Float?
+  weightedScore        Float?
   documentScore        Float?
   appeals              Appeal[]
   documents            Document[]
@@ -309,7 +306,6 @@ model Appeal {
   id           Int         @id @default(autoincrement())
   studentId    Int?
   preferenceId Int?
-  universityId Int?
   type         String
   description  String
   evidence     Json?
@@ -321,6 +317,7 @@ model Appeal {
   updatedAt    DateTime    @updatedAt
   senderRole   String      @default("STUDENT")
   target       String      @default("MOE")
+  universityId Int?
   preference   Preference? @relation(fields: [preferenceId], references: [id])
   student      Student?    @relation(fields: [studentId], references: [id])
   university   University? @relation(fields: [universityId], references: [id])
@@ -458,7 +455,6 @@ model InterviewInvitation {
   date             DateTime
   location         String?
   instructions     String?
-  invitationScore  Float?
   status           String          @default("PENDING")
   studentResponse  String?
   respondedAt      DateTime?
@@ -468,6 +464,7 @@ model InterviewInvitation {
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
   responseDeadline DateTime?
+  invitationScore  Float?
   admissionTrack   AdmissionTrack? @relation(fields: [admissionTrackId], references: [id])
   program          Program?        @relation(fields: [programId], references: [id])
   student          Student         @relation(fields: [studentId], references: [id])

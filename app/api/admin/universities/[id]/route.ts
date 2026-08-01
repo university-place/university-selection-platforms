@@ -21,9 +21,15 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     const id = parseInt(params.id);
     const body = await request.json();
     const allowedDomains =
-      body.domain !== undefined
-        ? (typeof body.domain === 'string' && body.domain.trim() ? [body.domain.trim().toLowerCase()] : [])
-        : undefined;
+        body.domain !== undefined
+          ? (typeof body.domain === 'string' && body.domain.trim() ? [body.domain.trim().toLowerCase()] : [])
+          : undefined;
+
+    if (body.contactEmail && typeof body.contactEmail === 'string') {
+      if (!body.contactEmail.toLowerCase().endsWith('.edu.et')) {
+        return NextResponse.json({ success: false, error: 'University contact email must use an official .edu.et domain.' }, { status: 400 });
+      }
+    }
 
     const university = await prisma.university.update({
       where: { id },

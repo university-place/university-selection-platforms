@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   Alert,
   SafeAreaView,
@@ -10,8 +10,10 @@ import {
   ActivityIndicator,
   Modal,
   TextInput,
+  RefreshControl,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import { useAuth } from '@/context/AuthContext';
 import { apiClient } from '@/lib/api';
 
@@ -21,6 +23,7 @@ export default function AppealsScreen() {
   
   const [appeals, setAppeals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [targetTab, setTargetTab] = useState<'MOE' | 'UNIVERSITY'>('MOE');
   
   // Modal state
@@ -34,14 +37,18 @@ export default function AppealsScreen() {
     universityId: ''
   });
 
-  useEffect(() => {
-    fetchAppeals();
-  }, []);
+  // Auto-fetch every time this screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      fetchAppeals();
+    }, [token])
+  );
 
-  const fetchAppeals = async () => {
+  const fetchAppeals = async (isRefresh = false) => {
     try {
       if (!token) return;
-      setLoading(true);
+      if (isRefresh) setRefreshing(true);
+      else setLoading(true);
       const result = await apiClient.getAppeals(token);
       if (result.success) {
         setAppeals(result.data || []);
@@ -52,8 +59,10 @@ export default function AppealsScreen() {
       Alert.alert('Error', error.message || 'An error occurred');
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
+
 
   const handleSubmitAppeal = async () => {
     if (!appealForm.description || !appealForm.type) {
@@ -102,26 +111,39 @@ export default function AppealsScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => fetchAppeals(true)}
+            colors={['#4f46e5']}
+          />
+        }
+      >
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>My Appeals</Text>
-          <Text style={styles.subtitle}>Submit and track your appeals</Text>
+          <Text style={styles.subtitle}>Pull down to refresh · {appeals.length} total</Text>
         </View>
 
         {/* Target Tabs */}
         <View style={styles.tabsContainer}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.tab, targetTab === 'MOE' && styles.activeTab]}
             onPress={() => setTargetTab('MOE')}
           >
-            <Text style={[styles.tabText, targetTab === 'MOE' && styles.activeTabText]}>MOE Appeals</Text>
+            <Text style={[styles.tabText, targetTab === 'MOE' && styles.activeTabText]}>
+              MOE ({appeals.filter(a => a.target === 'MOE').length})
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.tab, targetTab === 'UNIVERSITY' && styles.activeTab]}
             onPress={() => setTargetTab('UNIVERSITY')}
           >
-            <Text style={[styles.tabText, targetTab === 'UNIVERSITY' && styles.activeTabText]}>University Appeals</Text>
+            <Text style={[styles.tabText, targetTab === 'UNIVERSITY' && styles.activeTabText]}>
+              University ({appeals.filter(a => a.target === 'UNIVERSITY').length})
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -129,12 +151,9 @@ export default function AppealsScreen() {
         <View style={styles.content}>
           <View style={styles.actionRow}>
             <Text style={styles.sectionTitle}>
-              {targetTab === 'MOE' ? 'Ministry of Education Appeals' : 'University Appeals'}
+              {targetTab === 'MOE' ? 'Ministry of Education' : 'University Appeals'}
             </Text>
-            <TouchableOpacity 
-              style={styles.addButton}
-              onPress={() => setShowModal(true)}
-            >
+            <TouchableOpacity style={styles.addButton} onPress={() => setShowModal(true)}>
               <Text style={styles.addButtonText}>+ New Appeal</Text>
             </TouchableOpacity>
           </View>
@@ -142,53 +161,89 @@ export default function AppealsScreen() {
           {filteredAppeals.length === 0 ? (
             <View style={styles.emptyState}>
               <Text style={styles.emptyStateIcon}>📢</Text>
-              <Text style={styles.emptyStateTitle}>No Appeals Found</Text>
+              <Text style={styles.emptyStateTitle}>No Appeals Yet</Text>
               <Text style={styles.emptyStateText}>
-                You have not submitted any appeals to {targetTab === 'MOE' ? 'MOE' : 'a University'} yet.
+                No appeals submitted to {targetTab === 'MOE' ? 'Ministry of Education' : 'a University'} yet.
               </Text>
             </View>
           ) : (
-            filteredAppeals.map((appeal, index) => (
-              <View key={appeal.id || index} style={styles.appealCard}>
-                <View style={styles.appealHeader}>
-                  <Text style={styles.appealType}>
-                    {appeal.type.charAt(0).toUpperCase() + appeal.type.slice(1)} Appeal
-                  </Text>
-                  <View style={[
-                    styles.statusBadge, 
-                    (appeal.status === 'approved' || appeal.status === 'resolved') ? styles.statusApproved : 
-                    appeal.status === 'rejected' ? styles.statusRejected : 
-                    styles.statusPending
-                  ]}>
-                    <Text style={[
-                      styles.statusText,
-                      (appeal.status === 'approved' || appeal.status === 'resolved') ? styles.statusTextApproved : 
-                      appeal.status === 'rejected' ? styles.statusTextRejected : 
-                      styles.statusTextPending
+            filteredAppeals.map((appeal, index) => {
+              const isMoe = appeal.target === 'MOE';
+              const isResolved = appeal.status === 'resolved' || appeal.status === 'approved';
+              const isRejected = appeal.status === 'rejected';
+              return (
+                <View key={appeal.id || index} style={styles.appealCard}>
+                  {/* Header */}
+                  <View style={styles.appealHeader}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.appealType}>
+                        {(appeal.type || 'general').charAt(0).toUpperCase() + (appeal.type || 'general').slice(1)} Appeal
+                      </Text>
+                      <Text style={styles.appealDate}>
+                        #{appeal.id} · {new Date(appeal.createdAt).toLocaleDateString()}
+                      </Text>
+                    </View>
+                    <View style={[
+                      styles.statusBadge,
+                      isResolved ? styles.statusApproved :
+                      isRejected ? styles.statusRejected :
+                      styles.statusPending
                     ]}>
-                      {appeal.status || 'Pending'}
+                      <Text style={[
+                        styles.statusText,
+                        isResolved ? styles.statusTextApproved :
+                        isRejected ? styles.statusTextRejected :
+                        styles.statusTextPending
+                      ]}>
+                        {(appeal.status || 'pending').toUpperCase()}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* Related info */}
+                  {appeal.preference && (
+                    <Text style={styles.appealMeta}>
+                      📎 {appeal.preference.university?.name} — {appeal.preference.program?.name}
                     </Text>
-                  </View>
+                  )}
+                  {!appeal.preference && appeal.university?.name && (
+                    <Text style={styles.appealMeta}>🏫 {appeal.university.name}</Text>
+                  )}
+
+                  {/* Description */}
+                  <Text style={styles.appealDescription}>"{appeal.description}"</Text>
+
+                  {/* Pending */}
+                  {!isResolved && !isRejected && (
+                    <View style={styles.pendingBox}>
+                      <Text style={styles.pendingText}>
+                        ⏳ Under review by {isMoe ? 'Ministry of Education' : 'University'}
+                      </Text>
+                    </View>
+                  )}
+
+                  {/* Resolved response */}
+                  {appeal.resolution && isResolved && (
+                    <View style={[styles.responseBox, isMoe ? styles.responseBoxMoe : styles.responseBoxUniversity]}>
+                      <Text style={[styles.responseLabel, isMoe ? styles.responseLabelMoe : styles.responseLabelUni]}>
+                        ✓ {isMoe ? 'MOE Resolution' : `${appeal.university?.name || 'University'} Response`}:
+                      </Text>
+                      <Text style={styles.responseText}>{appeal.resolution}</Text>
+                    </View>
+                  )}
+
+                  {/* Rejected response */}
+                  {appeal.resolution && isRejected && (
+                    <View style={styles.rejectedBox}>
+                      <Text style={styles.rejectedLabel}>
+                        ✗ Rejected by {isMoe ? 'MOE' : (appeal.university?.name || 'University')}:
+                      </Text>
+                      <Text style={styles.responseText}>{appeal.resolution}</Text>
+                    </View>
+                  )}
                 </View>
-                
-                <Text style={styles.appealDate}>
-                  {new Date(appeal.createdAt).toLocaleDateString()}
-                </Text>
-                
-                {appeal.university?.name && (
-                  <Text style={styles.appealMeta}>University: {appeal.university.name}</Text>
-                )}
-                
-                <Text style={styles.appealDescription}>{appeal.description}</Text>
-                
-                {appeal.resolution && (
-                  <View style={styles.responseBox}>
-                    <Text style={styles.responseLabel}>Response:</Text>
-                    <Text style={styles.responseText}>{appeal.resolution}</Text>
-                  </View>
-                )}
-              </View>
-            ))
+              );
+            })
           )}
         </View>
       </ScrollView>
@@ -278,40 +333,51 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f5' },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   loadingText: { marginTop: 12, fontSize: 14, color: '#666' },
-  header: { backgroundColor: '#007AFF', paddingHorizontal: 20, paddingTop: 16, paddingBottom: 20 },
+  header: { backgroundColor: '#4f46e5', paddingHorizontal: 20, paddingTop: 16, paddingBottom: 20 },
   title: { fontSize: 28, fontWeight: 'bold', color: '#fff', marginBottom: 4 },
-  subtitle: { fontSize: 14, color: 'rgba(255,255,255,0.8)' },
+  subtitle: { fontSize: 13, color: 'rgba(255,255,255,0.75)' },
   tabsContainer: { flexDirection: 'row', backgroundColor: '#fff', elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 2 },
-  tab: { flex: 1, paddingVertical: 16, alignItems: 'center', borderBottomWidth: 2, borderBottomColor: 'transparent' },
-  activeTab: { borderBottomColor: '#007AFF' },
-  tabText: { fontSize: 14, fontWeight: '600', color: '#666' },
-  activeTabText: { color: '#007AFF' },
+  tab: { flex: 1, paddingVertical: 14, alignItems: 'center', borderBottomWidth: 2.5, borderBottomColor: 'transparent' },
+  activeTab: { borderBottomColor: '#4f46e5' },
+  tabText: { fontSize: 13, fontWeight: '600', color: '#666' },
+  activeTabText: { color: '#4f46e5' },
   content: { padding: 16 },
   actionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#111' },
-  addButton: { backgroundColor: '#007AFF', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 6 },
-  addButtonText: { color: '#fff', fontSize: 13, fontWeight: 'bold' },
-  emptyState: { backgroundColor: '#fff', borderRadius: 12, padding: 32, alignItems: 'center', marginTop: 20 },
+  sectionTitle: { fontSize: 16, fontWeight: '700', color: '#111', flex: 1 },
+  addButton: { backgroundColor: '#f97316', paddingHorizontal: 14, paddingVertical: 9, borderRadius: 8 },
+  addButtonText: { color: '#fff', fontSize: 13, fontWeight: '700' },
+  emptyState: { backgroundColor: '#fff', borderRadius: 12, padding: 32, alignItems: 'center', marginTop: 12 },
   emptyStateIcon: { fontSize: 48, marginBottom: 16 },
   emptyStateTitle: { fontSize: 18, fontWeight: 'bold', color: '#333', marginBottom: 8 },
   emptyStateText: { fontSize: 14, color: '#666', textAlign: 'center', lineHeight: 20 },
-  appealCard: { backgroundColor: '#fff', borderRadius: 12, padding: 16, marginBottom: 16, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2 },
-  appealHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 },
-  appealType: { fontSize: 16, fontWeight: 'bold', color: '#111' },
-  statusBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12 },
-  statusPending: { backgroundColor: '#FFF3E0' },
+  // Appeal card
+  appealCard: { backgroundColor: '#fff', borderRadius: 14, padding: 16, marginBottom: 14, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 4, borderWidth: 1, borderColor: '#e8e8e8' },
+  appealHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 },
+  appealType: { fontSize: 15, fontWeight: '700', color: '#111' },
+  statusBadge: { paddingHorizontal: 9, paddingVertical: 4, borderRadius: 12 },
+  statusPending: { backgroundColor: '#FFF8E1' },
   statusApproved: { backgroundColor: '#E8F5E9' },
   statusRejected: { backgroundColor: '#FFEBEE' },
-  statusText: { fontSize: 12, fontWeight: 'bold' },
+  statusText: { fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
   statusTextPending: { color: '#F57C00' },
   statusTextApproved: { color: '#2E7D32' },
   statusTextRejected: { color: '#C62828' },
-  appealDate: { fontSize: 12, color: '#666', marginBottom: 8 },
-  appealMeta: { fontSize: 13, color: '#444', marginBottom: 8, fontStyle: 'italic' },
-  appealDescription: { fontSize: 14, color: '#333', lineHeight: 20, marginBottom: 12 },
-  responseBox: { backgroundColor: '#F5F5F5', padding: 12, borderRadius: 8, borderLeftWidth: 3, borderLeftColor: '#007AFF' },
-  responseLabel: { fontSize: 12, fontWeight: 'bold', color: '#555', marginBottom: 4 },
-  responseText: { fontSize: 13, color: '#333', lineHeight: 18 },
+  appealDate: { fontSize: 11, color: '#999', marginBottom: 6 },
+  appealMeta: { fontSize: 13, color: '#4f46e5', marginBottom: 8, fontWeight: '500' },
+  appealDescription: { fontSize: 14, color: '#333', lineHeight: 20, marginBottom: 10, fontStyle: 'italic' },
+  // Status boxes
+  pendingBox: { backgroundColor: '#FFFBEB', borderRadius: 8, padding: 10, borderLeftWidth: 3, borderLeftColor: '#F59E0B' },
+  pendingText: { fontSize: 12, color: '#92400E', fontWeight: '600' },
+  responseBox: { borderRadius: 10, padding: 12, marginTop: 6, borderLeftWidth: 3 },
+  responseBoxMoe: { backgroundColor: '#f5f3ff', borderLeftColor: '#7c3aed' },
+  responseBoxUniversity: { backgroundColor: '#eff6ff', borderLeftColor: '#2563eb' },
+  responseLabel: { fontSize: 11, fontWeight: '800', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 },
+  responseLabelMoe: { color: '#6d28d9' },
+  responseLabelUni: { color: '#1d4ed8' },
+  responseText: { fontSize: 13, color: '#333', lineHeight: 19 },
+  rejectedBox: { backgroundColor: '#FFF1F2', borderRadius: 10, padding: 12, marginTop: 6, borderLeftWidth: 3, borderLeftColor: '#E11D48' },
+  rejectedLabel: { fontSize: 11, fontWeight: '800', color: '#9F1239', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 },
+  // Modal
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   modalContent: { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, maxHeight: '80%' },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
@@ -323,10 +389,11 @@ const styles = StyleSheet.create({
   textArea: { height: 120 },
   typeSelector: { flexDirection: 'row', gap: 8 },
   typeOption: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8, backgroundColor: '#f0f0f0', borderWidth: 1, borderColor: 'transparent' },
-  activeTypeOption: { backgroundColor: '#E3F2FD', borderColor: '#007AFF' },
+  activeTypeOption: { backgroundColor: '#EDE9FE', borderColor: '#4f46e5' },
   typeOptionText: { fontSize: 13, fontWeight: '600', color: '#666' },
-  activeTypeOptionText: { color: '#007AFF' },
-  submitButton: { backgroundColor: '#007AFF', paddingVertical: 16, borderRadius: 12, alignItems: 'center', marginTop: 10, marginBottom: 20 },
+  activeTypeOptionText: { color: '#4f46e5' },
+  submitButton: { backgroundColor: '#4f46e5', paddingVertical: 16, borderRadius: 12, alignItems: 'center', marginTop: 10, marginBottom: 20 },
   submitButtonDisabled: { opacity: 0.7 },
-  submitButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' }
+  submitButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
 });
+

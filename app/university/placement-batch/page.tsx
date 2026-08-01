@@ -726,7 +726,7 @@ export default function UniversityPlacementBatchPage() {
                 <p className="text-xs text-red-500 mt-1">⚠️ May cause resource allocation issues</p>
               </div>
 
-              <div className="md:col-span-2">
+              {/* <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Notification Email
                 </label>
@@ -738,7 +738,7 @@ export default function UniversityPlacementBatchPage() {
                   className="w-full border border-gray-300 rounded-lg px-3 py-2"
                 />
                 <p className="text-xs text-gray-500 mt-1">Email for placement completion notifications</p>
-              </div>
+              </div> */}
 
               <div className="md:col-span-2 flex justify-end">
                 <button

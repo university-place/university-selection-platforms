@@ -7,7 +7,8 @@ async function verifyAdmin(request: Request) {
   if (!authHeader?.startsWith('Bearer ')) throw new Error('No token provided')
   const token = authHeader.substring(7)
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any
+    const secret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || "dXFzVnQzYUdMZkhNQVFwQjRyOHY2TzV4aTdqYjBlQ2M=";
+    const decoded = jwt.verify(token, secret) as any
     if (decoded.role !== 'MOE_ADMIN' && decoded.role !== 'PLATFORM_ADMIN') {
       throw new Error('Forbidden')
     }
@@ -63,6 +64,8 @@ export async function GET(request: Request) {
     if (placementStatus) {
       if (placementStatus === 'NOT_REGISTERED') {
         where.isRegistered = false
+      } else if (placementStatus === 'REGISTERED') {
+        where.isRegistered = true
       } else if (placementStatus === 'PLACED') {
         where.preferences = { some: { status: { in: ['ACCEPTED', 'PLACED', 'BATCH_PLACED'] } } }
       } else if (placementStatus === 'NOT_PLACED') {

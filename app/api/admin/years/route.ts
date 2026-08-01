@@ -10,9 +10,10 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'No token provided' }, { status: 401 })
     }
     const token = authHeader.substring(7)
+    const secret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || "dXFzVnQzYUdMZkhNQVFwQjRyOHY2TzV4aTdqYjBlQ2M=";
     let decoded: any
     try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET!)
+      decoded = jwt.verify(token, secret)
     } catch (err) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
     }

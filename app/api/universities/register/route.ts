@@ -58,34 +58,50 @@ export async function POST(request: Request) {
     const existingAdmin = await prisma.universityAdmin.findFirst({
       where: { universityId: university.id }
     })
-    if (existingAdmin) {
-      return NextResponse.json(
-        { error: 'This university already has an admin registered' },
-        { status: 409 }
-      )
-    }
-
-    // Create user (MOE model - also handles university admins)
+    
+    let user;
     const hashedPassword = await bcrypt.hash(password, 10)
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        name,
-        role: 'UNIVERSITY_ADMIN',  // Important: role for university admin
-        isActive: true,
-        emailVerified: false
-      }
-    })
 
-    // Create university admin record (links User to University)
-    await prisma.universityAdmin.create({
-      data: {
-        userId: user.id,
-        universityId: university.id,
-        department: department || null
+    if (existingAdmin) {
+      // Update existing admin user
+      user = await prisma.user.update({
+        where: { id: existingAdmin.userId },
+        data: {
+          email,
+          password: hashedPassword,
+          name,
+          emailVerified: false
+        }
+      })
+      
+      if (department) {
+        await prisma.universityAdmin.update({
+          where: { id: existingAdmin.id },
+          data: { department }
+        })
       }
-    })
+    } else {
+      // Create new user (MOE model - also handles university admins)
+      user = await prisma.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          name,
+          role: 'UNIVERSITY_ADMIN',  // Important: role for university admin
+          isActive: true,
+          emailVerified: false
+        }
+      })
+  
+      // Create university admin record (links User to University)
+      await prisma.universityAdmin.create({
+        data: {
+          userId: user.id,
+          universityId: university.id,
+          department: department || null
+        }
+      })
+    }
 
     // Mark university as registered
     if (!university.isRegistered) {
@@ -96,8 +112,22 @@ export async function POST(request: Request) {
     }
 
     // Send verification email
-    const token = await createVerificationToken(user.id)
-    await sendVerificationEmail(user.email, token, user.name || 'University Admin', 'admin')
+    try {
+      const token = await createVerificationToken(user.id)
+      await sendVerificationEmail(user.email, token, user.name || 'University Admin', 'admin')
+    } catch (emailError: any) {
+      console.error('Failed to send verification email:', emailError)
+      return NextResponse.json({
+        success: true,
+        message: 'Registration successful, but we failed to send the verification email. Please contact support.',
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role
+        }
+      })
+    }
 
     return NextResponse.json({
       success: true,

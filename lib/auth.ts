@@ -95,18 +95,19 @@ export async function verifyUniversityAdmin(request: Request) {
   }
   const token = authHeader.substring(7);
   try {
-    const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET!) as any;
+    const secret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || "dXFzVnQzYUdMZkhNQVFwQjRyOHY2TzV4aTdqYjBlQ2M=";
+    const decoded = jwt.verify(token, secret) as any;
     if (decoded.role !== 'UNIVERSITY_ADMIN') {
       throw new Error('Forbidden');
     }
     const admin = await prisma.universityAdmin.findUnique({
-      where: { userId: parseInt(decoded.id) },
+      where: { userId: decoded.id },
       select: { universityId: true }
     });
     if (!admin) {
       throw new Error('University admin record not found');
     }
-    return { userId: parseInt(decoded.id), universityId: admin.universityId };
+    return { userId: decoded.id, universityId: admin.universityId };
   } catch (error) {
     throw new Error('Invalid token');
   }
@@ -120,7 +121,8 @@ export async function verifyStudent(request: Request) {
   }
   const token = authHeader.substring(7);
   try {
-    const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET!) as any;
+    const secret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || "dXFzVnQzYUdMZkhNQVFwQjRyOHY2TzV4aTdqYjBlQ2M=";
+    const decoded = jwt.verify(token, secret) as any;
     if (decoded.role !== 'STUDENT') {
       throw new Error('Forbidden');
     }

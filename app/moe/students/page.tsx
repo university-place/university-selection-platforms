@@ -184,6 +184,7 @@ export default function MOEStudentsPage() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 >
                   <option value="">All Statuses</option>
+                  <option value="REGISTERED">Registered in our platform</option>
                   <option value="NOT_REGISTERED">Not Registered in our platform</option>
                   <option value="PLACED">Placed (Any University)</option>
                   <option value="NOT_PLACED">Not Placed (All)</option>
