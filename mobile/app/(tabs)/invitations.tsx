@@ -142,20 +142,23 @@ export default function InvitationsScreen() {
         {activeTab === 'pending' ? (
           // Pending Invitations
           pendingInvitations.length > 0 ? (
-            pendingInvitations.map((invitation) => (
-              <InvitationCard
-                key={invitation.id}
-                universityName={invitation.university?.name || 'Unknown University'}
-                eventType={invitation.type || 'Interview'}
-                date={new Date(invitation.date).toLocaleDateString()}
-                time={new Date(invitation.date).toLocaleTimeString()}
-                location={invitation.location || 'Online'}
-                status="Pending"
-                showButtons={true}
-                onAccept={() => handleAccept(invitation.id)}
-                onDecline={() => handleDeclineClick(invitation)}
-              />
-            ))
+            pendingInvitations.map((invitation) => {
+              const isExpired = invitation.responseDeadline && new Date(invitation.responseDeadline) < new Date();
+              return (
+                <InvitationCard
+                  key={invitation.id}
+                  universityName={invitation.university?.name || 'Unknown University'}
+                  eventType={invitation.type || 'Interview'}
+                  date={new Date(invitation.date).toLocaleDateString()}
+                  time={new Date(invitation.date).toLocaleTimeString()}
+                  location={invitation.location || 'Online'}
+                  status={isExpired ? "Expired" : "Pending"}
+                  showButtons={!isExpired}
+                  onAccept={() => handleAccept(invitation.id)}
+                  onDecline={() => handleDeclineClick(invitation)}
+                />
+              );
+            })
           ) : (
             <View style={styles.emptyState}>
               <Text style={styles.emptyText}>No pending invitations</Text>

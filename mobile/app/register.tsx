@@ -15,7 +15,6 @@ import { apiClient } from '@/lib/api';
 
 export default function RegisterScreen() {
   const router = useRouter();
-  const [registrationType, setRegistrationType] = useState<'email' | 'noemail'>('noemail'); // Changed default to 'noemail'
   const [formData, setFormData] = useState({
     examID: '',
     firstName: '',
@@ -128,44 +127,7 @@ export default function RegisterScreen() {
     }
   };
 
-  const prefillAlmaz = () => {
-    setRegistrationType('email');
-    setFormData({
-      examID: 'EXM-2024-002',
-      firstName: 'Almaz',
-      lastName: 'Getnet',
-      email: 'almaz.getnet@example.com',
-      phone: '+251-911-234567',
-      password: 'Test@123',
-      confirmPassword: 'Test@123',
-    });
-  };
 
-  const prefillHabtamu = () => {
-    setRegistrationType('noemail');
-    setFormData({
-      examID: 'EXM-2024-003',
-      firstName: 'Habtamu',
-      lastName: 'Tadesse',
-      email: '',
-      phone: '+251-912-345678',
-      password: 'Test@123',
-      confirmPassword: 'Test@123',
-    });
-  };
-
-  const prefillZelalem = () => {
-    setRegistrationType('noemail');
-    setFormData({
-      examID: 'EXM-2024-007',
-      firstName: 'Zelalem',
-      lastName: 'Biru',
-      email: '',
-      phone: '09xxxxxxxx',
-      password: 'Password@123',
-      confirmPassword: 'Password@123',
-    });
-  };
 
   const clearForm = () => {
     setFormData({
@@ -189,45 +151,7 @@ export default function RegisterScreen() {
           <Text style={styles.subtitle}>Ethiopian University Selection Platform</Text>
         </View>
 
-        {/* Registration Type Buttons - Now just for demo prefills */}
-        <View style={styles.typeContainer}>
-          <TouchableOpacity
-            style={[styles.typeBtn, registrationType === 'email' && styles.activeBtn]}
-            onPress={prefillAlmaz}
-            disabled={loading}
-          >
-            <Text style={styles.typeIcon}>✉️</Text>
-            <Text
-              style={[styles.typeText, registrationType === 'email' && styles.activeTypeText]}
-            >
-              Sample: Almaz (With Email)
-            </Text>
-          </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.typeBtn, registrationType === 'noemail' && styles.activeBtn]}
-            onPress={prefillHabtamu}
-            disabled={loading}
-          >
-            <Text style={styles.typeIcon}>👤</Text>
-            <Text
-              style={[styles.typeText, registrationType === 'noemail' && styles.activeTypeText]}
-            >
-              Sample: Habtamu (No Email)
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.typeBtn}
-            onPress={prefillZelalem}
-            disabled={loading}
-          >
-            <Text style={styles.typeIcon}>👨‍🎓</Text>
-            <Text style={styles.typeText}>
-              Sample: Zelalem
-            </Text>
-          </TouchableOpacity>
-        </View>
 
         {/* Form Section */}
         <View style={styles.formCard}>

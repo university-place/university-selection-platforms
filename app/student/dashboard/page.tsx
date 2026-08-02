@@ -1393,19 +1393,20 @@ export default function StudentDashboardPage() {
         `}} />
       )}
       {/* Sidebar */}
-      <aside className="w-72 bg-white shadow-lg fixed h-full overflow-y-auto z-10">
-        <div className="p-8 border-b text-center">
-          <div className="flex flex-col items-center gap-4">
+      <aside className="w-72 bg-white/80 backdrop-blur-md shadow-xl fixed h-full overflow-y-auto z-10 border-r border-gray-100">
+        <div className="p-8 border-b border-gray-100 text-center relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-blue-500 to-indigo-600 opacity-10"></div>
+          <div className="flex flex-col items-center gap-4 relative z-10">
             {profile.photo ? (
-              <img src={profile.photo} className="w-24 h-24 rounded-3xl object-cover shadow-xl border-4 border-blue-50" />
+              <img src={profile.photo} className="w-24 h-24 rounded-full object-cover shadow-lg border-4 border-white" />
             ) : (
-              <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl flex items-center justify-center text-white font-black text-3xl shadow-xl">
+              <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-black text-3xl shadow-lg border-4 border-white">
                 {profile.firstName[0]}{profile.lastName[0]}
               </div>
             )}
             <div>
-              <h2 className="font-black text-xl text-gray-900 tracking-tighter">{profile.firstName} {profile.lastName}</h2>
-              <p className="text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full mt-1 inline-block">{profile.examID}</p>
+              <h2 className="font-bold text-xl text-gray-900 tracking-tight">{profile.firstName} {profile.lastName}</h2>
+              <p className="text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1 rounded-full mt-2 inline-block shadow-sm">ID: {profile.examID}</p>
             </div>
           </div>
         </div>
@@ -1422,7 +1423,7 @@ export default function StudentDashboardPage() {
                   setActiveTab(item.id);
                 }
               }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeTab === item.id && item.id !== 'invitations' && item.id !== 'my-placements' ? 'bg-blue-50 text-blue-600 border-r-4 border-blue-600' : 'text-gray-700 hover:bg-gray-100'}`}
+              className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 font-medium ${activeTab === item.id && item.id !== 'invitations' && item.id !== 'my-placements' ? 'bg-gradient-to-r from-blue-50 to-indigo-50/50 text-blue-700 shadow-sm border-l-4 border-blue-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:translate-x-1'}`}
             >
               <item.icon className="w-5 h-5" />
               <span>{item.label}</span>
@@ -1459,117 +1460,183 @@ export default function StudentDashboardPage() {
       </aside>
 
       {/* Main Content */}
-      <main className="ml-72 flex-1 p-8">
+      <main className="ml-72 flex-1 p-8 xl:p-12 relative min-h-screen overflow-hidden bg-slate-50">
+        {/* Dynamic Mesh Background Gradients */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+          <div className="absolute -top-40 -left-40 w-96 h-96 bg-purple-400 rounded-full mix-blend-multiply filter blur-[128px] opacity-40 animate-blob"></div>
+          <div className="absolute top-40 -right-20 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-[128px] opacity-40 animate-blob animation-delay-2000"></div>
+          <div className="absolute -bottom-40 left-20 w-96 h-96 bg-pink-400 rounded-full mix-blend-multiply filter blur-[128px] opacity-40 animate-blob animation-delay-4000"></div>
+        </div>
+
         {/* Dashboard Home */}
         {activeTab === 'dashboard' && (
-          <div>
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
-              <p className="text-gray-600 mt-1">{profile.firstName} {profile.lastName} • Exam ID: {profile.examID}</p>
+          <div className="max-w-6xl mx-auto relative z-10">
+            <div className="mb-12">
+              <h1 className="text-5xl font-black text-slate-900 tracking-tight leading-tight">
+                Welcome back, <br/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
+                  {profile.firstName} {profile.lastName}
+                </span>
+              </h1>
+              <p className="text-slate-600 mt-3 font-medium text-lg flex items-center gap-2">
+                <span className="bg-slate-200 text-slate-700 px-2 py-0.5 rounded text-sm font-bold tracking-widest uppercase">ID: {profile.examID}</span> 
+                Here is your application overview.
+              </p>
             </div>
 
             {/* Application Journey Timeline */}
-            <div className="bg-white rounded-xl shadow-sm p-8 mb-8">
-              <h2 className="text-lg font-bold mb-6">Your Application Journey</h2>
-              <div className="flex items-center justify-between relative">
+            <div className="bg-white/60 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/80 p-10 mb-12 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-1.5 bg-gradient-to-b from-blue-500 via-purple-500 to-pink-500 h-full"></div>
+              <h2 className="text-2xl font-black mb-10 text-slate-800 tracking-tight flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                  <Award className="w-4 h-4 text-white" />
+                </div>
+                Your Application Journey
+              </h2>
+              
+              <div className="flex items-center justify-between relative px-6">
+                {/* Connecting Solid Line Track */}
+                <div className="absolute top-7 left-16 right-16 h-2 bg-slate-100 rounded-full -z-10 shadow-inner"></div>
+                
+                {/* Active connecting line fill - could be dynamic based on progress */}
+                <div className="absolute top-7 left-16 right-16 h-2 bg-gradient-to-r from-green-400 via-blue-500 to-slate-100 rounded-full -z-10 opacity-70"></div>
+
                 {/* Step 1: Profile Complete */}
-                <div className="flex flex-col items-center w-1/4">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold ${profile.isRegistered ? 'bg-green-500' : 'bg-blue-500'}`}>
+                <div className="flex flex-col items-center w-1/4 group cursor-pointer">
+                  <div className={`w-14 h-14 rounded-full flex items-center justify-center text-white font-bold transition-all duration-300 group-hover:-translate-y-1 ${profile.isRegistered ? 'bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-[0_0_20px_rgba(16,185,129,0.4)] ring-4 ring-emerald-50' : 'bg-gradient-to-br from-blue-400 to-blue-600 shadow-[0_0_20px_rgba(59,130,246,0.4)] ring-4 ring-blue-50'}`}>
                     <CheckCircle className="w-6 h-6" />
                   </div>
-                  <p className="text-center text-sm font-semibold mt-2">Profile</p>
-                  <p className="text-xs text-gray-500 text-center mt-1">Complete</p>
+                  <p className="text-center text-sm font-black mt-4 text-slate-800 tracking-tight">Profile</p>
+                  <p className="text-xs text-emerald-600 text-center mt-1 font-bold bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">Complete</p>
                 </div>
 
                 {/* Step 2: Documents */}
-                <div className="flex flex-col items-center w-1/4">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold ${documents.length > 0 && documents.every(d => d.verificationStatus === 'VERIFIED') ? 'bg-green-500' : documents.length > 0 ? 'bg-yellow-500' : 'bg-gray-300'}`}>
+                <div className="flex flex-col items-center w-1/4 group cursor-pointer">
+                  <div className={`w-14 h-14 rounded-full flex items-center justify-center text-white font-bold transition-all duration-300 group-hover:-translate-y-1 ${documents.length > 0 && documents.every(d => d.verificationStatus === 'VERIFIED') ? 'bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-[0_0_20px_rgba(16,185,129,0.4)] ring-4 ring-emerald-50' : documents.length > 0 ? 'bg-gradient-to-br from-amber-400 to-orange-500 shadow-[0_0_20px_rgba(245,158,11,0.4)] ring-4 ring-amber-50' : 'bg-slate-200 text-slate-400 shadow-none ring-4 ring-slate-50'}`}>
                     <FileText className="w-6 h-6" />
                   </div>
-                  <p className="text-center text-sm font-semibold mt-2">Documents</p>
-                  <p className="text-xs text-gray-500 text-center mt-1">{documents.filter(d => d.verificationStatus === 'VERIFIED').length}/{documents.length}</p>
+                  <p className="text-center text-sm font-black mt-4 text-slate-800 tracking-tight">Documents</p>
+                  <p className={`text-xs text-center mt-1 font-bold px-3 py-1 rounded-full border ${documents.length > 0 ? 'bg-amber-50 text-amber-600 border-amber-100' : 'bg-slate-100 text-slate-500 border-slate-200'}`}>
+                    {documents.filter(d => d.verificationStatus === 'VERIFIED').length}/{documents.length}
+                  </p>
                 </div>
 
                 {/* Step 3: Preferences */}
-                <div className="flex flex-col items-center w-1/4">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold ${preferences.length >= 3 ? 'bg-green-500' : preferences.length > 0 ? 'bg-blue-500' : 'bg-gray-300'}`}>
+                <div className="flex flex-col items-center w-1/4 group cursor-pointer">
+                  <div className={`w-14 h-14 rounded-full flex items-center justify-center text-white font-bold transition-all duration-300 group-hover:-translate-y-1 ${preferences.length >= 3 ? 'bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-[0_0_20px_rgba(16,185,129,0.4)] ring-4 ring-emerald-50' : preferences.length > 0 ? 'bg-gradient-to-br from-blue-400 to-blue-600 shadow-[0_0_20px_rgba(59,130,246,0.4)] ring-4 ring-blue-50' : 'bg-slate-200 text-slate-400 shadow-none ring-4 ring-slate-50'}`}>
                     <ClipboardList className="w-6 h-6" />
                   </div>
-                  <p className="text-center text-sm font-semibold mt-2">Preferences</p>
-                  <p className="text-xs text-gray-500 text-center mt-1">{preferences.length} added</p>
+                  <p className="text-center text-sm font-black mt-4 text-slate-800 tracking-tight">Preferences</p>
+                  <p className={`text-xs text-center mt-1 font-bold px-3 py-1 rounded-full border ${preferences.length > 0 ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-slate-100 text-slate-500 border-slate-200'}`}>
+                    {preferences.length} added
+                  </p>
                 </div>
 
                 {/* Step 4: Results */}
-                <div className="flex flex-col items-center w-1/4">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold ${placement && placement.status === 'PLACED' ? 'bg-green-500' : placement ? 'bg-blue-500' : 'bg-gray-300'}`}>
+                <div className="flex flex-col items-center w-1/4 group cursor-pointer">
+                  <div className={`w-14 h-14 rounded-full flex items-center justify-center text-white font-bold transition-all duration-300 group-hover:-translate-y-1 ${placement && placement.status === 'PLACED' ? 'bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-[0_0_20px_rgba(16,185,129,0.4)] ring-4 ring-emerald-50' : placement ? 'bg-gradient-to-br from-blue-400 to-blue-600 shadow-[0_0_20px_rgba(59,130,246,0.4)] ring-4 ring-blue-50' : 'bg-slate-200 text-slate-400 shadow-none ring-4 ring-slate-50'}`}>
                     <Award className="w-6 h-6" />
                   </div>
-                  <p className="text-center text-sm font-semibold mt-2">Placement</p>
-                  <p className="text-xs text-gray-500 text-center mt-1">{placement ? placement.status : 'Pending'}</p>
+                  <p className="text-center text-sm font-black mt-4 text-slate-800 tracking-tight">Placement</p>
+                  <p className="text-xs text-slate-500 text-center mt-1 font-bold bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+                    {placement ? placement.status : 'Pending'}
+                  </p>
                 </div>
-
-                {/* Connecting Line */}
-                <div className="absolute top-6 left-0 right-0 h-1 bg-gray-200 -z-10"></div>
               </div>
             </div>
 
             {/* Key Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
-                <Award className="w-8 h-8 text-blue-600 mb-2" />
-                <p className="text-gray-600 text-sm">Exam Score</p>
-                <p className="text-3xl font-bold text-blue-700">{profile.totalScore}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-6 border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(59,130,246,0.15)] transition-all duration-300 group overflow-hidden relative">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
+                <div className="relative z-10 flex items-center gap-5">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform duration-300">
+                    <Award className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-slate-500 text-xs font-black uppercase tracking-widest mb-1">Exam Score</p>
+                    <p className="text-3xl font-black text-slate-800 tracking-tighter">{profile.totalScore}</p>
+                  </div>
+                </div>
               </div>
-              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
-                <ClipboardList className="w-8 h-8 text-green-600 mb-2" />
-                <p className="text-gray-600 text-sm">Preferences</p>
-                <p className="text-3xl font-bold text-green-700">{preferences.length}</p>
+              <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-6 border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(16,185,129,0.15)] transition-all duration-300 group overflow-hidden relative">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
+                <div className="relative z-10 flex items-center gap-5">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform duration-300">
+                    <ClipboardList className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-slate-500 text-xs font-black uppercase tracking-widest mb-1">Preferences</p>
+                    <p className="text-3xl font-black text-slate-800 tracking-tighter">{preferences.length}</p>
+                  </div>
+                </div>
               </div>
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
-                <FileCheck className="w-8 h-8 text-purple-600 mb-2" />
-                <p className="text-gray-600 text-sm">Documents</p>
-                <p className="text-3xl font-bold text-purple-700">{documents.length}</p>
+              <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-6 border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(168,85,247,0.15)] transition-all duration-300 group overflow-hidden relative">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
+                <div className="relative z-10 flex items-center gap-5">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30 group-hover:scale-110 transition-transform duration-300">
+                    <FileCheck className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-slate-500 text-xs font-black uppercase tracking-widest mb-1">Documents</p>
+                    <p className="text-3xl font-black text-slate-800 tracking-tighter">{documents.length}</p>
+                  </div>
+                </div>
               </div>
-              <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border border-orange-200">
-                <Bell className="w-8 h-8 text-orange-600 mb-2" />
-                <p className="text-gray-600 text-sm">Unread</p>
-                <p className="text-3xl font-bold text-orange-700">{notifications.filter(n => !n.read).length}</p>
+              <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-6 border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(249,115,22,0.15)] transition-all duration-300 group overflow-hidden relative">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-orange-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
+                <div className="relative z-10 flex items-center gap-5">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-lg shadow-orange-500/30 group-hover:scale-110 transition-transform duration-300">
+                    <Bell className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-slate-500 text-xs font-black uppercase tracking-widest mb-1">Unread</p>
+                    <p className="text-3xl font-black text-slate-800 tracking-tighter">{notifications.filter(n => !n.read).length}</p>
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* Main Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Document Status */}
-              <div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6">
-                <h2 className="text-lg font-bold mb-4">Document Status</h2>
+              <div className="lg:col-span-2 bg-white/60 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/80 p-8">
+                <h2 className="text-xl font-black mb-6 text-slate-800 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                    <FileCheck className="w-4 h-4 text-white" />
+                  </div>
+                  Document Status
+                </h2>
                 {documents.length === 0 ? (
-                  <div className="text-center py-8">
-                    <FileText className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                    <p className="text-gray-500">No documents uploaded yet</p>
-                    <button onClick={() => setActiveTab('profile')} className="mt-3 text-blue-600 hover:underline text-sm font-semibold">Upload Documents →</button>
+                  <div className="text-center py-12 bg-white/50 rounded-2xl border border-dashed border-slate-200">
+                    <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                    <p className="text-slate-500 font-medium">No documents uploaded yet</p>
+                    <button onClick={() => setActiveTab('profile')} className="mt-4 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-700 px-6 py-2 rounded-full text-sm font-bold transition-colors">Upload Documents →</button>
                   </div>
                 ) : (
-                  <div className="space-y-2">
+                  <div className="space-y-4">
                     {documents.map(doc => (
-                      <div key={doc.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
-                        <div className="flex items-center gap-3 flex-1">
-                          <FileText className="w-5 h-5 text-gray-400" />
+                      <div key={doc.id} className="flex items-center justify-between p-5 bg-white/80 border border-white rounded-2xl hover:bg-white shadow-[0_2px_10px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_20px_rgb(0,0,0,0.06)] hover:-translate-y-0.5 transition-all">
+                        <div className="flex items-center gap-5 flex-1">
+                          <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100">
+                            <FileText className="w-6 h-6 text-slate-400" />
+                          </div>
                           <div>
-                            <p className="font-medium text-sm">{doc.name}</p>
-                            <p className="text-xs text-gray-500">{new Date(doc.uploadDate).toLocaleDateString()}</p>
+                            <p className="font-bold text-slate-900 text-base">{doc.name}</p>
+                            <p className="text-xs font-medium text-slate-500 mt-1 uppercase tracking-wider">{new Date(doc.uploadDate).toLocaleDateString()}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
                           {doc.verificationStatus === 'VERIFIED' ? (
-                            <span className="flex items-center gap-1 text-green-600 text-sm font-semibold">
+                            <span className="flex items-center gap-2 text-emerald-700 bg-emerald-50 px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest shadow-sm border border-emerald-100">
                               <CheckCircle className="w-4 h-4" /> Verified
                             </span>
                           ) : doc.verificationStatus === 'REJECTED' ? (
-                            <span className="flex items-center gap-1 text-red-600 text-sm font-semibold">
+                            <span className="flex items-center gap-2 text-rose-700 bg-rose-50 px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest shadow-sm border border-rose-100">
                               <XCircle className="w-4 h-4" /> Rejected
                             </span>
                           ) : (
-                            <span className="flex items-center gap-1 text-yellow-600 text-sm font-semibold">
+                            <span className="flex items-center gap-2 text-amber-700 bg-amber-50 px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest shadow-sm border border-amber-100">
                               <Clock className="w-4 h-4" /> Pending
                             </span>
                           )}
@@ -1581,37 +1648,47 @@ export default function StudentDashboardPage() {
               </div>
 
               {/* Quick Actions */}
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <h2 className="text-lg font-bold mb-4">Quick Actions</h2>
-                <div className="space-y-3">
+              <div className="bg-slate-900 text-white rounded-3xl shadow-[0_20px_40px_rgba(15,23,42,0.3)] border border-slate-800 p-8 relative overflow-hidden">
+                <div className="absolute -top-32 -right-32 w-64 h-64 bg-indigo-600 rounded-full mix-blend-screen filter blur-[80px] opacity-60"></div>
+                
+                <h2 className="text-xl font-black mb-8 text-white relative z-10">Quick Actions</h2>
+                <div className="space-y-4 relative z-10">
                   <button
                     onClick={() => setActiveTab('profile')}
-                    className="w-full flex items-center gap-3 p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition text-left font-medium text-blue-700"
+                    className="w-full flex items-center gap-4 p-4 bg-white/10 hover:bg-white/20 border border-white/10 hover:border-white/30 hover:-translate-y-1 rounded-2xl transition-all text-left group"
                   >
-                    <Upload className="w-5 h-5" />
-                    <span>Upload Documents</span>
+                    <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center group-hover:bg-blue-500/40 transition-colors">
+                      <Upload className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <span className="font-bold text-sm tracking-wide">Upload Documents</span>
                   </button>
                   <button
                     onClick={() => setActiveTab('universities')}
-                    className="w-full flex items-center gap-3 p-3 bg-green-50 hover:bg-green-100 rounded-lg transition text-left font-medium text-green-700"
+                    className="w-full flex items-center gap-4 p-4 bg-white/10 hover:bg-white/20 border border-white/10 hover:border-white/30 hover:-translate-y-1 rounded-2xl transition-all text-left group"
                   >
-                    <Search className="w-5 h-5" />
-                    <span>Find Universities</span>
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center group-hover:bg-emerald-500/40 transition-colors">
+                      <Search className="w-5 h-5 text-emerald-400" />
+                    </div>
+                    <span className="font-bold text-sm tracking-wide">Find Universities</span>
                   </button>
                   <button
                     onClick={() => setActiveTab('preferences')}
-                    className="w-full flex items-center gap-3 p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition text-left font-medium text-purple-700"
+                    className="w-full flex items-center gap-4 p-4 bg-white/10 hover:bg-white/20 border border-white/10 hover:border-white/30 hover:-translate-y-1 rounded-2xl transition-all text-left group"
                   >
-                    <ClipboardList className="w-5 h-5" />
-                    <span>Manage Preferences</span>
+                    <div className="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center group-hover:bg-purple-500/40 transition-colors">
+                      <ClipboardList className="w-5 h-5 text-purple-400" />
+                    </div>
+                    <span className="font-bold text-sm tracking-wide">Manage Preferences</span>
                   </button>
                   {placement && (
                     <button
                       onClick={() => router.push('/student/placements')}
-                      className="w-full flex items-center gap-3 p-3 bg-orange-50 hover:bg-orange-100 rounded-lg transition text-left font-medium text-orange-700"
+                      className="w-full flex items-center gap-4 p-4 bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/30 hover:border-orange-500/50 hover:-translate-y-1 rounded-2xl transition-all text-left group"
                     >
-                      <Award className="w-5 h-5" />
-                      <span>Check Placement</span>
+                      <div className="w-10 h-10 rounded-xl bg-orange-500/30 flex items-center justify-center group-hover:bg-orange-500/50 transition-colors">
+                        <Award className="w-5 h-5 text-orange-400" />
+                      </div>
+                      <span className="font-bold text-sm tracking-wide text-orange-100">Check Placement</span>
                     </button>
                   )}
 
@@ -1621,10 +1698,10 @@ export default function StudentDashboardPage() {
                     fetchGeneralDocuments();
                     setShowGeneralDocModal(true);
                   }}
-                  className="w-full flex items-center gap-3 p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition text-left font-medium text-purple-700"
+                  className="w-full flex items-center gap-3 p-4 mt-3 bg-gray-50 border border-gray-200 hover:bg-gray-100 hover:-translate-y-0.5 rounded-xl transition-all text-left font-semibold text-gray-700"
                 >
                   <Upload className="w-5 h-5" />
-                  <span>Upload General Documents</span>
+                  <span>Upload General Docs</span>
                 </button>
               </div>
             </div>
@@ -1948,8 +2025,8 @@ export default function StudentDashboardPage() {
                 Object.entries(profile.examResults)
                   .filter(([subj]) => subj.toLowerCase() !== 'total')
                   .map(([name, score]) => ({ name, score }))
-              ).map((subj: any) => (
-                <div key={subj.name} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+              ).map((subj: any, index: number) => (
+                <div key={`${subj.name}-${index}`} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-full -mr-12 -mt-12 group-hover:scale-150 transition-transform duration-500"></div>
                   <div className="relative z-10">
                     <p className="text-gray-400 font-black uppercase tracking-widest text-[10px] mb-1">{subj.name}</p>

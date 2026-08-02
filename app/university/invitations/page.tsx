@@ -235,7 +235,7 @@ export default function UniversityInvitationsPage() {
     
     try {
       // 1. Fetch applicants to filter
-      const streamParam = bulkInviteForm.stream !== 'all' ? `&stream=${bulkInviteForm.stream}` : '';
+      const streamParam = bulkInviteForm.stream !== 'all' ? `&stream=${encodeURIComponent(bulkInviteForm.stream)}` : '';
       const appsRes = await fetch(`/api/universities/applicants?limit=1000${streamParam}`, {
         headers: { Authorization: `Bearer ${token}` }
       });

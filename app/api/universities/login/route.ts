@@ -91,3 +91,4 @@ export async function POST(request: Request) {
   response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   return response;
 }
+// Trigger reload

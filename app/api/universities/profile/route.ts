@@ -163,6 +163,18 @@ export async function PUT(request: Request) {
   },
 });
 
+    // Also update the confirmation deadline for any pending placements
+    if (applicationDeadline) {
+      await prisma.preference.updateMany({
+        where: {
+          universityId: universityId,
+          status: 'PENDING'
+        },
+        data: {
+          confirmationDeadline: new Date(applicationDeadline)
+        }
+      });
+    }
 
     return NextResponse.json(updated)
   } catch (error: any) {

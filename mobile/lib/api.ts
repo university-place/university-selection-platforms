@@ -439,23 +439,7 @@ export const apiClient = {
     }
   },
 
-  async respondToInvitation(token: string, invitationId: number, response: 'ACCEPTED' | 'DECLINED') {
-    try {
-      const res = await fetch(`${API_BASE_URL}/students/interviews`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ invitationId, response }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to respond to invitation');
-      return { success: true, message: data.message };
-    } catch (error: any) {
-      return { success: false, message: error.message || 'Network error' };
-    }
-  },
+
 
   // Add new preference
   async addPreference(token: string, universityId: number, programId?: number | null, admissionTrackId?: number | null) {

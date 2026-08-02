@@ -309,7 +309,8 @@ export async function GET(request: Request) {
     })
   } catch (error: any) {
     console.error('Error in /api/universities/applicants:', error)
-    const status = error.message === 'Forbidden' ? 403 : 401
-    return NextResponse.json({ error: error.message }, { status })
+    const status = error?.message === 'Forbidden' ? 403 : 400
+    const errorDetails = error?.message || error?.toString() || 'Unknown error'
+    return NextResponse.json({ error: errorDetails, fullError: error }, { status })
   }
 }
