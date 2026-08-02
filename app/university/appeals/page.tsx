@@ -200,7 +200,7 @@ export default function UniversityAppealsPage() {
           {activeTab === 'outgoing' && (
             <button
               onClick={() => setShowMoeAppealModal(true)}
-              className="bg-white text-blue-700 hover:bg-blue-50 px-5 py-3 rounded-xl text-sm font-black shadow-md transition flex items-center gap-2 self-stretch md:self-auto justify-center"
+              className="bg-card text-blue-700 hover:bg-blue-50 px-5 py-3 rounded-xl text-sm font-black shadow-md transition flex items-center gap-2 self-stretch md:self-auto justify-center"
             >
               <Plus className="w-4 h-4" />
               File Appeal to MoE
@@ -209,16 +209,16 @@ export default function UniversityAppealsPage() {
         </div>
 
         {/* Tab Controls */}
-        <div className="flex border-b border-gray-200">
+        <div className="flex border-b border-border">
           <button
             onClick={() => setActiveTab('incoming')}
-            className={`px-6 py-3.5 text-sm font-bold border-b-2 transition ${activeTab === 'incoming' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
+            className={`px-6 py-3.5 text-sm font-bold border-b-2 transition ${activeTab === 'incoming' ? 'border-blue-600 text-blue-600' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
           >
             📥 Incoming Student Appeals ({studentAppeals.length})
           </button>
           <button
             onClick={() => setActiveTab('outgoing')}
-            className={`px-6 py-3.5 text-sm font-bold border-b-2 transition ${activeTab === 'outgoing' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
+            className={`px-6 py-3.5 text-sm font-bold border-b-2 transition ${activeTab === 'outgoing' ? 'border-blue-600 text-blue-600' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
           >
             📤 Outgoing MoE Appeals ({moeAppeals.length})
           </button>
@@ -240,16 +240,16 @@ export default function UniversityAppealsPage() {
 
         {/* Dynamic Lists */}
         {loading ? (
-          <div className="flex justify-center items-center py-20 bg-white rounded-2xl border">
+          <div className="flex justify-center items-center py-20 bg-card rounded-2xl border">
             <Loader2 className="animate-spin text-blue-600 w-10 h-10" />
           </div>
         ) : activeTab === 'incoming' ? (
           /* Student Appeals Grid */
-          <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+          <div className="bg-card rounded-2xl border shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-gray-50 border-b text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  <tr className="bg-gray-50 border-b text-xs font-bold text-muted-foreground uppercase tracking-wider">
                     <th className="px-6 py-4">Student</th>
                     <th className="px-6 py-4">Stream</th>
                     <th className="px-6 py-4">Type</th>
@@ -261,7 +261,7 @@ export default function UniversityAppealsPage() {
                 <tbody className="divide-y divide-gray-100 text-sm">
                   {studentAppeals.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="text-center py-16 text-gray-400 font-semibold italic">
+                      <td colSpan={6} className="text-center py-16 text-muted-foreground font-semibold italic">
                         No incoming student appeals found.
                       </td>
                     </tr>
@@ -269,8 +269,8 @@ export default function UniversityAppealsPage() {
                     studentAppeals.map((a) => (
                       <tr key={a.id} className="hover:bg-gray-50/50 transition">
                         <td className="px-6 py-4">
-                          <div className="font-bold text-gray-900">{a.student?.firstName} {a.student?.lastName}</div>
-                          <div className="text-xs text-gray-500 font-semibold mt-0.5">{a.student?.examID}</div>
+                          <div className="font-bold text-foreground">{a.student?.firstName} {a.student?.lastName}</div>
+                          <div className="text-xs text-muted-foreground font-semibold mt-0.5">{a.student?.examID}</div>
                         </td>
                         <td className="px-6 py-4">
                           <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full ${a.student?.stream === 'Natural Science' ? 'bg-teal-50 text-teal-700 border border-teal-200' : 'bg-orange-50 text-orange-700 border border-orange-200'}`}>
@@ -278,10 +278,10 @@ export default function UniversityAppealsPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="font-bold text-gray-700 capitalize">{a.type}</div>
+                          <div className="font-bold text-muted-foreground capitalize">{a.type}</div>
                         </td>
                         <td className="px-6 py-4 max-w-sm">
-                          <p className="text-gray-600 line-clamp-2">"{a.description}"</p>
+                          <p className="text-muted-foreground line-clamp-2">"{a.description}"</p>
                           {a.resolution && (
                             <div className="text-xs text-green-700 font-semibold mt-1 flex items-center gap-1">
                               <CheckCircle className="w-3.5 h-3.5" /> Resolution: {a.resolution}
@@ -289,7 +289,7 @@ export default function UniversityAppealsPage() {
                           )}
                         </td>
                         <td className="px-6 py-4">
-                          <span className={`px-3 py-1 rounded-full text-xs font-bold ${STATUS_COLOR[a.status] || 'bg-gray-100 text-gray-700'}`}>
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold ${STATUS_COLOR[a.status] || 'bg-gray-100 text-muted-foreground'}`}>
                             {a.status}
                           </span>
                         </td>
@@ -310,11 +310,11 @@ export default function UniversityAppealsPage() {
           </div>
         ) : (
           /* Outgoing MoE Appeals */
-          <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+          <div className="bg-card rounded-2xl border shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-gray-50 border-b text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  <tr className="bg-gray-50 border-b text-xs font-bold text-muted-foreground uppercase tracking-wider">
                     <th className="px-6 py-4">ID</th>
                     <th className="px-6 py-4">Appeal Type</th>
                     <th className="px-6 py-4">Detailed Description</th>
@@ -326,24 +326,24 @@ export default function UniversityAppealsPage() {
                 <tbody className="divide-y divide-gray-100 text-sm">
                   {moeAppeals.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="text-center py-16 text-gray-400 font-semibold italic">
+                      <td colSpan={6} className="text-center py-16 text-muted-foreground font-semibold italic">
                         No appeals filed to the Ministry of Education yet.
                       </td>
                     </tr>
                   ) : (
                     moeAppeals.map((a) => (
                       <tr key={a.id} className="hover:bg-gray-50/50 transition">
-                        <td className="px-6 py-4 font-mono font-bold text-gray-500">
+                        <td className="px-6 py-4 font-mono font-bold text-muted-foreground">
                           #{a.id}
                         </td>
                         <td className="px-6 py-4">
-                          <div className="font-bold text-gray-900">{a.type === 'policy_variance' ? 'Policy Variance' : a.type === 'capacity_adjust' ? 'Capacity Adjustment' : a.type}</div>
+                          <div className="font-bold text-foreground">{a.type === 'policy_variance' ? 'Policy Variance' : a.type === 'capacity_adjust' ? 'Capacity Adjustment' : a.type}</div>
                         </td>
                         <td className="px-6 py-4 max-w-sm">
-                          <p className="text-gray-600">"{a.description}"</p>
+                          <p className="text-muted-foreground">"{a.description}"</p>
                         </td>
                         <td className="px-6 py-4">
-                          <span className={`px-3 py-1 rounded-full text-xs font-bold ${STATUS_COLOR[a.status] || 'bg-gray-100 text-gray-700'}`}>
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold ${STATUS_COLOR[a.status] || 'bg-gray-100 text-muted-foreground'}`}>
                             {a.status}
                           </span>
                         </td>
@@ -353,10 +353,10 @@ export default function UniversityAppealsPage() {
                               {a.resolution}
                             </p>
                           ) : (
-                            <span className="text-gray-400 text-xs italic">Awaiting MoE decision</span>
+                            <span className="text-muted-foreground text-xs italic">Awaiting MoE decision</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-xs font-bold text-gray-500">
+                        <td className="px-6 py-4 text-xs font-bold text-muted-foreground">
                           {new Date(a.createdAt).toLocaleDateString()}
                         </td>
                       </tr>
@@ -371,31 +371,31 @@ export default function UniversityAppealsPage() {
         {/* Student Appeal Response Modal */}
         {selectedStudentAppeal && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <form onSubmit={handleUpdateStudentAppeal} className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <form onSubmit={handleUpdateStudentAppeal} className="bg-card rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
               <div className="p-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
                 <h3 className="text-xl font-black">Respond to Student Appeal</h3>
                 <p className="text-blue-100 text-xs mt-1">Review applicant statement and post your administrative response.</p>
               </div>
               <div className="p-6 space-y-4">
                 <div className="bg-gray-50 p-4 rounded-xl space-y-2 border">
-                  <p className="text-xs text-gray-500 font-bold uppercase">Applicant Context</p>
-                  <p className="text-sm font-black text-gray-900">
+                  <p className="text-xs text-muted-foreground font-bold uppercase">Applicant Context</p>
+                  <p className="text-sm font-black text-foreground">
                     {selectedStudentAppeal.student?.firstName} {selectedStudentAppeal.student?.lastName}
                   </p>
-                  <p className="text-xs text-gray-600 font-semibold">
+                  <p className="text-xs text-muted-foreground font-semibold">
                     Exam ID: {selectedStudentAppeal.student?.examID} | Stream: {selectedStudentAppeal.student?.stream}
                   </p>
-                  <p className="text-xs text-gray-600 italic mt-2 p-2.5 bg-white border rounded-lg">
+                  <p className="text-xs text-muted-foreground italic mt-2 p-2.5 bg-card border rounded-lg">
                     "{selectedStudentAppeal.description}"
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black uppercase text-gray-500 mb-2">Resolution Status *</label>
+                  <label className="block text-xs font-black uppercase text-muted-foreground mb-2">Resolution Status *</label>
                   <select
                     value={responseForm.status}
                     onChange={(e) => setResponseForm({ ...responseForm, status: e.target.value })}
-                    className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white font-semibold text-sm"
+                    className="w-full border border-border rounded-xl px-3 py-2 bg-card font-semibold text-sm"
                   >
                     <option value="resolved">✅ Resolved / Approved</option>
                     <option value="rejected">❌ Rejected / Declined</option>
@@ -403,14 +403,14 @@ export default function UniversityAppealsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black uppercase text-gray-500 mb-2">Resolution Notes *</label>
+                  <label className="block text-xs font-black uppercase text-muted-foreground mb-2">Resolution Notes *</label>
                   <textarea
                     required
                     value={responseForm.resolution}
                     onChange={(e) => setResponseForm({ ...responseForm, resolution: e.target.value })}
                     placeholder="Enter your administrative response detail here..."
                     rows={4}
-                    className="w-full border border-gray-300 rounded-xl p-3 text-sm"
+                    className="w-full border border-border rounded-xl p-3 text-sm"
                   />
                 </div>
               </div>
@@ -419,7 +419,7 @@ export default function UniversityAppealsPage() {
                 <button
                   type="button"
                   onClick={() => setSelectedStudentAppeal(null)}
-                  className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold text-xs uppercase tracking-wider rounded-xl transition"
+                  className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-muted-foreground font-bold text-xs uppercase tracking-wider rounded-xl transition"
                 >
                   Cancel
                 </button>
@@ -438,18 +438,18 @@ export default function UniversityAppealsPage() {
         {/* Outgoing MoE Appeal Modal */}
         {showMoeAppealModal && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <form onSubmit={handleCreateMoeAppeal} className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <form onSubmit={handleCreateMoeAppeal} className="bg-card rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
               <div className="p-6 bg-gradient-to-r from-indigo-600 to-blue-600 text-white">
                 <h3 className="text-xl font-black">Submit Appeal to MoE</h3>
                 <p className="text-indigo-100 text-xs mt-1">Appeal policies, student capacity allocations, or request review by Ministry of Education.</p>
               </div>
               <div className="p-6 space-y-4">
                 <div>
-                  <label className="block text-xs font-black uppercase text-gray-500 mb-2">Appeal Type *</label>
+                  <label className="block text-xs font-black uppercase text-muted-foreground mb-2">Appeal Type *</label>
                   <select
                     value={moeAppealForm.type}
                     onChange={(e) => setMoeAppealForm({ ...moeAppealForm, type: e.target.value })}
-                    className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white font-semibold text-sm"
+                    className="w-full border border-border rounded-xl px-3 py-2 bg-card font-semibold text-sm"
                   >
                     <option value="policy_variance">Policy Variance Request</option>
                     <option value="capacity_adjust">Capacity Adjustment</option>
@@ -459,14 +459,14 @@ export default function UniversityAppealsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black uppercase text-gray-500 mb-2">Detailed Justification & Description *</label>
+                  <label className="block text-xs font-black uppercase text-muted-foreground mb-2">Detailed Justification & Description *</label>
                   <textarea
                     required
                     value={moeAppealForm.description}
                     onChange={(e) => setMoeAppealForm({ ...moeAppealForm, description: e.target.value })}
                     placeholder="Provide full description, reasoning, and context for the Ministry..."
                     rows={6}
-                    className="w-full border border-gray-300 rounded-xl p-3 text-sm"
+                    className="w-full border border-border rounded-xl p-3 text-sm"
                   />
                 </div>
               </div>
@@ -475,7 +475,7 @@ export default function UniversityAppealsPage() {
                 <button
                   type="button"
                   onClick={() => setShowMoeAppealModal(false)}
-                  className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold text-xs uppercase tracking-wider rounded-xl transition"
+                  className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-muted-foreground font-bold text-xs uppercase tracking-wider rounded-xl transition"
                 >
                   Cancel
                 </button>

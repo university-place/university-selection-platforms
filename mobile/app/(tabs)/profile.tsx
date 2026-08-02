@@ -14,15 +14,16 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 import { Feather, MaterialIcons, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { apiClient } from '@/lib/api';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { logout, token, studentData } = useAuth();
+  const { isDarkMode, toggleTheme } = useTheme();
   const [profileData, setProfileData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     fetchProfileData();
@@ -72,8 +73,6 @@ export default function ProfileScreen() {
 
   const comingSoon = () => Alert.alert('Coming Soon', 'This feature is currently under development.');
 
-  const toggleSwitch = () => setIsDarkMode(previousState => !previousState);
-
   const displayName = profileData?.firstName 
     ? `${profileData.firstName} ${profileData.lastName || ''}` 
     : studentData?.firstName 
@@ -100,10 +99,10 @@ export default function ProfileScreen() {
         <View style={styles.headerRight}>
           <Feather name="moon" size={24} color={isDarkMode ? "#fff" : "#111"} />
           <Switch
-            trackColor={{ false: "#D1D1D6", true: "#34C759" }}
-            thumbColor={"#fff"}
-            ios_backgroundColor="#D1D1D6"
-            onValueChange={toggleSwitch}
+            trackColor={{ false: '#767577', true: '#34C759' }}
+            thumbColor={isDarkMode ? '#ffffff' : '#f4f3f4'}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={toggleTheme}
             value={isDarkMode}
             style={{ marginLeft: 8 }}
           />

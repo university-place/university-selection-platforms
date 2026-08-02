@@ -138,9 +138,9 @@ export default function UniversityPublicPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b sticky top-0 z-10">
+      <div className="bg-card border-b sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-6 py-4">
-          <button onClick={() => router.back()} className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+          <button onClick={() => router.back()} className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
             <ArrowLeft className="w-5 h-5" /> Back to Universities
           </button>
         </div>
@@ -169,24 +169,24 @@ export default function UniversityPublicPage() {
         {(university.keyFacts?.established || university.keyFacts?.students || university.keyFacts?.programs) && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             {university.keyFacts?.established && (
-              <div className="bg-white rounded-lg p-4 text-center shadow-sm">
+              <div className="bg-card rounded-lg p-4 text-center shadow-sm">
                 <Calendar className="w-6 h-6 text-blue-600 mx-auto mb-2" />
                 <p className="text-2xl font-bold">{university.keyFacts.established}</p>
-                <p className="text-sm text-gray-500">Year Established</p>
+                <p className="text-sm text-muted-foreground">Year Established</p>
               </div>
             )}
             {university.keyFacts?.students && (
-              <div className="bg-white rounded-lg p-4 text-center shadow-sm">
+              <div className="bg-card rounded-lg p-4 text-center shadow-sm">
                 <Users className="w-6 h-6 text-green-600 mx-auto mb-2" />
                 <p className="text-2xl font-bold">{university.keyFacts.students.toLocaleString()}+</p>
-                <p className="text-sm text-gray-500">Total Students</p>
+                <p className="text-sm text-muted-foreground">Total Students</p>
               </div>
             )}
             {university.keyFacts?.programs && (
-              <div className="bg-white rounded-lg p-4 text-center shadow-sm">
+              <div className="bg-card rounded-lg p-4 text-center shadow-sm">
                 <GraduationCap className="w-6 h-6 text-purple-600 mx-auto mb-2" />
                 <p className="text-2xl font-bold">{university.keyFacts.programs}+</p>
-                <p className="text-sm text-gray-500">Academic Programs</p>
+                <p className="text-sm text-muted-foreground">Academic Programs</p>
               </div>
             )}
           </div>
@@ -195,8 +195,8 @@ export default function UniversityPublicPage() {
         {/* Application Deadline */}
         {/* Application Period - Shows BOTH Start Date AND Deadline */}
 {(university.applicationStartDate || university.applicationDeadline) && (
-  <div className="mb-6 bg-white rounded-xl shadow-sm p-6 border-l-4 border-blue-500">
-    <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+  <div className="mb-6 bg-card rounded-xl shadow-sm p-6 border-l-4 border-blue-500">
+    <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
       <Calendar className="w-5 h-5 text-blue-600" />
       Application Period
     </h2>
@@ -219,8 +219,8 @@ export default function UniversityPublicPage() {
       
       {/* Deadline */}
      {/* Application Period - Shows BOTH Start Date AND Deadline */}
-<div className="mb-6 bg-white rounded-xl shadow-sm p-6 border-l-4 border-blue-500">
-  <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+<div className="mb-6 bg-card rounded-xl shadow-sm p-6 border-l-4 border-blue-500">
+  <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
     <Calendar className="w-5 h-5 text-blue-600" />
     Application Period
   </h2>
@@ -262,13 +262,13 @@ export default function UniversityPublicPage() {
           </p>
         </>
       ) : (
-        <p className="text-gray-500">Not set</p>
+        <p className="text-muted-foreground">Not set</p>
       )}
     </div>
   </div>
   
   {/* Status Banner */}
-  <div className="mt-4 p-4 rounded-lg bg-gray-50 border border-gray-200">
+  <div className="mt-4 p-4 rounded-lg bg-gray-50 border border-border">
     <div className="flex items-center gap-3">
       {(() => {
         const now = new Date();
@@ -328,7 +328,7 @@ export default function UniversityPublicPage() {
     </div>
     
     {/* Status Banner */}
-    <div className="mt-4 p-4 rounded-lg bg-gray-50 border border-gray-200">
+    <div className="mt-4 p-4 rounded-lg bg-gray-50 border border-border">
       <div className="flex items-center gap-3">
         {(() => {
           const now = new Date();
@@ -389,12 +389,12 @@ export default function UniversityPublicPage() {
 
         {/* Description */}
         {university.description && (
-          <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+          <div className="bg-card rounded-xl shadow-sm p-6 mb-6">
+            <h2 className="text-xl font-bold text-foreground mb-3 flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-blue-600" />
               About the University
             </h2>
-            <p className="text-gray-700 leading-relaxed">
+            <p className="text-muted-foreground leading-relaxed">
               {showFullDescription ? university.description : `${university.description.substring(0, 400)}...`}
             </p>
             {university.description.length > 400 && (
@@ -410,19 +410,19 @@ export default function UniversityPublicPage() {
 
         {/* History */}
         {university.history && (
-          <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+          <div className="bg-card rounded-xl shadow-sm p-6 mb-6">
+            <h2 className="text-xl font-bold text-foreground mb-3 flex items-center gap-2">
               <Clock className="w-5 h-5 text-green-600" />
               History & Background
             </h2>
-            <p className="text-gray-700 leading-relaxed">{university.history}</p>
+            <p className="text-muted-foreground leading-relaxed">{university.history}</p>
           </div>
         )}
 
         {/* Achievements */}
         {university.achievements && (
-          <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+          <div className="bg-card rounded-xl shadow-sm p-6 mb-6">
+            <h2 className="text-xl font-bold text-foreground mb-3 flex items-center gap-2">
               <Trophy className="w-5 h-5 text-yellow-600" />
               Achievements & Recognition
             </h2>
@@ -431,7 +431,7 @@ export default function UniversityPublicPage() {
                 item.trim() && (
                   <div key={idx} className="flex items-start gap-2">
                     <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700">{item.replace('• ', '')}</span>
+                    <span className="text-muted-foreground">{item.replace('• ', '')}</span>
                   </div>
                 )
               ))}
@@ -441,8 +441,8 @@ export default function UniversityPublicPage() {
 
         {/* Facilities */}
         {university.facilities && (
-          <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+          <div className="bg-card rounded-xl shadow-sm p-6 mb-6">
+            <h2 className="text-xl font-bold text-foreground mb-3 flex items-center gap-2">
               <Library className="w-5 h-5 text-purple-600" />
               Campus Facilities
             </h2>
@@ -451,7 +451,7 @@ export default function UniversityPublicPage() {
                 item.trim() && (
                   <div key={idx} className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-blue-500" />
-                    <span className="text-gray-700 text-sm">{item.replace('• ', '')}</span>
+                    <span className="text-muted-foreground text-sm">{item.replace('• ', '')}</span>
                   </div>
                 )
               ))}
@@ -461,8 +461,8 @@ export default function UniversityPublicPage() {
 
         {/* Research Areas */}
         {university.researchAreas && (
-          <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+          <div className="bg-card rounded-xl shadow-sm p-6 mb-6">
+            <h2 className="text-xl font-bold text-foreground mb-3 flex items-center gap-2">
               <Microscope className="w-5 h-5 text-indigo-600" />
               Research Areas
             </h2>
@@ -480,8 +480,8 @@ export default function UniversityPublicPage() {
 
         {/* Student Life */}
         {university.studentLife && (
-          <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+          <div className="bg-card rounded-xl shadow-sm p-6 mb-6">
+            <h2 className="text-xl font-bold text-foreground mb-3 flex items-center gap-2">
               <HeartHandshake className="w-5 h-5 text-pink-600" />
               Student Life
             </h2>
@@ -490,7 +490,7 @@ export default function UniversityPublicPage() {
                 item.trim() && (
                   <div key={idx} className="flex items-center gap-2">
                     <Heart className="w-4 h-4 text-red-500" />
-                    <span className="text-gray-700 text-sm">{item.replace('• ', '')}</span>
+                    <span className="text-muted-foreground text-sm">{item.replace('• ', '')}</span>
                   </div>
                 )
               ))}
@@ -500,8 +500,8 @@ export default function UniversityPublicPage() {
 
         {/* Accreditation */}
         {university.accreditation && (
-          <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+          <div className="bg-card rounded-xl shadow-sm p-6 mb-6">
+            <h2 className="text-xl font-bold text-foreground mb-3 flex items-center gap-2">
               <Shield className="w-5 h-5 text-green-600" />
               Accreditation & Partnerships
             </h2>
@@ -510,7 +510,7 @@ export default function UniversityPublicPage() {
                 item.trim() && (
                   <div key={idx} className="flex items-start gap-2">
                     <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700">{item.replace('• ', '')}</span>
+                    <span className="text-muted-foreground">{item.replace('• ', '')}</span>
                   </div>
                 )
               ))}
@@ -519,17 +519,17 @@ export default function UniversityPublicPage() {
         )}
 
         {/* Contact Information */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <div className="bg-card rounded-xl shadow-sm p-6 mb-6">
+          <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
             <Mail className="w-5 h-5 text-blue-600" />
             Contact Information
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {university.contactEmail && (
               <div className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-gray-400" />
+                <Mail className="w-5 h-5 text-muted-foreground" />
                 <div>
-                  <p className="text-sm text-gray-500">Email</p>
+                  <p className="text-sm text-muted-foreground">Email</p>
                   <a href={`mailto:${university.contactEmail}`} className="text-blue-600 hover:underline">
                     {university.contactEmail}
                   </a>
@@ -538,10 +538,10 @@ export default function UniversityPublicPage() {
             )}
             {university.contactPhone && (
               <div className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-gray-400" />
+                <Phone className="w-5 h-5 text-muted-foreground" />
                 <div>
-                  <p className="text-sm text-gray-500">Phone</p>
-                  <a href={`tel:${university.contactPhone}`} className="text-gray-900">
+                  <p className="text-sm text-muted-foreground">Phone</p>
+                  <a href={`tel:${university.contactPhone}`} className="text-foreground">
                     {university.contactPhone}
                   </a>
                 </div>
@@ -549,9 +549,9 @@ export default function UniversityPublicPage() {
             )}
             {university.website && (
               <div className="flex items-center gap-3">
-                <Globe className="w-5 h-5 text-gray-400" />
+                <Globe className="w-5 h-5 text-muted-foreground" />
                 <div>
-                  <p className="text-sm text-gray-500">Website</p>
+                  <p className="text-sm text-muted-foreground">Website</p>
                   <a href={university.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                     {university.website}
                   </a>
@@ -560,10 +560,10 @@ export default function UniversityPublicPage() {
             )}
             {university.address && (
               <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-gray-400" />
+                <MapPin className="w-5 h-5 text-muted-foreground" />
                 <div>
-                  <p className="text-sm text-gray-500">Address</p>
-                  <p className="text-gray-900">{university.address}</p>
+                  <p className="text-sm text-muted-foreground">Address</p>
+                  <p className="text-foreground">{university.address}</p>
                 </div>
               </div>
             )}
@@ -571,8 +571,8 @@ export default function UniversityPublicPage() {
         </div>
 
         {/* Academic Programs */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+        <div className="bg-card rounded-xl shadow-sm p-6 mb-6">
+          <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
             <GraduationCap className="w-7 h-7 text-blue-600" />
             Academic Programs
           </h2>
@@ -585,14 +585,14 @@ export default function UniversityPublicPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {programs.map(program => (
-                <div key={program.id} className="bg-white border-2 border-gray-100 rounded-2xl p-6 hover:shadow-lg hover:border-blue-200 transition-all duration-300 group flex flex-col h-full">
+                <div key={program.id} className="bg-card border-2 border-border rounded-2xl p-6 hover:shadow-lg hover:border-blue-200 transition-all duration-300 group flex flex-col h-full">
                   <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <BookOpen className="w-6 h-6" />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                  <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-blue-600 transition-colors">
                     {program.name}
                   </h3>
-                  <p className="text-gray-600 text-sm line-clamp-3 mb-4 flex-grow">
+                  <p className="text-muted-foreground text-sm line-clamp-3 mb-4 flex-grow">
                     {program.description || 'No description available for this program.'}
                   </p>
                   <div className="flex items-center text-sm font-medium text-blue-600 mt-auto">
@@ -606,12 +606,12 @@ export default function UniversityPublicPage() {
 
         {/* Admission Instructions */}
         {university.admissionInstructions && (
-          <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+          <div className="bg-card rounded-xl shadow-sm p-6 mb-6">
+            <h2 className="text-xl font-bold text-foreground mb-3 flex items-center gap-2">
               <FileText className="w-6 h-6 text-green-600" />
               Admission Instructions
             </h2>
-            <p className="text-gray-700 leading-relaxed">{university.admissionInstructions}</p>
+            <p className="text-muted-foreground leading-relaxed">{university.admissionInstructions}</p>
           </div>
         )}
 

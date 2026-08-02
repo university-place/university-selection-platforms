@@ -56,7 +56,7 @@ export default function AnalyticsPage() {
   if (!data) {
     return (
       <DashboardLayout title="Analytics" navLinks={navLinks} theme="green">
-        <div className="text-center py-12 text-gray-500">No applicant data available</div>
+        <div className="text-center py-12 text-muted-foreground">No applicant data available</div>
       </DashboardLayout>
     );
   }
@@ -66,19 +66,19 @@ export default function AnalyticsPage() {
       <div className="mb-6 flex gap-2 bg-gray-100 p-1 rounded-lg w-fit">
         <button
           onClick={() => setSelectedStream('all')}
-          className={`px-4 py-2 rounded-md text-sm font-semibold transition ${selectedStream === 'all' ? 'bg-white shadow-sm text-green-600' : 'text-gray-600 hover:text-gray-900'}`}
+          className={`px-4 py-2 rounded-md text-sm font-semibold transition ${selectedStream === 'all' ? 'bg-card shadow-sm text-green-600' : 'text-muted-foreground hover:text-foreground'}`}
         >
           All Streams
         </button>
         <button
           onClick={() => setSelectedStream('natural')}
-          className={`px-4 py-2 rounded-md text-sm font-semibold transition ${selectedStream === 'natural' ? 'bg-white shadow-sm text-green-600' : 'text-gray-600 hover:text-gray-900'}`}
+          className={`px-4 py-2 rounded-md text-sm font-semibold transition ${selectedStream === 'natural' ? 'bg-card shadow-sm text-green-600' : 'text-muted-foreground hover:text-foreground'}`}
         >
           Natural Science
         </button>
         <button
           onClick={() => setSelectedStream('social')}
-          className={`px-4 py-2 rounded-md text-sm font-semibold transition ${selectedStream === 'social' ? 'bg-white shadow-sm text-green-600' : 'text-gray-600 hover:text-gray-900'}`}
+          className={`px-4 py-2 rounded-md text-sm font-semibold transition ${selectedStream === 'social' ? 'bg-card shadow-sm text-green-600' : 'text-muted-foreground hover:text-foreground'}`}
         >
           Social Science
         </button>
@@ -113,30 +113,30 @@ export default function AnalyticsPage() {
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white rounded-xl p-4 shadow-sm border">
+        <div className="bg-card rounded-xl p-4 shadow-sm border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-500 text-sm">Total Applicants</p>
-              <p className="text-2xl font-bold text-gray-900">{data.summary.totalApplicants}</p>
+              <p className="text-muted-foreground text-sm">Total Applicants</p>
+              <p className="text-2xl font-bold text-foreground">{data.summary.totalApplicants}</p>
             </div>
             <Users className="w-8 h-8 text-blue-500" />
           </div>
         </div>
         
-        <div className="bg-white rounded-xl p-4 shadow-sm border">
+        <div className="bg-card rounded-xl p-4 shadow-sm border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-500 text-sm">Average Weighted Score</p>
+              <p className="text-muted-foreground text-sm">Average Weighted Score</p>
               <p className="text-2xl font-bold text-green-600">{data.summary.avgWeightedScore}</p>
             </div>
             <Award className="w-8 h-8 text-green-500" />
           </div>
         </div>
         
-        <div className="bg-white rounded-xl p-4 shadow-sm border">
+        <div className="bg-card rounded-xl p-4 shadow-sm border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-500 text-sm">Top 10% Avg Score</p>
+              <p className="text-muted-foreground text-sm">Top 10% Avg Score</p>
               <p className="text-2xl font-bold text-purple-600">{data.summary.top10AvgScore}</p>
             </div>
             <Crown className="w-8 h-8 text-yellow-500" />
@@ -147,8 +147,8 @@ export default function AnalyticsPage() {
       {/* Distribution Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Gender Distribution */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border">
-          <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <div className="bg-card rounded-xl p-6 shadow-sm border">
+          <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
             <Users className="w-5 h-5 text-blue-600" />
             Gender Distribution
           </h3>
@@ -175,8 +175,8 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Disability Distribution */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border">
-          <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <div className="bg-card rounded-xl p-6 shadow-sm border">
+          <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
             <Heart className="w-5 h-5 text-red-600" />
             Disability Status
           </h3>
@@ -200,30 +200,30 @@ export default function AnalyticsPage() {
               </div>
             </div>
           </div>
-          <p className="text-xs text-gray-500 mt-4">
+          <p className="text-xs text-muted-foreground mt-4">
             * Students with disability receive +{data.settings.disabilityWeight}% bonus
           </p>
         </div>
       </div>
 
       {/* Top Ranked Applicants */}
-      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+      <div className="bg-card rounded-xl shadow-sm border overflow-hidden">
         <div className="px-6 py-4 border-b">
-          <h3 className="font-bold text-gray-900 flex items-center gap-2">
+          <h3 className="font-bold text-foreground flex items-center gap-2">
             <Medal className="w-5 h-5 text-yellow-500" />
             Top Ranked Applicants (Weighted Score)
           </h3>
-          <p className="text-xs text-gray-500 mt-1">Click on any candidate to inspect their detailed weighted score breakdown.</p>
+          <p className="text-xs text-muted-foreground mt-1">Click on any candidate to inspect their detailed weighted score breakdown.</p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Rank</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Exam ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Raw Score</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Weighted Score</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground">Rank</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground">Exam ID</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground">Raw Score</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground">Weighted Score</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -235,9 +235,9 @@ export default function AnalyticsPage() {
                 >
                   <td className="px-6 py-4">
                     {index === 0 && <Crown className="w-5 h-5 text-yellow-500" />}
-                    {index === 1 && <Medal className="w-5 h-5 text-gray-400" />}
+                    {index === 1 && <Medal className="w-5 h-5 text-muted-foreground" />}
                     {index === 2 && <Medal className="w-5 h-5 text-amber-600" />}
-                    {index > 2 && <span className="text-gray-500">{index + 1}</span>}
+                    {index > 2 && <span className="text-muted-foreground">{index + 1}</span>}
                   </td>
                   <td className="px-6 py-4 font-mono text-sm">{applicant.examID}</td>
                   <td className="px-6 py-4 font-medium">{applicant.name}</td>
@@ -253,7 +253,7 @@ export default function AnalyticsPage() {
       {/* Score Breakdown Modal */}
       {selectedApplicant && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all duration-300">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-gray-100 transform scale-100 transition-all">
+          <div className="bg-card rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-border transform scale-100 transition-all">
             <div className="bg-gradient-to-r from-green-600 to-teal-600 p-6 text-white relative">
               <button 
                 onClick={() => setSelectedApplicant(null)}
@@ -271,24 +271,24 @@ export default function AnalyticsPage() {
             <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
               <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl">
                 <div>
-                  <p className="text-xs text-gray-500 font-bold uppercase">Raw Score</p>
-                  <p className="text-lg font-black text-gray-800">{selectedApplicant.examScore} <span className="text-xs text-gray-400 font-normal">/ {data.summary?.maxExamScore || 700}</span></p>
+                  <p className="text-xs text-muted-foreground font-bold uppercase">Raw Score</p>
+                  <p className="text-lg font-black text-foreground">{selectedApplicant.examScore} <span className="text-xs text-muted-foreground font-normal">/ {data.summary?.maxExamScore || 700}</span></p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 font-bold uppercase">Final Weighted Score</p>
+                  <p className="text-xs text-muted-foreground font-bold uppercase">Final Weighted Score</p>
                   <p className="text-lg font-black text-green-600">{Number(selectedApplicant.weightedScore || 0).toFixed(2)}%</p>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <h5 className="text-sm font-bold text-gray-700 uppercase tracking-wide">Weighted Contributions</h5>
+                <h5 className="text-sm font-bold text-muted-foreground uppercase tracking-wide">Weighted Contributions</h5>
 
                 {/* Exam Score */}
                 {data.settings.examScoreWeight > 0 && (
                   <div>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-600 font-medium">Exam Performance ({data.settings.examScoreWeight}%)</span>
-                      <span className="font-bold text-gray-900">{Number(selectedApplicant.breakdown?.examScoreContribution || 0).toFixed(2)}%</span>
+                      <span className="text-muted-foreground font-medium">Exam Performance ({data.settings.examScoreWeight}%)</span>
+                      <span className="font-bold text-foreground">{Number(selectedApplicant.breakdown?.examScoreContribution || 0).toFixed(2)}%</span>
                     </div>
                     <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                       <div className="h-full bg-blue-500 rounded-full" style={{ width: `${(Number(selectedApplicant.breakdown?.examScoreContribution || 0) / data.settings.examScoreWeight) * 100}%` }}></div>
@@ -300,8 +300,8 @@ export default function AnalyticsPage() {
                 {data.settings.regionWeight > 0 && (
                   <div>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-600 font-medium">Regional Preference ({selectedApplicant.region} - {data.settings.regionWeight}%)</span>
-                      <span className="font-bold text-gray-900">{Number(selectedApplicant.breakdown?.regionContribution || 0).toFixed(2)}%</span>
+                      <span className="text-muted-foreground font-medium">Regional Preference ({selectedApplicant.region} - {data.settings.regionWeight}%)</span>
+                      <span className="font-bold text-foreground">{Number(selectedApplicant.breakdown?.regionContribution || 0).toFixed(2)}%</span>
                     </div>
                     <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                       <div className="h-full bg-green-500 rounded-full" style={{ width: `${(Number(selectedApplicant.breakdown?.regionContribution || 0) / data.settings.regionWeight) * 100}%` }}></div>
@@ -313,8 +313,8 @@ export default function AnalyticsPage() {
                 {data.settings.genderWeight > 0 && (
                   <div>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-600 font-medium">Gender Balance ({selectedApplicant.gender} - {data.settings.genderWeight}%)</span>
-                      <span className="font-bold text-gray-900">{Number(selectedApplicant.breakdown?.genderContribution || 0).toFixed(2)}%</span>
+                      <span className="text-muted-foreground font-medium">Gender Balance ({selectedApplicant.gender} - {data.settings.genderWeight}%)</span>
+                      <span className="font-bold text-foreground">{Number(selectedApplicant.breakdown?.genderContribution || 0).toFixed(2)}%</span>
                     </div>
                     <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                       <div className="h-full bg-purple-500 rounded-full" style={{ width: `${(Number(selectedApplicant.breakdown?.genderContribution || 0) / data.settings.genderWeight) * 100}%` }}></div>
@@ -326,8 +326,8 @@ export default function AnalyticsPage() {
                 {data.settings.disabilityWeight > 0 && (
                   <div>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-600 font-medium">Disability Bonus ({selectedApplicant.disability || 'None'} - {data.settings.disabilityWeight}%)</span>
-                      <span className="font-bold text-gray-900">{Number(selectedApplicant.breakdown?.disabilityContribution || 0).toFixed(2)}%</span>
+                      <span className="text-muted-foreground font-medium">Disability Bonus ({selectedApplicant.disability || 'None'} - {data.settings.disabilityWeight}%)</span>
+                      <span className="font-bold text-foreground">{Number(selectedApplicant.breakdown?.disabilityContribution || 0).toFixed(2)}%</span>
                     </div>
                     <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                       <div className="h-full bg-red-500 rounded-full" style={{ width: `${(Number(selectedApplicant.breakdown?.disabilityContribution || 0) / data.settings.disabilityWeight) * 100}%` }}></div>
@@ -339,8 +339,8 @@ export default function AnalyticsPage() {
                 {(data.settings.invitationScoreWeight || 0) > 0 && (
                   <div>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-600 font-medium">Interview / Entrance Exam ({data.settings.invitationScoreWeight}%)</span>
-                      <span className="font-bold text-gray-900">{Number(selectedApplicant.breakdown?.invitationScoreContribution || 0).toFixed(2)}%</span>
+                      <span className="text-muted-foreground font-medium">Interview / Entrance Exam ({data.settings.invitationScoreWeight}%)</span>
+                      <span className="font-bold text-foreground">{Number(selectedApplicant.breakdown?.invitationScoreContribution || 0).toFixed(2)}%</span>
                     </div>
                     <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                       <div className="h-full bg-orange-500 rounded-full" style={{ width: `${(Number(selectedApplicant.breakdown?.invitationScoreContribution || 0) / data.settings.invitationScoreWeight) * 100}%` }}></div>
@@ -352,8 +352,8 @@ export default function AnalyticsPage() {
                 {(data.settings.documentScoreWeight || 0) > 0 && (
                   <div>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-600 font-medium">Document Evaluation ({data.settings.documentScoreWeight}%)</span>
-                      <span className="font-bold text-gray-900">{Number(selectedApplicant.breakdown?.documentContribution || 0).toFixed(2)}%</span>
+                      <span className="text-muted-foreground font-medium">Document Evaluation ({data.settings.documentScoreWeight}%)</span>
+                      <span className="font-bold text-foreground">{Number(selectedApplicant.breakdown?.documentContribution || 0).toFixed(2)}%</span>
                     </div>
                     <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                       <div className="h-full bg-teal-500 rounded-full" style={{ width: `${(Number(selectedApplicant.breakdown?.documentContribution || 0) / data.settings.documentScoreWeight) * 100}%` }}></div>
@@ -365,8 +365,8 @@ export default function AnalyticsPage() {
                 {Number(selectedApplicant.breakdown?.customContribution || 0) > 0 && (
                   <div>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-600 font-medium">Custom Criteria Contributions</span>
-                      <span className="font-bold text-gray-900">{Number(selectedApplicant.breakdown?.customContribution || 0).toFixed(2)}%</span>
+                      <span className="text-muted-foreground font-medium">Custom Criteria Contributions</span>
+                      <span className="font-bold text-foreground">{Number(selectedApplicant.breakdown?.customContribution || 0).toFixed(2)}%</span>
                     </div>
                     <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                       <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${100}%` }}></div>
@@ -376,7 +376,7 @@ export default function AnalyticsPage() {
               </div>
             </div>
 
-            <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+            <div className="p-4 bg-gray-50 border-t border-border flex justify-end">
               <button
                 onClick={() => setSelectedApplicant(null)}
                 className="px-5 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded-xl font-semibold transition shadow-sm"

@@ -99,23 +99,23 @@ export default function UniversityApplicationsPage() {
 
   return (
     <DashboardLayout title="Applications" navLinks={navLinks} theme="green">
-      <div className="bg-white rounded-xl shadow overflow-hidden">
+      <div className="bg-card rounded-xl shadow overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Exam ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Student Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Program</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Score</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Applied On</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Exam ID</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Student Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Program</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Score</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Applied On</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {applications.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">
                     No applications found.
                   </td>
                 </tr>
@@ -127,7 +127,7 @@ export default function UniversityApplicationsPage() {
                     <td className="px-6 py-4 text-sm">{app.programName}</td>
                     <td className="px-6 py-4 text-sm font-semibold">{app.score}</td>
                     <td className="px-6 py-4">{getStatusBadge(app.status)}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
+                    <td className="px-6 py-4 text-sm text-muted-foreground">
                       {new Date(app.appliedAt).toLocaleDateString()}
                     </td>
                   </tr>

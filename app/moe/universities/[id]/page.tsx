@@ -60,27 +60,27 @@ export default function MOEUniversityDetailPage() {
 
         {data && (
           <>
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h2 className="text-2xl font-bold text-gray-900">{data.university.name}</h2>
-              <p className="text-gray-600 mt-1">{data.university.code} · {data.university.type} · {data.university.region || 'N/A'}</p>
-              <p className="text-sm mt-2 text-gray-500">
+            <div className="bg-card rounded-lg p-6 shadow-sm">
+              <h2 className="text-2xl font-bold text-foreground">{data.university.name}</h2>
+              <p className="text-muted-foreground mt-1">{data.university.code} · {data.university.type} · {data.university.region || 'N/A'}</p>
+              <p className="text-sm mt-2 text-muted-foreground">
                 Registered: {data.university.isRegistered ? 'Yes' : 'No'} · Active: {data.university.isActive ? 'Yes' : 'No'} · Verified: {data.university.isVerified ? 'Yes' : 'No'}
               </p>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {Object.entries(data.statusSummary).map(([key, value]) => (
-                <div key={key} className="bg-white rounded-lg p-4 shadow-sm border">
-                  <p className="text-xs uppercase text-gray-500">{key}</p>
-                  <p className="text-2xl font-bold text-gray-900">{String(value)}</p>
+                <div key={key} className="bg-card rounded-lg p-4 shadow-sm border">
+                  <p className="text-xs uppercase text-muted-foreground">{key}</p>
+                  <p className="text-2xl font-bold text-foreground">{String(value)}</p>
                 </div>
               ))}
             </div>
 
             {/* Filters Section */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-card p-6 rounded-lg shadow-sm border grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Stream Filter</label>
+                <label className="block text-sm font-semibold text-muted-foreground mb-1">Stream Filter</label>
                 <select
                   value={stream}
                   onChange={(e) => setStream(e.target.value)}
@@ -93,7 +93,7 @@ export default function MOEUniversityDetailPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Gender Filter</label>
+                <label className="block text-sm font-semibold text-muted-foreground mb-1">Gender Filter</label>
                 <select
                   value={gender}
                   onChange={(e) => setGender(e.target.value)}
@@ -106,7 +106,7 @@ export default function MOEUniversityDetailPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Status Filter</label>
+                <label className="block text-sm font-semibold text-muted-foreground mb-1">Status Filter</label>
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
@@ -125,13 +125,13 @@ export default function MOEUniversityDetailPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="bg-card rounded-lg shadow-sm overflow-hidden">
               <div className="p-4 border-b flex justify-between items-center">
                 <h3 className="font-semibold">Applications</h3>
-                <span className="text-sm text-gray-500">{(data.applications || []).length} results</span>
+                <span className="text-sm text-muted-foreground">{(data.applications || []).length} results</span>
               </div>
               {loading ? (
-                <div className="p-8 text-center text-gray-500">Loading filtered applications...</div>
+                <div className="p-8 text-center text-muted-foreground">Loading filtered applications...</div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
@@ -148,14 +148,14 @@ export default function MOEUniversityDetailPage() {
                     <tbody>
                       {(data.applications || []).length === 0 ? (
                         <tr>
-                          <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
+                          <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
                             No applications found matching the criteria.
                           </td>
                         </tr>
                       ) : (
                         (data.applications || []).slice(0, 100).map((item: any) => (
                           <tr key={item.id} className="border-t">
-                            <td className="px-4 py-3 font-semibold text-gray-900">
+                            <td className="px-4 py-3 font-semibold text-foreground">
                               {item.student?.firstName} {item.student?.lastName}
                             </td>
                             <td className="px-4 py-3 font-mono">{item.student?.examID}</td>
@@ -171,7 +171,7 @@ export default function MOEUniversityDetailPage() {
                                 item.isCancelled ? 'bg-red-100 text-red-800' :
                                 item.status === 'PLACED' ? 'bg-green-100 text-green-800' :
                                 item.status === 'SUBMITTED' ? 'bg-blue-100 text-blue-800' :
-                                'bg-gray-100 text-gray-800'
+                                'bg-gray-100 text-foreground'
                               }`}>
                                 {item.isCancelled ? 'CANCELLED' : item.status || 'PENDING'}
                               </span>

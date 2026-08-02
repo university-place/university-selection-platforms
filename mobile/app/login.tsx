@@ -13,11 +13,13 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 import { apiClient } from '@/lib/api';
 
 export default function LoginScreen() {
   const router = useRouter();
   const { login } = useAuth();
+  const { isDarkMode } = useTheme();
   const [examId, setExamId] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -114,7 +116,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, isDarkMode && { backgroundColor: '#111' }]}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -122,15 +124,15 @@ export default function LoginScreen() {
       >
         {/* Logo Section */}
         <View style={styles.logoSection}>
-          <View style={styles.logoPlaceholder}>
+          <View style={[styles.logoPlaceholder, isDarkMode && { backgroundColor: '#222' }]}>
             <Text style={styles.logoText}>🎓</Text>
           </View>
-          <Text style={styles.appTitle}>Student Login</Text>
-          <Text style={styles.appSubtitle}>Sign in to your account</Text>
+          <Text style={[styles.appTitle, isDarkMode && { color: '#fff' }]}>Student Login</Text>
+          <Text style={[styles.appSubtitle, isDarkMode && { color: '#aaa' }]}>Sign in to your account</Text>
         </View>
 
         {/* Form Section */}
-        <View style={styles.formSection}>
+        <View style={[styles.formSection, isDarkMode && { backgroundColor: '#222' }]}>
           {loginError ? (
             <View style={styles.globalErrorContainer}>
               <Text style={styles.globalErrorText}>{loginError}</Text>
@@ -139,11 +141,11 @@ export default function LoginScreen() {
 
           {/* Exam ID Input */}
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Exam ID</Text>
+            <Text style={[styles.label, isDarkMode && { color: '#ddd' }]}>Exam ID</Text>
             <TextInput
-              style={[styles.input, errors.examId && styles.inputError]}
+              style={[styles.input, isDarkMode && { backgroundColor: '#333', color: '#fff', borderColor: '#444' }, errors.examId && styles.inputError]}
               placeholder="EXM-2024-002"
-              placeholderTextColor="#999"
+              placeholderTextColor={isDarkMode ? "#777" : "#999"}
               value={examId}
               onChangeText={setExamId}
               editable={!loading}
@@ -153,12 +155,12 @@ export default function LoginScreen() {
 
           {/* Password Input */}
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Password</Text>
-            <View style={[styles.passwordContainer, errors.password && styles.inputError]}>
+            <Text style={[styles.label, isDarkMode && { color: '#ddd' }]}>Password</Text>
+            <View style={[styles.passwordContainer, isDarkMode && { backgroundColor: '#333', borderColor: '#444' }, errors.password && styles.inputError]}>
               <TextInput
-                style={styles.passwordInput}
+                style={[styles.passwordInput, isDarkMode && { color: '#fff' }]}
                 placeholder="Enter your password"
-                placeholderTextColor="#999"
+                placeholderTextColor={isDarkMode ? "#777" : "#999"}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
@@ -213,9 +215,9 @@ export default function LoginScreen() {
       {/* Forgot Password Modal */}
       <Modal visible={showForgotModal} animationType="slide" transparent={true}>
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Change Default Password</Text>
-            <Text style={styles.modalSubtitle}>Please update your password before logging in</Text>
+          <View style={[styles.modalContent, isDarkMode && { backgroundColor: '#222' }]}>
+            <Text style={[styles.modalTitle, isDarkMode && { color: '#fff' }]}>Change Default Password</Text>
+            <Text style={[styles.modalSubtitle, isDarkMode && { color: '#aaa' }]}>Please update your password before logging in</Text>
 
             {forgotError ? (
               <View style={styles.globalErrorContainer}>

@@ -89,8 +89,8 @@ export default function MOECompliancePage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-4 flex gap-3">
-          <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none"
+        <div className="bg-card rounded-xl shadow-sm p-4 flex gap-3">
+          <select className="border border-border rounded-lg px-3 py-2 text-sm outline-none"
             value={filter} onChange={(e) => setFilter(e.target.value)}>
             <option value="">All Universities</option>
             <option value="COMPLIANT">Compliant Only</option>
@@ -99,7 +99,7 @@ export default function MOECompliancePage() {
           </select>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="bg-card rounded-xl shadow-sm overflow-hidden">
           {error && <div className="p-4 text-red-600 bg-red-50">{error}</div>}
           {loading ? (
             <div className="flex justify-center items-center h-48">
@@ -111,13 +111,13 @@ export default function MOECompliancePage() {
                 <thead className="bg-gray-50 border-b">
                   <tr>
                     {['University', 'Code', 'Region', 'Applications', 'Invitations', 'Accepted', 'Placements', 'Appeals', 'Response Rate', 'Compliance'].map((h) => (
-                      <th key={h} className="text-left px-4 py-3 text-gray-600 font-semibold text-xs uppercase">{h}</th>
+                      <th key={h} className="text-left px-4 py-3 text-muted-foreground font-semibold text-xs uppercase">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {filtered.length === 0 ? (
-                    <tr><td colSpan={9} className="text-center py-12 text-gray-400">No data</td></tr>
+                    <tr><td colSpan={9} className="text-center py-12 text-muted-foreground">No data</td></tr>
                   ) : filtered.map((u) => {
                     const c = COMPLIANCE_COLOR[u.complianceStatus] || COMPLIANCE_COLOR.NON_COMPLIANT;
                     const Icon = c.icon;
@@ -125,7 +125,7 @@ export default function MOECompliancePage() {
                       <tr key={u.id} className="hover:bg-gray-50 transition">
                         <td className="px-4 py-3 font-medium">{u.name}</td>
                         <td className="px-4 py-3 font-mono text-xs text-blue-700">{u.code}</td>
-                        <td className="px-4 py-3 text-gray-500">{u.region}</td>
+                        <td className="px-4 py-3 text-muted-foreground">{u.region}</td>
                         <td className="px-4 py-3 text-center font-semibold">{u.totalApplications}</td>
                         <td className="px-4 py-3 text-center">{u.invitationsSent}</td>
                         <td className="px-4 py-3 text-center text-green-700 font-semibold">{u.acceptedApplications}</td>
@@ -136,7 +136,7 @@ export default function MOECompliancePage() {
                               {u.appealCount} Appeals
                             </span>
                           ) : (
-                            <span className="text-gray-400 text-xs">None</span>
+                            <span className="text-muted-foreground text-xs">None</span>
                           )}
                         </td>
                         <td className="px-4 py-3 text-center">

@@ -717,7 +717,7 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
-      <aside className="w-72 bg-white shadow-lg fixed h-full overflow-y-auto z-10">
+      <aside className="w-72 bg-card shadow-lg fixed h-full overflow-y-auto z-10">
         <div className="p-6 border-b">
           <div className="flex items-center gap-3">
             {profile.photo ? (
@@ -729,7 +729,7 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
             )}
             <div>
               <h2 className="font-semibold">{profile.firstName} {profile.lastName}</h2>
-              <p className="text-sm text-gray-500">{profile.examID}</p>
+              <p className="text-sm text-muted-foreground">{profile.examID}</p>
             </div>
           </div>
         </div>
@@ -741,7 +741,7 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                 activeTab === item.id
                   ? 'bg-blue-50 text-blue-600 border-r-4 border-blue-600'
-                  : 'text-gray-700 hover:bg-gray-100'
+                  : 'text-muted-foreground hover:bg-gray-100'
               }`}
             >
               <item.icon className="w-5 h-5" />
@@ -764,12 +764,12 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
         {activeTab === 'dashboard' && (
           <div>
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
-              <p className="text-gray-600 mt-1">{profile.firstName} {profile.lastName} • Exam ID: {profile.examID}</p>
+              <h1 className="text-3xl font-bold text-foreground">Welcome Back</h1>
+              <p className="text-muted-foreground mt-1">{profile.firstName} {profile.lastName} • Exam ID: {profile.examID}</p>
             </div>
 
             {/* Application Journey Timeline */}
-            <div className="bg-white rounded-xl shadow-sm p-8 mb-8">
+            <div className="bg-card rounded-xl shadow-sm p-8 mb-8">
               <h2 className="text-lg font-bold mb-6">Your Application Journey</h2>
               <div className="flex items-center justify-between relative">
                 {/* Step 1: Profile Complete */}
@@ -778,7 +778,7 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
                     <CheckCircle className="w-6 h-6" />
                   </div>
                   <p className="text-center text-sm font-semibold mt-2">Profile</p>
-                  <p className="text-xs text-gray-500 text-center mt-1">Complete</p>
+                  <p className="text-xs text-muted-foreground text-center mt-1">Complete</p>
                 </div>
 
                 {/* Step 2: Documents */}
@@ -787,7 +787,7 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
                     <FileText className="w-6 h-6" />
                   </div>
                   <p className="text-center text-sm font-semibold mt-2">Documents</p>
-                  <p className="text-xs text-gray-500 text-center mt-1">{documents.filter(d => d.verificationStatus === 'VERIFIED').length}/{documents.length}</p>
+                  <p className="text-xs text-muted-foreground text-center mt-1">{documents.filter(d => d.verificationStatus === 'VERIFIED').length}/{documents.length}</p>
                 </div>
 
                 {/* Step 3: Preferences */}
@@ -796,7 +796,7 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
                     <ClipboardList className="w-6 h-6" />
                   </div>
                   <p className="text-center text-sm font-semibold mt-2">Preferences</p>
-                  <p className="text-xs text-gray-500 text-center mt-1">{preferences.length} added</p>
+                  <p className="text-xs text-muted-foreground text-center mt-1">{preferences.length} added</p>
                 </div>
 
                 {/* Step 4: Results */}
@@ -805,7 +805,7 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
                     <Award className="w-6 h-6" />
                   </div>
                   <p className="text-center text-sm font-semibold mt-2">Placement</p>
-                  <p className="text-xs text-gray-500 text-center mt-1">{placement ? placement.status : 'Pending'}</p>
+                  <p className="text-xs text-muted-foreground text-center mt-1">{placement ? placement.status : 'Pending'}</p>
                 </div>
 
                 {/* Connecting Line */}
@@ -817,22 +817,22 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
                 <Award className="w-8 h-8 text-blue-600 mb-2" />
-                <p className="text-gray-600 text-sm">Exam Score</p>
+                <p className="text-muted-foreground text-sm">Exam Score</p>
                 <p className="text-3xl font-bold text-blue-700">{profile.totalScore}</p>
               </div>
               <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
                 <ClipboardList className="w-8 h-8 text-green-600 mb-2" />
-                <p className="text-gray-600 text-sm">Preferences</p>
+                <p className="text-muted-foreground text-sm">Preferences</p>
                 <p className="text-3xl font-bold text-green-700">{preferences.length}</p>
               </div>
               <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
                 <FileCheck className="w-8 h-8 text-purple-600 mb-2" />
-                <p className="text-gray-600 text-sm">Documents</p>
+                <p className="text-muted-foreground text-sm">Documents</p>
                 <p className="text-3xl font-bold text-purple-700">{documents.length}</p>
               </div>
               <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border border-orange-200">
                 <Bell className="w-8 h-8 text-orange-600 mb-2" />
-                <p className="text-gray-600 text-sm">Unread</p>
+                <p className="text-muted-foreground text-sm">Unread</p>
                 <p className="text-3xl font-bold text-orange-700">{notifications.filter(n => !n.read).length}</p>
               </div>
             </div>
@@ -840,12 +840,12 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
             {/* Main Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Document Status */}
-              <div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6">
+              <div className="lg:col-span-2 bg-card rounded-xl shadow-sm p-6">
                 <h2 className="text-lg font-bold mb-4">Document Status</h2>
                 {documents.length === 0 ? (
                   <div className="text-center py-8">
                     <FileText className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                    <p className="text-gray-500">No documents uploaded yet</p>
+                    <p className="text-muted-foreground">No documents uploaded yet</p>
                     <button onClick={() => setActiveTab('profile')} className="mt-3 text-blue-600 hover:underline text-sm font-semibold">Upload Documents →</button>
                   </div>
                 ) : (
@@ -853,10 +853,10 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
                     {documents.map(doc => (
                       <div key={doc.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
                         <div className="flex items-center gap-3 flex-1">
-                          <FileText className="w-5 h-5 text-gray-400" />
+                          <FileText className="w-5 h-5 text-muted-foreground" />
                           <div>
                             <p className="font-medium text-sm">{doc.name}</p>
-                            <p className="text-xs text-gray-500">{new Date(doc.uploadDate).toLocaleDateString()}</p>
+                            <p className="text-xs text-muted-foreground">{new Date(doc.uploadDate).toLocaleDateString()}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
@@ -881,7 +881,7 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
               </div>
 
               {/* Quick Actions */}
-              <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="bg-card rounded-xl shadow-sm p-6">
                 <h2 className="text-lg font-bold mb-4">Quick Actions</h2>
                 <div className="space-y-3">
                   <button 
@@ -920,26 +920,26 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
 
             {/* Placement Status */}
             {placement && (
-              <div className="mt-6 bg-white rounded-xl shadow-sm p-6 border-l-4 border-green-500">
+              <div className="mt-6 bg-card rounded-xl shadow-sm p-6 border-l-4 border-green-500">
                 <h2 className="text-lg font-bold mb-4">Your Placement</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <p className="text-gray-600 text-sm">University</p>
-                    <p className="text-lg font-semibold text-gray-900">{placement.universityName}</p>
+                    <p className="text-muted-foreground text-sm">University</p>
+                    <p className="text-lg font-semibold text-foreground">{placement.universityName}</p>
                   </div>
                   <div>
-                    <p className="text-gray-600 text-sm">Program</p>
-                    <p className="text-lg font-semibold text-gray-900">{placement.programName}</p>
+                    <p className="text-muted-foreground text-sm">Program</p>
+                    <p className="text-lg font-semibold text-foreground">{placement.programName}</p>
                   </div>
                   <div>
-                    <p className="text-gray-600 text-sm">Status</p>
+                    <p className="text-muted-foreground text-sm">Status</p>
                     <p className={`text-lg font-bold ${placement.status === 'PLACED' ? 'text-green-600' : 'text-red-600'}`}>
                       {placement.status === 'PLACED' ? '✓ Accepted' : placement.status === 'NOT_PLACED' ? '✗ Not Placed' : 'Pending'}
                     </p>
                   </div>
                   <div>
-                    <p className="text-gray-600 text-sm">Deadline</p>
-                    <p className="text-lg font-semibold text-gray-900">{new Date(placement.confirmationDeadline).toLocaleDateString()}</p>
+                    <p className="text-muted-foreground text-sm">Deadline</p>
+                    <p className="text-lg font-semibold text-foreground">{new Date(placement.confirmationDeadline).toLocaleDateString()}</p>
                   </div>
                 </div>
               </div>
@@ -947,14 +947,14 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
 
             {/* Recent Notifications */}
             {notifications.length > 0 && (
-              <div className="mt-6 bg-white rounded-xl shadow-sm p-6">
+              <div className="mt-6 bg-card rounded-xl shadow-sm p-6">
                 <h2 className="text-lg font-bold mb-4">Recent Notifications</h2>
                 <div className="space-y-3 max-h-48 overflow-y-auto">
                   {notifications.slice(0, 5).map(n => (
                     <div key={n.id} className={`p-3 rounded-lg ${!n.read ? 'bg-blue-50 border-l-4 border-blue-500' : 'bg-gray-50'}`}>
                       <p className="font-semibold text-sm">{n.title}</p>
-                      <p className="text-sm text-gray-600">{n.message}</p>
-                      <p className="text-xs text-gray-400 mt-1">{new Date(n.createdAt).toLocaleDateString()}</p>
+                      <p className="text-sm text-muted-foreground">{n.message}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{new Date(n.createdAt).toLocaleDateString()}</p>
                     </div>
                   ))}
                 </div>
@@ -967,25 +967,25 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
         {activeTab === 'profile' && (
           <div>
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">Profile & Documents</h1>
-              <p className="text-gray-600 mt-1">Manage your account information and upload required documents</p>
+              <h1 className="text-3xl font-bold text-foreground">Profile & Documents</h1>
+              <p className="text-muted-foreground mt-1">Manage your account information and upload required documents</p>
             </div>
 
             {/* Personal Information */}
-            <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+            <div className="bg-card rounded-xl shadow-sm p-6 mb-6">
               <h2 className="text-lg font-bold mb-6">Personal Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div className="pb-4 border-b">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Exam ID</p>
-                  <p className="text-lg font-semibold text-gray-900 mt-1">{profile.examID}</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Exam ID</p>
+                  <p className="text-lg font-semibold text-foreground mt-1">{profile.examID}</p>
                 </div>
                 <div className="pb-4 border-b">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Full Name</p>
-                  <p className="text-lg font-semibold text-gray-900 mt-1">{profile.firstName} {profile.lastName}</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Full Name</p>
+                  <p className="text-lg font-semibold text-foreground mt-1">{profile.firstName} {profile.lastName}</p>
                 </div>
                 <div className="pb-4 border-b">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Email</p>
-                  <p className="text-lg font-semibold text-gray-900 mt-1 flex items-center gap-2">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Email</p>
+                  <p className="text-lg font-semibold text-foreground mt-1 flex items-center gap-2">
                     {profile.email}
                     {profile.emailVerified ? (
                       <CheckCircle className="w-5 h-5 text-green-500" title="Verified" />
@@ -995,35 +995,35 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
                   </p>
                 </div>
                 <div className="pb-4 border-b">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Phone</p>
-                  <p className="text-lg font-semibold text-gray-900 mt-1">{profile.phone || 'Not provided'}</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Phone</p>
+                  <p className="text-lg font-semibold text-foreground mt-1">{profile.phone || 'Not provided'}</p>
                 </div>
                 <div className="pb-4 border-b">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Region</p>
-                  <p className="text-lg font-semibold text-gray-900 mt-1">{profile.region || 'Not specified'}</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Region</p>
+                  <p className="text-lg font-semibold text-foreground mt-1">{profile.region || 'Not specified'}</p>
                 </div>
                 <div className="pb-4 border-b">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Date of Birth</p>
-                  <p className="text-lg font-semibold text-gray-900 mt-1">{new Date(profile.dateOfBirth).toLocaleDateString()}</p>
-                  <p className="text-sm text-gray-500 mt-1">{profile.age} years old</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Date of Birth</p>
+                  <p className="text-lg font-semibold text-foreground mt-1">{new Date(profile.dateOfBirth).toLocaleDateString()}</p>
+                  <p className="text-sm text-muted-foreground mt-1">{profile.age} years old</p>
                 </div>
                 <div className="pb-4 border-b">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Gender</p>
-                  <p className="text-lg font-semibold text-gray-900 mt-1">{profile.gender || 'Not specified'}</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Gender</p>
+                  <p className="text-lg font-semibold text-foreground mt-1">{profile.gender || 'Not specified'}</p>
                 </div>
                 <div className="pb-4 border-b">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Disability Status</p>
-                  <p className="text-lg font-semibold text-gray-900 mt-1">{profile.disability}</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Disability Status</p>
+                  <p className="text-lg font-semibold text-foreground mt-1">{profile.disability}</p>
                 </div>
                 <div className="pb-4 border-b">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Stream</p>
-                  <p className="text-lg font-semibold text-gray-900 mt-1">{profile.stream}</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Stream</p>
+                  <p className="text-lg font-semibold text-foreground mt-1">{profile.stream}</p>
                 </div>
               </div>
             </div>
 
             {/* Documents Section */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="bg-card rounded-xl shadow-sm p-6">
               <h2 className="text-lg font-bold mb-6">Required Documents</h2>
               
               {/* Upload Area */}
@@ -1031,10 +1031,10 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
   <div className="text-center">
     <Upload className="w-12 h-12 text-blue-500 mx-auto mb-3" />
     <label htmlFor="document-upload" className="cursor-pointer">
-      <span className="font-semibold text-gray-900 hover:text-blue-600">Click to upload</span>
-      <span className="text-gray-600"> or drag and drop</span>
+      <span className="font-semibold text-foreground hover:text-blue-600">Click to upload</span>
+      <span className="text-muted-foreground"> or drag and drop</span>
     </label>
-    <p className="text-sm text-gray-500 mt-2">PDF, JPG, or PNG (max 10MB)</p>
+    <p className="text-sm text-muted-foreground mt-2">PDF, JPG, or PNG (max 10MB)</p>
     <input 
       id="document-upload"
       type="file" 
@@ -1053,15 +1053,15 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
 
               {/* Documents List */}
               {documents.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-muted-foreground">
                   <FileText className="w-12 h-12 text-gray-300 mx-auto mb-2" />
                   <p>No documents uploaded yet</p>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-gray-900 mb-4">Uploaded Documents ({documents.length})</h3>
+                  <h3 className="font-semibold text-foreground mb-4">Uploaded Documents ({documents.length})</h3>
                   {documents.map(doc => (
-                    <div key={doc.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                    <div key={doc.id} className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-gray-50 transition">
                       <div className="flex items-center gap-3 flex-1">
                         <div className="flex-shrink-0">
                           {doc.verificationStatus === 'VERIFIED' ? (
@@ -1082,7 +1082,7 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
                           <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 hover:underline">
                             {doc.name}
                           </a>
-                          <p className="text-sm text-gray-500 mt-1">{new Date(doc.uploadDate).toLocaleDateString()}</p>
+                          <p className="text-sm text-muted-foreground mt-1">{new Date(doc.uploadDate).toLocaleDateString()}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3 flex-shrink-0">
@@ -1136,7 +1136,7 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
         {activeTab === 'exam-results' && (
           <div>
             <h1 className="text-2xl font-bold mb-6">Exam Results</h1>
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="bg-card rounded-xl shadow-sm p-6">
               <div className="mb-4"><span className="font-semibold">Stream:</span> {profile.stream}</div>
               <div className="mb-4"><span className="font-semibold">Total Score:</span> <span className="text-2xl font-bold text-blue-600">{profile.totalScore}</span></div>
               <h3 className="font-semibold mb-3">Subject Scores</h3>
@@ -1158,11 +1158,11 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
             <h1 className="text-2xl font-bold mb-6">Admission Tracks</h1>
             <div className="grid gap-4">
               {admissionTracks.map(track => (
-                <div key={track.id} className={`bg-white rounded-xl shadow-sm p-6 border-l-8 ${track.isEligible ? 'border-green-500' : 'border-red-500'}`}>
+                <div key={track.id} className={`bg-card rounded-xl shadow-sm p-6 border-l-8 ${track.isEligible ? 'border-green-500' : 'border-red-500'}`}>
                   <div className="flex justify-between"><h3 className="font-bold text-lg">{track.name}</h3>{track.isEligible ? <CheckCircle className="text-green-500" /> : <XCircle className="text-red-500" />}</div>
-                  <p className="text-gray-600 mt-2">{track.description}</p>
-                  <p className="text-sm text-gray-500 mt-1">Eligibility: {track.eligibilityCriteria}</p>
-                  <p className="text-sm text-gray-500">Capacity: {track.capacity}</p>
+                  <p className="text-muted-foreground mt-2">{track.description}</p>
+                  <p className="text-sm text-muted-foreground mt-1">Eligibility: {track.eligibilityCriteria}</p>
+                  <p className="text-sm text-muted-foreground">Capacity: {track.capacity}</p>
                 </div>
               ))}
             </div>
@@ -1183,8 +1183,8 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
             </div>
             <div className="grid gap-4">
               {universities.filter(u => u.name.toLowerCase().includes(searchQuery.toLowerCase()) && (filterType === 'all' || u.type === filterType)).map(uni => (
-                <div key={uni.id} className="bg-white rounded-xl shadow-sm p-4 flex justify-between items-center">
-                  <div><h3 className="font-semibold">{uni.name}</h3><p className="text-sm text-gray-500">{uni.region} | {uni.type}</p></div>
+                <div key={uni.id} className="bg-card rounded-xl shadow-sm p-4 flex justify-between items-center">
+                  <div><h3 className="font-semibold">{uni.name}</h3><p className="text-sm text-muted-foreground">{uni.region} | {uni.type}</p></div>
                   <div className="flex gap-2">
                     <button onClick={() => window.open(`/university/${uni.id}`, '_blank')} className="px-3 py-1 text-blue-600 border border-blue-600 rounded-lg">View Profile</button>
                     <button onClick={() => setCompareList(prev => prev.includes(uni) ? prev.filter(u => u.id !== uni.id) : [...prev, uni])} className={`px-3 py-1 rounded-lg ${compareList.includes(uni) ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>Compare</button>
@@ -1193,7 +1193,7 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
               ))}
             </div>
             {compareList.length > 0 && (
-              <div className="fixed bottom-4 right-4 bg-white shadow-xl rounded-xl p-4 w-96 border">
+              <div className="fixed bottom-4 right-4 bg-card shadow-xl rounded-xl p-4 w-96 border">
                 <h3 className="font-bold mb-2">Compare ({compareList.length})</h3>
                 <div className="max-h-64 overflow-auto">
                   {compareList.map(uni => <div key={uni.id} className="flex justify-between"><span>{uni.name}</span><button onClick={() => setCompareList(prev => prev.filter(u => u.id !== uni.id))}><X className="w-4 h-4" /></button></div>)}
@@ -1208,8 +1208,8 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
         {activeTab === 'preferences' && (
           <div>
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">My Preferences</h1>
-              <p className="text-gray-600 mt-1">Build your ranked list of university preferences by admission track</p>
+              <h1 className="text-3xl font-bold text-foreground">My Preferences</h1>
+              <p className="text-muted-foreground mt-1">Build your ranked list of university preferences by admission track</p>
             </div>
 
             {/* Info Banner */}
@@ -1233,17 +1233,17 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
 
             {/* Add New Preference */}
             {/* Add New Preference */}
-<div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+<div className="bg-card rounded-xl shadow-sm p-6 mb-6">
   <h2 className="text-lg font-bold mb-4">Add University Preference</h2>
   <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
     <div>
-      <label className="text-sm font-semibold text-gray-700 block mb-1">University</label>
+      <label className="text-sm font-semibold text-muted-foreground block mb-1">University</label>
       <select 
         value={newPreference.universityId} 
         onChange={e => { 
           setNewPreference({ ...newPreference, universityId: parseInt(e.target.value), programId: 0, admissionTrackId: 0 }); 
         }} 
-        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
         <option value={0}>Choose university...</option>
         {universities.map(u => (
@@ -1252,13 +1252,13 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
       </select>
     </div>
     <div>
-      <label className="text-sm font-semibold text-gray-700 block mb-1">Program</label>
+      <label className="text-sm font-semibold text-muted-foreground block mb-1">Program</label>
       <select 
         value={newPreference.programId} 
         onChange={e => { 
           setNewPreference({ ...newPreference, programId: parseInt(e.target.value), admissionTrackId: 0 }); 
         }} 
-        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
         disabled={!newPreference.universityId}
       >
         <option value={0}>Select program...</option>
@@ -1268,11 +1268,11 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
       </select>
     </div>
     <div>
-      <label className="text-sm font-semibold text-gray-700 block mb-1">Admission Track</label>
+      <label className="text-sm font-semibold text-muted-foreground block mb-1">Admission Track</label>
       <select 
         value={newPreference.admissionTrackId} 
         onChange={e => setNewPreference({ ...newPreference, admissionTrackId: parseInt(e.target.value) })} 
-        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
         disabled={!newPreference.programId}
       >
         <option value={0}>Select track...</option>
@@ -1294,11 +1294,11 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
   </div>
 </div>
             {/* Current Preferences List */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="bg-card rounded-xl shadow-sm p-6">
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h2 className="text-lg font-bold">Your Ranked Preferences</h2>
-                  <p className="text-sm text-gray-600 mt-1">{preferences.length} preference(s) added</p>
+                  <p className="text-sm text-muted-foreground mt-1">{preferences.length} preference(s) added</p>
                 </div>
                 {preferences.length > 0 && (
                   <span className={`px-3 py-1 rounded-full text-sm font-semibold ${submissionAttemptsLeft > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
@@ -1310,8 +1310,8 @@ async function editAndResubmit(preferenceId: number, universityName: string, cur
 {preferences.length === 0 ? (
   <div className="text-center py-12">
     <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-3" />
-    <p className="text-gray-500 font-medium">No preferences added yet</p>
-    <p className="text-gray-400 text-sm mt-1">Add your university preferences above</p>
+    <p className="text-muted-foreground font-medium">No preferences added yet</p>
+    <p className="text-muted-foreground text-sm mt-1">Add your university preferences above</p>
   </div>
 ) : (
   <div className="space-y-4">
@@ -1332,13 +1332,13 @@ if (isSubmitted && hasAttemptsLeft) {
   buttonClasses += "bg-yellow-600 hover:bg-yellow-700 text-white";
 } else if (isSubmitted && !hasAttemptsLeft) {
   buttonText = "✓ Submitted - No Attempts Left";
-  buttonClasses += "bg-gray-300 cursor-not-allowed text-gray-600";
+  buttonClasses += "bg-gray-300 cursor-not-allowed text-muted-foreground";
 } else if (!isSubmitted && hasAttemptsLeft && !isDeadlinePassed) {
   buttonText = `📝 Submit (${pref.remainingAttempts} attempts left)`;
   buttonClasses += "bg-green-600 hover:bg-green-700 text-white";
 } else if (!isSubmitted && hasAttemptsLeft && isDeadlinePassed) {
   buttonText = "⏰ Deadline Passed";
-  buttonClasses += "bg-gray-300 cursor-not-allowed text-gray-600";
+  buttonClasses += "bg-gray-300 cursor-not-allowed text-muted-foreground";
 } else {
   buttonText = "❌ No Attempts Left";
   buttonClasses += "bg-red-300 cursor-not-allowed text-white";
@@ -1348,14 +1348,14 @@ if (isSubmitted && hasAttemptsLeft) {
 const finalDisabled = isDisabled || (!hasAttemptsLeft);
       
       return (
-        <div key={pref.id} className="bg-white rounded-lg shadow-md p-5 hover:shadow-lg transition">
+        <div key={pref.id} className="bg-card rounded-lg shadow-md p-5 hover:shadow-lg transition">
           <div className="flex justify-between items-start">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
                 <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">
                   {index + 1}
                 </span>
-                <h4 className="font-semibold text-lg text-gray-900">{pref.universityName}</h4>
+                <h4 className="font-semibold text-lg text-foreground">{pref.universityName}</h4>
                 {isSubmitted && (
                   <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full flex items-center gap-1">
                     <CheckCircle className="w-3 h-3" /> Submitted
@@ -1364,10 +1364,10 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
               </div>
               
               <div className="ml-11 space-y-1">
-                <p className="text-sm text-gray-700">
+                <p className="text-sm text-muted-foreground">
                   <span className="font-medium">Program:</span> {pref.programName}
                 </p>
-                <p className="text-sm text-gray-700">
+                <p className="text-sm text-muted-foreground">
                   <span className="font-medium">Track:</span> {pref.admissionTrackName}
                 </p>
               </div>
@@ -1400,8 +1400,8 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
                       </>
                     ) : (
                       <>
-                        <Clock className="w-4 h-4 text-gray-500" />
-                        <span className="text-xs text-gray-600">
+                        <Clock className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground">
                           Deadline: {new Date(pref.universityDeadline).toLocaleDateString()}
                         </span>
                       </>
@@ -1455,9 +1455,9 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
             {/* Confirmation Modal */}
             {showFinalSubmitConfirm && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-xl w-full max-w-md shadow-2xl">
+                <div className="bg-card rounded-xl w-full max-w-md shadow-2xl">
                   <div className="p-6 border-b">
-                    <h3 className="text-xl font-bold text-gray-900">Confirm Submission</h3>
+                    <h3 className="text-xl font-bold text-foreground">Confirm Submission</h3>
                   </div>
                   <div className="p-6">
                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
@@ -1466,17 +1466,17 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
                         This action cannot be undone
                       </p>
                     </div>
-                    <p className="text-gray-700 mb-4">
+                    <p className="text-muted-foreground mb-4">
                       You are about to submit your final preference list of <span className="font-bold">{preferences.length}</span> preference(s).
                     </p>
-                    <p className="text-gray-600 text-sm mb-6">
+                    <p className="text-muted-foreground text-sm mb-6">
                       After submission, you will have <span className="font-bold">{Math.max(0, submissionAttemptsLeft - 1)}</span> attempt(s) remaining.
                     </p>
                     <div className="space-y-2 max-h-48 overflow-y-auto mb-6 p-4 bg-gray-50 rounded-lg">
                       {preferences.sort((a, b) => a.rank - b.rank).map((pref, index) => (
                         <div key={pref.id} className="flex gap-2 text-sm">
                           <span className="font-bold text-blue-600 w-6">{index + 1}.</span>
-                          <span className="text-gray-700">{pref.universityName} - {pref.programName}</span>
+                          <span className="text-muted-foreground">{pref.universityName} - {pref.programName}</span>
                         </div>
                       ))}
                     </div>
@@ -1484,7 +1484,7 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
                   <div className="flex justify-end gap-3 p-6 border-t bg-gray-50 rounded-b-xl">
                     <button 
                       onClick={() => setShowFinalSubmitConfirm(false)} 
-                      className="px-4 py-2 border border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-100 transition"
+                      className="px-4 py-2 border border-border rounded-lg font-semibold text-muted-foreground hover:bg-gray-100 transition"
                     >
                       Cancel
                     </button>
@@ -1505,8 +1505,8 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
         {activeTab === 'placement' && (
           <div>
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">Placement Results & Appeals</h1>
-              <p className="text-gray-600 mt-1">View your placement decision and submit appeals if needed</p>
+              <h1 className="text-3xl font-bold text-foreground">Placement Results & Appeals</h1>
+              <p className="text-muted-foreground mt-1">View your placement decision and submit appeals if needed</p>
             </div>
 
             {/* Placement Result */}
@@ -1514,31 +1514,31 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
               <div className={`rounded-xl shadow-sm p-8 mb-6 border-l-4 ${placement.status === 'PLACED' ? 'bg-green-50 border-green-500' : 'bg-red-50 border-red-500'}`}>
                 <div className="flex items-start justify-between mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">
+                    <h2 className="text-2xl font-bold text-foreground">
                       {placement.status === 'PLACED' ? '✓ Placement Confirmed' : placement.status === 'NOT_PLACED' ? '✗ Not Placed' : 'Decision Pending'}
                     </h2>
-                    <p className={`text-sm mt-2 ${placement.status === 'PLACED' ? 'text-green-700' : placement.status === 'NOT_PLACED' ? 'text-red-700' : 'text-gray-600'}`}>
+                    <p className={`text-sm mt-2 ${placement.status === 'PLACED' ? 'text-green-700' : placement.status === 'NOT_PLACED' ? 'text-red-700' : 'text-muted-foreground'}`}>
                       Last updated: {new Date(placement.decisionDate).toLocaleDateString()}
                     </p>
                   </div>
-                  <div className={`text-4xl ${placement.status === 'PLACED' ? 'text-green-500' : placement.status === 'NOT_PLACED' ? 'text-red-500' : 'text-gray-400'}`}>
+                  <div className={`text-4xl ${placement.status === 'PLACED' ? 'text-green-500' : placement.status === 'NOT_PLACED' ? 'text-red-500' : 'text-muted-foreground'}`}>
                     {placement.status === 'PLACED' ? '✓' : placement.status === 'NOT_PLACED' ? '✗' : '...'}
                   </div>
                 </div>
 
                 {placement.status === 'PLACED' && (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-white rounded-lg p-4">
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">University</p>
-                      <p className="text-lg font-bold text-gray-900 mt-2">{placement.universityName}</p>
+                    <div className="bg-card rounded-lg p-4">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">University</p>
+                      <p className="text-lg font-bold text-foreground mt-2">{placement.universityName}</p>
                     </div>
-                    <div className="bg-white rounded-lg p-4">
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Program</p>
-                      <p className="text-lg font-bold text-gray-900 mt-2">{placement.programName}</p>
+                    <div className="bg-card rounded-lg p-4">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Program</p>
+                      <p className="text-lg font-bold text-foreground mt-2">{placement.programName}</p>
                     </div>
-                    <div className="bg-white rounded-lg p-4">
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Confirmation Deadline</p>
-                      <p className="text-lg font-bold text-gray-900 mt-2">{new Date(placement.confirmationDeadline).toLocaleDateString()}</p>
+                    <div className="bg-card rounded-lg p-4">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Confirmation Deadline</p>
+                      <p className="text-lg font-bold text-foreground mt-2">{new Date(placement.confirmationDeadline).toLocaleDateString()}</p>
                       {new Date() < new Date(placement.confirmationDeadline) && (
                         <p className="text-xs text-green-600 font-semibold mt-1">
                           {Math.ceil((new Date(placement.confirmationDeadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left
@@ -1549,8 +1549,8 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
                 )}
 
                 {placement.status !== 'PENDING' && (
-                  <div className="mt-6 p-4 bg-white rounded-lg border">
-                    <p className="text-sm text-gray-600 mb-3">
+                  <div className="mt-6 p-4 bg-card rounded-lg border">
+                    <p className="text-sm text-muted-foreground mb-3">
                       {placement.status === 'PLACED' 
                         ? 'You have been accepted to your selected program. Please review the details above and confirm your placement before the deadline.'
                         : 'Unfortunately, you were not placed in any of your preferred choices. You may file an appeal to reconsider your case.'}
@@ -1564,19 +1564,19 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
                 )}
               </div>
             ) : (
-              <div className="bg-white rounded-xl shadow-sm p-8 mb-6 text-center">
+              <div className="bg-card rounded-xl shadow-sm p-8 mb-6 text-center">
                 <Clock className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-gray-900">Placement Results Not Yet Available</h3>
-                <p className="text-gray-600 mt-2">Placement decisions will be published once universities complete their selection process.</p>
+                <h3 className="text-xl font-bold text-foreground">Placement Results Not Yet Available</h3>
+                <p className="text-muted-foreground mt-2">Placement decisions will be published once universities complete their selection process.</p>
               </div>
             )}
 
             {/* Appeals Section */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="bg-card rounded-xl shadow-sm p-6">
               <div className="flex justify-between items-center mb-6">
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">My Appeals Portal</h2>
-                  <p className="text-sm text-gray-500 mt-1">Track and submit your petitions to the Ministry or specific Universities.</p>
+                  <h2 className="text-xl font-bold text-foreground">My Appeals Portal</h2>
+                  <p className="text-sm text-muted-foreground mt-1">Track and submit your petitions to the Ministry or specific Universities.</p>
                 </div>
                 <button 
                   onClick={() => setShowAppealModal(true)}
@@ -1588,13 +1588,13 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
               </div>
 
               {/* Sub-tabs to filter appeals clearly */}
-              <div className="flex border-b border-gray-100 mb-6">
+              <div className="flex border-b border-border mb-6">
                 <button
                   onClick={() => setAppealSubTab('MOE')}
                   className={`pb-4 px-6 text-sm font-bold transition-all relative ${
                     appealSubTab === 'MOE'
                       ? 'text-purple-600 border-b-2 border-purple-600'
-                      : 'text-gray-500 hover:text-gray-800'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   Ministry of Education ({appeals.filter(a => a.target === 'MOE').length})
@@ -1604,7 +1604,7 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
                   className={`pb-4 px-6 text-sm font-bold transition-all relative ${
                     appealSubTab === 'UNIVERSITY'
                       ? 'text-blue-600 border-b-2 border-blue-600'
-                      : 'text-gray-500 hover:text-gray-800'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   University Appeals ({appeals.filter(a => a.target === 'UNIVERSITY').length})
@@ -1614,7 +1614,7 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
               {appeals.filter(a => appealSubTab === 'MOE' ? a.target === 'MOE' : a.target === 'UNIVERSITY').length === 0 ? (
                 <div className="text-center py-12">
                   <MessageCircle className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                  <p className="text-gray-500 font-medium">No appeals in this category yet</p>
+                  <p className="text-muted-foreground font-medium">No appeals in this category yet</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -1623,7 +1623,7 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
                     .map(ap => {
                       const isMoe = ap.target === 'MOE';
                       return (
-                        <div key={ap.id} className="p-5 border rounded-2xl hover:shadow-md transition-all duration-300 border-gray-100">
+                        <div key={ap.id} className="p-5 border rounded-2xl hover:shadow-md transition-all duration-300 border-border">
                           <div className="flex items-start justify-between mb-4">
                             <div>
                               <div className="flex items-center gap-2 mb-1">
@@ -1632,7 +1632,7 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
                                 }`}>
                                   Appeal #{ap.id} • {ap.type}
                                 </span>
-                                <span className="text-[10px] text-gray-400 font-medium">
+                                <span className="text-[10px] text-muted-foreground font-medium">
                                   {new Date(ap.createdAt).toLocaleString()}
                                 </span>
                               </div>
@@ -1657,7 +1657,7 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
                               </span>
                             </div>
                           </div>
-                          <p className="text-gray-600 text-sm italic bg-gray-50 p-3 rounded-xl border border-gray-100 mb-2">"{ap.description}"</p>
+                          <p className="text-muted-foreground text-sm italic bg-gray-50 p-3 rounded-xl border border-border mb-2">"{ap.description}"</p>
 
                           {/* Yellow pending review system */}
                           {ap.status === 'pending' && (
@@ -1700,8 +1700,8 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
 
                           {/* Fallback for general response if status matches anything else but has a resolution */}
                           {ap.resolution && ap.status?.toLowerCase() !== 'resolved' && ap.status?.toLowerCase() !== 'approved' && ap.status?.toLowerCase() !== 'rejected' && (
-                            <div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-150 text-gray-700">
-                              <p className="text-xs font-bold text-gray-800 mb-1 uppercase tracking-wider flex items-center gap-1">
+                            <div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-150 text-muted-foreground">
+                              <p className="text-xs font-bold text-foreground mb-1 uppercase tracking-wider flex items-center gap-1">
                                 <CheckCircle size={12} /> {isMoe ? 'MOE' : (ap.university?.name || 'University')} Response ({ap.status}):
                               </p>
                               <p className="text-sm font-medium">{ap.resolution}</p>
@@ -1717,14 +1717,14 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
             {/* Appeal Modal */}
             {showAppealModal && (
               <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                <div className="bg-card rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
                   <div className="p-8 bg-gradient-to-r from-orange-500 to-red-600 text-white">
                     <h3 className="text-2xl font-black tracking-tight">File an Appeal</h3>
                     <p className="text-orange-100 text-sm mt-1 opacity-90">File an appeal to either the MoE or a specific preferred university.</p>
                   </div>
                   <div className="p-8 space-y-6">
                     <div>
-                      <label className="text-xs font-black uppercase tracking-widest text-gray-400 block mb-3">Submit Appeal To *</label>
+                      <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-3">Submit Appeal To *</label>
                       <select 
                         className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-500 transition-all"
                         value={appealForm.target}
@@ -1744,7 +1744,7 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
 
                     {appealForm.target === 'UNIVERSITY' && (
                       <div>
-                        <label className="text-xs font-black uppercase tracking-widest text-gray-400 block mb-3">Select Target University *</label>
+                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-3">Select Target University *</label>
                         <select 
                           className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-500 transition-all"
                           value={appealForm.universityId}
@@ -1759,7 +1759,7 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
                     )}
 
                     <div>
-                      <label className="text-xs font-black uppercase tracking-widest text-gray-400 block mb-3">Appeal Type *</label>
+                      <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-3">Appeal Type *</label>
                       <select 
                         className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-500 transition-all"
                         value={appealForm.type}
@@ -1773,7 +1773,7 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
                     </div>
 
                     <div>
-                      <label className="text-xs font-black uppercase tracking-widest text-gray-400 block mb-3">Related Preference (Optional)</label>
+                      <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-3">Related Preference (Optional)</label>
                       <select 
                         className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-500 transition-all"
                         value={appealForm.preferenceId}
@@ -1789,7 +1789,7 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
                     </div>
 
                     <div>
-                      <label className="text-xs font-black uppercase tracking-widest text-gray-400 block mb-3">Detailed Description *</label>
+                      <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-3">Detailed Description *</label>
                       <textarea 
                         className="w-full bg-gray-50 border-none rounded-xl p-4 text-sm font-medium focus:ring-2 focus:ring-orange-500 resize-none min-h-[120px]"
                         placeholder="Please explain your case clearly..."
@@ -1808,7 +1808,7 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
                     </button>
                     <button 
                       onClick={() => setShowAppealModal(false)}
-                      className="flex-1 bg-gray-200 text-gray-700 py-4 rounded-2xl font-black uppercase tracking-widest text-sm hover:bg-gray-300 transition-all active:scale-95"
+                      className="flex-1 bg-gray-200 text-muted-foreground py-4 rounded-2xl font-black uppercase tracking-widest text-sm hover:bg-gray-300 transition-all active:scale-95"
                     >
                       Cancel
                     </button>
@@ -1824,11 +1824,11 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
         {activeTab === 'notifications' && (
           <div>
             <h1 className="text-2xl font-bold mb-6">Notifications</h1>
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="bg-card rounded-xl shadow-sm p-6">
               {notifications.map(n => (
                 <div key={n.id} className={`p-4 border-b ${!n.read ? 'bg-blue-50' : ''}`}>
-                  <div className="flex justify-between"><h3 className="font-semibold">{n.title}</h3><span className="text-xs text-gray-400">{new Date(n.createdAt).toLocaleString()}</span></div>
-                  <p className="text-gray-600 mt-1">{n.message}</p>
+                  <div className="flex justify-between"><h3 className="font-semibold">{n.title}</h3><span className="text-xs text-muted-foreground">{new Date(n.createdAt).toLocaleString()}</span></div>
+                  <p className="text-muted-foreground mt-1">{n.message}</p>
                 </div>
               ))}
             </div>
@@ -1839,7 +1839,7 @@ const finalDisabled = isDisabled || (!hasAttemptsLeft);
         {activeTab === 'settings' && (
           <div>
             <h1 className="text-2xl font-bold mb-6">Settings</h1>
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="bg-card rounded-xl shadow-sm p-6">
               <h2 className="font-semibold mb-4">Account Security</h2>
               <button className="w-full text-left p-3 border rounded mb-2">Change Password</button>
               <button className="w-full text-left p-3 border rounded mb-2">Manage Recovery Contacts</button>

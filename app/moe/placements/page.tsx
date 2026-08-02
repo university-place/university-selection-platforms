@@ -103,14 +103,14 @@ export default function MOEPlacementsPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-4 flex flex-wrap gap-3">
-          <div className="flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2 flex-1 min-w-[200px]">
-            <Search className="w-4 h-4 text-gray-400" />
+        <div className="bg-card rounded-xl shadow-sm p-4 flex flex-wrap gap-3">
+          <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2 flex-1 min-w-[200px]">
+            <Search className="w-4 h-4 text-muted-foreground" />
             <input className="outline-none text-sm w-full" placeholder="Search…"
               value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
-          <div className="flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2">
-            <Filter className="w-4 h-4 text-gray-400" />
+          <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2">
+            <Filter className="w-4 h-4 text-muted-foreground" />
             <select className="outline-none text-sm bg-transparent" value={statusFilter}
               onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}>
               <option value="ALL">All Students</option>
@@ -119,8 +119,8 @@ export default function MOEPlacementsPage() {
               <option value="NOT_PLACED">Not Placed Any</option>
             </select>
           </div>
-          <div className="flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2">
-            <Filter className="w-4 h-4 text-gray-400" />
+          <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2">
+            <Filter className="w-4 h-4 text-muted-foreground" />
             <select className="outline-none text-sm bg-transparent" value={streamFilter}
               onChange={(e) => { setStreamFilter(e.target.value); setPage(1); }}>
               <option value="ALL">All Streams</option>
@@ -130,7 +130,7 @@ export default function MOEPlacementsPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="bg-card rounded-xl shadow-sm overflow-hidden">
           {error && <div className="p-4 text-red-600 bg-red-50">{error}</div>}
           {loading ? (
             <div className="flex justify-center items-center h-48">
@@ -142,19 +142,19 @@ export default function MOEPlacementsPage() {
                 <thead className="bg-gray-50 border-b">
                   <tr>
                     {['#', 'Student', 'Exam ID', 'Stream', 'Score', 'Placed Universities', 'Region', 'Aggregate Status', 'Date'].map((h) => (
-                      <th key={h} className="text-left px-4 py-3 text-gray-600 font-semibold text-xs uppercase">{h}</th>
+                      <th key={h} className="text-left px-4 py-3 text-muted-foreground font-semibold text-xs uppercase">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {filtered.length === 0 ? (
-                    <tr><td colSpan={10} className="text-center py-12 text-gray-400">No placement records found</td></tr>
+                    <tr><td colSpan={10} className="text-center py-12 text-muted-foreground">No placement records found</td></tr>
                   ) : filtered.map((p, i) => (
                     <tr key={p.id} className="hover:bg-gray-50 transition">
-                      <td className="px-4 py-3 text-gray-500">{(page - 1) * 30 + i + 1}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{(page - 1) * 30 + i + 1}</td>
                       <td className="px-4 py-3 font-medium">{p.student?.firstName} {p.student?.lastName}</td>
                       <td className="px-4 py-3 font-mono text-emerald-700 text-xs">{p.student?.examID}</td>
-                      <td className="px-4 py-3 text-gray-600">{p.student?.stream}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{p.student?.stream}</td>
                       <td className="px-4 py-3 font-semibold">{p.student?.totalScore ?? '—'}</td>
                       <td className="px-4 py-3">
                         {p.universities && p.universities.length > 0 ? (
@@ -162,10 +162,10 @@ export default function MOEPlacementsPage() {
                             <span key={idx} className="block text-xs bg-gray-100 rounded px-2 py-1 mb-1">{u}</span>
                           ))
                         ) : (
-                          <span className="text-gray-400">None</span>
+                          <span className="text-muted-foreground">None</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-gray-500">{p.regions && p.regions.length > 0 ? p.regions.join(', ') : '—'}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{p.regions && p.regions.length > 0 ? p.regions.join(', ') : '—'}</td>
                       <td className="px-4 py-3">
                         <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
                           p.status === 'Placed' ? 'bg-green-100 text-green-800' :
@@ -175,7 +175,7 @@ export default function MOEPlacementsPage() {
                           {p.status}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-gray-500 text-xs">{new Date(p.createdAt).toLocaleDateString()}</td>
+                      <td className="px-4 py-3 text-muted-foreground text-xs">{new Date(p.createdAt).toLocaleDateString()}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -186,7 +186,7 @@ export default function MOEPlacementsPage() {
 
         {total > 30 && (
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-500">Showing {Math.min((page-1)*30+1, total)}–{Math.min(page*30, total)} of {total}</span>
+            <span className="text-sm text-muted-foreground">Showing {Math.min((page-1)*30+1, total)}–{Math.min(page*30, total)} of {total}</span>
             <div className="flex gap-2">
               <button onClick={() => setPage(Math.max(1, page-1))} disabled={page===1}
                 className="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm disabled:opacity-40">Previous</button>

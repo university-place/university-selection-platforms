@@ -283,30 +283,30 @@ export default function WeightingSettingsPage() {
         <div className="mb-6 flex gap-2 bg-gray-100 p-1 rounded-lg w-fit">
           <button
             onClick={() => setSelectedStream('all')}
-            className={`px-4 py-2 rounded-md text-sm font-semibold transition ${selectedStream === 'all' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+            className={`px-4 py-2 rounded-md text-sm font-semibold transition ${selectedStream === 'all' ? 'bg-card shadow-sm text-blue-600' : 'text-muted-foreground hover:text-foreground'}`}
           >
             All Students
           </button>
           <button
             onClick={() => setSelectedStream('natural')}
-            className={`px-4 py-2 rounded-md text-sm font-semibold transition ${selectedStream === 'natural' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+            className={`px-4 py-2 rounded-md text-sm font-semibold transition ${selectedStream === 'natural' ? 'bg-card shadow-sm text-blue-600' : 'text-muted-foreground hover:text-foreground'}`}
           >
             Natural Science
           </button>
           <button
             onClick={() => setSelectedStream('social')}
-            className={`px-4 py-2 rounded-md text-sm font-semibold transition ${selectedStream === 'social' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+            className={`px-4 py-2 rounded-md text-sm font-semibold transition ${selectedStream === 'social' ? 'bg-card shadow-sm text-blue-600' : 'text-muted-foreground hover:text-foreground'}`}
           >
             Social Science
           </button>
         </div>
 
         {/* Global Progress Bar */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6 mb-6">
           <div className="flex justify-between items-center mb-2">
             <div>
-              <h2 className="text-lg font-bold text-gray-900">Total Assigned Weight</h2>
-              <p className="text-xs text-gray-500">All criteria must add up to exactly 100%</p>
+              <h2 className="text-lg font-bold text-foreground">Total Assigned Weight</h2>
+              <p className="text-xs text-muted-foreground">All criteria must add up to exactly 100%</p>
             </div>
             <span className={`text-2xl font-black ${totalWeight === 100 ? 'text-green-600' : 'text-red-500'}`}>
               {totalWeight}%
@@ -324,13 +324,13 @@ export default function WeightingSettingsPage() {
         </div>
 
         {/* Weight Sliders */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Weight Distribution</h2>
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6 mb-6">
+          <h2 className="text-lg font-bold text-foreground mb-4">Weight Distribution</h2>
           
           {/* Exam Score Weight */}
           <div className="mb-6">
             <div className="flex justify-between mb-2">
-              <label className="flex items-center gap-2 text-gray-700 font-medium">
+              <label className="flex items-center gap-2 text-muted-foreground font-medium">
                 <GraduationCap className="w-4 h-4 text-blue-600" />
                 Exam Score Weight
               </label>
@@ -344,13 +344,13 @@ export default function WeightingSettingsPage() {
               onChange={(e) => setSettings({ ...settings, examScoreWeight: parseInt(e.target.value) })}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
             />
-            <p className="text-xs text-gray-500 mt-1">Higher weight gives more importance to academic performance</p>
+            <p className="text-xs text-muted-foreground mt-1">Higher weight gives more importance to academic performance</p>
           </div>
 
           {/* Region Weight */}
           <div className="mb-6">
             <div className="flex justify-between mb-2">
-              <label className="flex items-center gap-2 text-gray-700 font-medium">
+              <label className="flex items-center gap-2 text-muted-foreground font-medium">
                 <MapPin className="w-4 h-4 text-green-600" />
                 Region Weight
               </label>
@@ -369,7 +369,7 @@ export default function WeightingSettingsPage() {
           {/* Gender Weight */}
           <div className="mb-6">
             <div className="flex justify-between mb-2">
-              <label className="flex items-center gap-2 text-gray-700 font-medium">
+              <label className="flex items-center gap-2 text-muted-foreground font-medium">
                 <Users className="w-4 h-4 text-purple-600" />
                 Gender Balance Weight
               </label>
@@ -387,7 +387,7 @@ export default function WeightingSettingsPage() {
             {/* Gender Balance Preferences */}
             <div className="mt-4 grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm text-gray-600 block mb-1">Male Preference (%)</label>
+                <label className="text-sm text-muted-foreground block mb-1">Male Preference (%)</label>
                 <input
                   type="number"
                   min="0"
@@ -397,11 +397,11 @@ export default function WeightingSettingsPage() {
                     ...settings,
                     genderPreferences: { ...settings.genderPreferences, male: parseInt(e.target.value) || 0 }
                   })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white"
+                  className="w-full border border-border rounded-lg px-3 py-2 bg-card"
                 />
               </div>
               <div>
-                <label className="text-sm text-gray-600 block mb-1">Female Preference (%)</label>
+                <label className="text-sm text-muted-foreground block mb-1">Female Preference (%)</label>
                 <input
                   type="number"
                   min="0"
@@ -411,11 +411,11 @@ export default function WeightingSettingsPage() {
                     ...settings,
                     genderPreferences: { ...settings.genderPreferences, female: parseInt(e.target.value) || 0 }
                   })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white"
+                  className="w-full border border-border rounded-lg px-3 py-2 bg-card"
                 />
               </div>
             </div>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-muted-foreground mt-2">
               Gender preference percentage within the gender weight
             </p>
           </div>
@@ -423,7 +423,7 @@ export default function WeightingSettingsPage() {
           {/* Disability Weight */}
           <div className="mb-6">
             <div className="flex justify-between mb-2">
-              <label className="flex items-center gap-2 text-gray-700 font-medium">
+              <label className="flex items-center gap-2 text-muted-foreground font-medium">
                 <Heart className="w-4 h-4 text-red-600" />
                 Disability Bonus Weight
               </label>
@@ -441,7 +441,7 @@ export default function WeightingSettingsPage() {
             {/* Disability Preferences */}
             <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div>
-                <label className="text-xs text-gray-600 block mb-1">Visual (%)</label>
+                <label className="text-xs text-muted-foreground block mb-1">Visual (%)</label>
                 <input
                   type="number"
                   min="0"
@@ -451,11 +451,11 @@ export default function WeightingSettingsPage() {
                     ...settings,
                     disabilityPreferences: { ...settings.disabilityPreferences, visual: parseInt(e.target.value) || 0 }
                   })}
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm bg-white"
+                  className="w-full border border-border rounded-lg px-2 py-1 text-sm bg-card"
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-600 block mb-1">Hearing (%)</label>
+                <label className="text-xs text-muted-foreground block mb-1">Hearing (%)</label>
                 <input
                   type="number"
                   min="0"
@@ -465,11 +465,11 @@ export default function WeightingSettingsPage() {
                     ...settings,
                     disabilityPreferences: { ...settings.disabilityPreferences, hearing: parseInt(e.target.value) || 0 }
                   })}
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm bg-white"
+                  className="w-full border border-border rounded-lg px-2 py-1 text-sm bg-card"
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-600 block mb-1">Physical (%)</label>
+                <label className="text-xs text-muted-foreground block mb-1">Physical (%)</label>
                 <input
                   type="number"
                   min="0"
@@ -479,11 +479,11 @@ export default function WeightingSettingsPage() {
                     ...settings,
                     disabilityPreferences: { ...settings.disabilityPreferences, physical: parseInt(e.target.value) || 0 }
                   })}
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm bg-white"
+                  className="w-full border border-border rounded-lg px-2 py-1 text-sm bg-card"
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-600 block mb-1">Learning (%)</label>
+                <label className="text-xs text-muted-foreground block mb-1">Learning (%)</label>
                 <input
                   type="number"
                   min="0"
@@ -493,11 +493,11 @@ export default function WeightingSettingsPage() {
                     ...settings,
                     disabilityPreferences: { ...settings.disabilityPreferences, learning: parseInt(e.target.value) || 0 }
                   })}
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm bg-white"
+                  className="w-full border border-border rounded-lg px-2 py-1 text-sm bg-card"
                 />
               </div>
             </div>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-muted-foreground mt-2">
               Percentage of the maximum disability bonus allocated to each type.
             </p>
           </div>
@@ -505,7 +505,7 @@ export default function WeightingSettingsPage() {
           {/* Interview/Invitation Score Weight */}
           <div className="mb-6">
             <div className="flex justify-between mb-2">
-              <label className="flex items-center gap-2 text-gray-700 font-medium">
+              <label className="flex items-center gap-2 text-muted-foreground font-medium">
                 <Percent className="w-4 h-4 text-orange-600" />
                 Interview / Entrance Exam Score Weight
               </label>
@@ -519,13 +519,13 @@ export default function WeightingSettingsPage() {
               onChange={(e) => setSettings({ ...settings, invitationScoreWeight: parseInt(e.target.value) || 0 })}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-orange-600"
             />
-            <p className="text-xs text-gray-500 mt-1">Weight allocated to the candidate's interview or entrance exam score</p>
+            <p className="text-xs text-muted-foreground mt-1">Weight allocated to the candidate's interview or entrance exam score</p>
           </div>
 
           {/* Document Score Weight */}
           <div className="mb-6">
             <div className="flex justify-between mb-2">
-              <label className="flex items-center gap-2 text-gray-700 font-medium">
+              <label className="flex items-center gap-2 text-muted-foreground font-medium">
                 <FileText className="w-4 h-4 text-teal-600" />
                 Document Evaluation Score Weight
               </label>
@@ -539,17 +539,17 @@ export default function WeightingSettingsPage() {
               onChange={(e) => setSettings({ ...settings, documentScoreWeight: parseInt(e.target.value) || 0 })}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-teal-600"
             />
-            <p className="text-xs text-gray-500 mt-1">Weight allocated to the candidate's evaluated document score</p>
+            <p className="text-xs text-muted-foreground mt-1">Weight allocated to the candidate's evaluated document score</p>
           </div>
 
           {/* Custom Criteria Weights inside the Weight Distribution border */}
           {settings.customCriteria && settings.customCriteria.length > 0 && (
-            <div className="border-t border-gray-200 pt-6 mt-6 space-y-6">
-              <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide">Custom Criteria Weights</h3>
+            <div className="border-t border-border pt-6 mt-6 space-y-6">
+              <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wide">Custom Criteria Weights</h3>
               {settings.customCriteria.map((criterion, index) => (
                 <div key={index} className="mb-6">
                   <div className="flex justify-between mb-2">
-                    <label className="flex items-center gap-2 text-gray-700 font-medium font-sans">
+                    <label className="flex items-center gap-2 text-muted-foreground font-medium font-sans">
                       <Percent className="w-4 h-4 text-indigo-600" />
                       {criterion.name || 'Unnamed Criterion'} Weight
                     </label>
@@ -589,42 +589,42 @@ export default function WeightingSettingsPage() {
             <p className="text-sm text-blue-800 mb-4">
               This demonstrates how Abebe Kebede's final score is calculated dynamically using your current weight distribution settings, to assure examiners of the calculation's exactness.
             </p>
-            <div className="bg-white rounded-lg p-4 font-mono text-sm shadow-sm space-y-2">
-              <div className="flex justify-between text-gray-600">
+            <div className="bg-card rounded-lg p-4 font-mono text-sm shadow-sm space-y-2">
+              <div className="flex justify-between text-muted-foreground">
                 <span>Exam Score ({abebeExam}/{abebeMaxExam} - Weight: {settings.examScoreWeight}%):</span>
                 <span>{abebeExamContribution.toFixed(2)} pts</span>
               </div>
-              <div className="flex justify-between text-gray-600">
+              <div className="flex justify-between text-muted-foreground">
                 <span>Region Match ({abebeRegion} - Pref: {regionPct}% - Weight: {settings.regionWeight}%):</span>
                 <span>{abebeRegionContribution.toFixed(2)} pts</span>
               </div>
-              <div className="flex justify-between text-gray-600">
+              <div className="flex justify-between text-muted-foreground">
                 <span>Gender Balance ({abebeGender} - Pref: {genderPct}% - Weight: {settings.genderWeight}%):</span>
                 <span>{abebeGenderContribution.toFixed(2)} pts</span>
               </div>
-              <div className="flex justify-between text-gray-600">
+              <div className="flex justify-between text-muted-foreground">
                 <span>Disability Status (Hearing - Pref: {disabilityPct}% - Weight: {settings.disabilityWeight}%):</span>
                 <span>{abebeDisabilityContribution.toFixed(2)} pts</span>
               </div>
               {((settings as any).invitationScoreWeight || 0) > 0 && (
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-muted-foreground">
                   <span>Interview/Entrance (Score: {abebeInterview}% - Weight: {(settings as any).invitationScoreWeight}%):</span>
                   <span>{abebeInvitationContribution.toFixed(2)} pts</span>
                 </div>
               )}
               {(settings.documentScoreWeight || 0) > 0 && (
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-muted-foreground">
                   <span>Document Evaluation (Score: {abebeDocument}% - Weight: {settings.documentScoreWeight}%):</span>
                   <span>{abebeDocumentContribution.toFixed(2)} pts</span>
                 </div>
               )}
               {customCriteriaContributions.map((item, i) => (
-                <div key={i} className="flex justify-between text-gray-600">
+                <div key={i} className="flex justify-between text-muted-foreground">
                   <span>{item.name} (Assumed Score: {item.scorePct}% - Weight: {item.weight}%):</span>
                   <span>{item.contribution.toFixed(2)} pts</span>
                 </div>
               ))}
-              <div className="border-t pt-2 mt-2 font-bold text-gray-900 flex justify-between">
+              <div className="border-t pt-2 mt-2 font-bold text-foreground flex justify-between">
                 <span>Total Final Weight Score:</span>
                 <span>{abebeTotalScore.toFixed(2)}% / 100.00%</span>
               </div>
@@ -633,9 +633,9 @@ export default function WeightingSettingsPage() {
         </div>
 
         {/* Custom Criteria */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6 mb-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold text-gray-900">Custom Criteria</h2>
+            <h2 className="text-lg font-bold text-foreground">Custom Criteria</h2>
             <button
               onClick={() => {
                 setSettings({
@@ -643,17 +643,17 @@ export default function WeightingSettingsPage() {
                   customCriteria: [...(settings.customCriteria || []), { name: 'New Criterion', weight: 0 }]
                 });
               }}
-              className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 transition"
+              className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg text-muted-foreground transition"
             >
               + Add Criterion
             </button>
           </div>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             Add additional custom weighting criteria specific to your university's evaluation process.
           </p>
 
           {(!settings.customCriteria || settings.customCriteria.length === 0) ? (
-            <p className="text-gray-500 text-center py-4 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+            <p className="text-muted-foreground text-center py-4 bg-gray-50 rounded-lg border border-dashed border-border">
               No custom criteria added yet.
             </p>
           ) : (
@@ -665,10 +665,10 @@ export default function WeightingSettingsPage() {
               );
 
               return (
-                <div key={index} className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div key={index} className="mb-6 p-4 bg-gray-50 rounded-lg border border-border">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-3">
                     <div>
-                      <label className="text-xs font-bold text-gray-500 block mb-1 uppercase">Source</label>
+                      <label className="text-xs font-bold text-muted-foreground block mb-1 uppercase">Source</label>
                       <select
                         value={criterion.source || 'manual'}
                         onChange={(e) => {
@@ -683,14 +683,14 @@ export default function WeightingSettingsPage() {
                           }
                           setSettings({ ...settings, customCriteria: newCriteria });
                         }}
-                        className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm"
+                        className="w-full bg-card border border-border rounded px-2 py-1 text-sm"
                       >
                         {/* <option value="manual">Manual Input</option> */}
                         <option value="system">System Attribute (MOE)</option>
                       </select>
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-gray-500 block mb-1 uppercase">Field / Attribute</label>
+                      <label className="text-xs font-bold text-muted-foreground block mb-1 uppercase">Field / Attribute</label>
                       {criterion.source === 'system' ? (
                         <select
                           value={criterion.key || ''}
@@ -733,7 +733,7 @@ export default function WeightingSettingsPage() {
                             }
                             setSettings({ ...settings, customCriteria: newCriteria });
                           }}
-                          className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm"
+                          className="w-full bg-card border border-border rounded px-2 py-1 text-sm"
                         >
                           <option value="">Select Attribute</option>
                           {customAttrDefs.map(def => (
@@ -749,7 +749,7 @@ export default function WeightingSettingsPage() {
                             newCriteria[index].name = e.target.value;
                             setSettings({ ...settings, customCriteria: newCriteria });
                           }}
-                          className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm"
+                          className="w-full bg-card border border-border rounded px-2 py-1 text-sm"
                           placeholder="e.g. Extra Curricular"
                         />
                       )}
@@ -757,14 +757,14 @@ export default function WeightingSettingsPage() {
 
                     {isString ? (
                       <div className="col-span-2">
-                        <label className="text-xs font-bold text-gray-500 block mb-1 uppercase">Option Percentages</label>
+                        <label className="text-xs font-bold text-muted-foreground block mb-1 uppercase">Option Percentages</label>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                           {(attributeOptions[criterion.key || ''] || (criterion.key === 'gender' ? ['Male', 'Female'] : criterion.key === 'disability' ? ['Visual', 'Hearing', 'Physical', 'Learning', 'None'] : ['High', 'Medium', 'Low'])).map(opt => {
                             const existingMap = criterion.mappings?.find((m: any) => m.value.toLowerCase() === opt.toLowerCase());
                             const pct = existingMap ? existingMap.percent : 100;
                             return (
-                              <div key={opt} className="bg-white p-2 rounded border border-gray-200">
-                                <label className="text-[10px] text-gray-600 block truncate font-bold" title={opt}>{opt} (%)</label>
+                              <div key={opt} className="bg-card p-2 rounded border border-border">
+                                <label className="text-[10px] text-muted-foreground block truncate font-bold" title={opt}>{opt} (%)</label>
                                 <input
                                   type="number"
                                   min="0"
@@ -784,7 +784,7 @@ export default function WeightingSettingsPage() {
                                     newCriteria[index].operator = 'value_map';
                                     setSettings({ ...settings, customCriteria: newCriteria });
                                   }}
-                                  className="w-full border border-gray-300 rounded px-2 py-1 text-sm bg-white"
+                                  className="w-full border border-border rounded px-2 py-1 text-sm bg-card"
                                 />
                               </div>
                             );
@@ -794,7 +794,7 @@ export default function WeightingSettingsPage() {
                     ) : (
                       <>
                         <div>
-                          <label className="text-xs font-bold text-gray-500 block mb-1 uppercase">Condition</label>
+                          <label className="text-xs font-bold text-muted-foreground block mb-1 uppercase">Condition</label>
                           <select
                             value={criterion.operator || 'equals'}
                             onChange={(e) => {
@@ -802,7 +802,7 @@ export default function WeightingSettingsPage() {
                               newCriteria[index].operator = e.target.value as any;
                               setSettings({ ...settings, customCriteria: newCriteria });
                             }}
-                            className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm"
+                            className="w-full bg-card border border-border rounded px-2 py-1 text-sm"
                           >
                             <option value="equals">Equals</option>
                             <option value="greater">Greater Than</option>
@@ -811,7 +811,7 @@ export default function WeightingSettingsPage() {
                           </select>
                         </div>
                         <div>
-                          <label className="text-xs font-bold text-gray-500 block mb-1 uppercase">Value</label>
+                          <label className="text-xs font-bold text-muted-foreground block mb-1 uppercase">Value</label>
                           <input
                             type="text"
                             value={String(criterion.value || '')}
@@ -820,7 +820,7 @@ export default function WeightingSettingsPage() {
                               newCriteria[index].value = e.target.value;
                               setSettings({ ...settings, customCriteria: newCriteria });
                             }}
-                            className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm"
+                            className="w-full bg-card border border-border rounded px-2 py-1 text-sm"
                             placeholder="Match value"
                           />
                         </div>
@@ -830,7 +830,7 @@ export default function WeightingSettingsPage() {
 
                   <div className="flex justify-between items-center mb-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-gray-500 uppercase">Weight</span>
+                      <span className="text-xs font-bold text-muted-foreground uppercase">Weight</span>
                     </div>
                     <div className="flex items-center gap-4">
                       <span className="text-blue-600 font-bold">{criterion.weight}%</span>
@@ -864,9 +864,9 @@ export default function WeightingSettingsPage() {
         </div>
 
         {/* Region Preferences */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Region Preferences</h2>
-          <p className="text-sm text-gray-600 mb-4">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6 mb-6">
+          <h2 className="text-lg font-bold text-foreground mb-4">Region Preferences</h2>
+          <p className="text-sm text-muted-foreground mb-4">
             Assign preference weights to different regions within the region weight
           </p>
           
@@ -877,7 +877,7 @@ export default function WeightingSettingsPage() {
             return (
               <div key={index} className="mb-4">
                 <div className="flex justify-between mb-1">
-                  <label className="text-sm text-gray-700">{region}</label>
+                  <label className="text-sm text-muted-foreground">{region}</label>
                   <span className="text-sm font-medium text-green-600">{weight}%</span>
                 </div>
                 <input
@@ -905,7 +905,7 @@ export default function WeightingSettingsPage() {
           })}
           
           {availableRegions.length === 0 && (
-            <p className="text-gray-500 text-center py-4">No applicants yet. Regions will appear here when students apply.</p>
+            <p className="text-muted-foreground text-center py-4">No applicants yet. Regions will appear here when students apply.</p>
           )}
         </div>
 

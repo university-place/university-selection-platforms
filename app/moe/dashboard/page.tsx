@@ -232,11 +232,11 @@ export default function MOEDashboardPage() {
 
         {/* Main Statistics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-purple-500 hover:shadow-md transition">
+          <div className="bg-card border-border rounded-xl shadow-sm p-5 border-l-4 border-purple-500 hover:shadow-md transition">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-gray-500 text-sm">Total Students</p>
-                <p className="text-3xl font-bold text-gray-800">{formatNumber(stats.totalStudents)}</p>
+                <p className="text-muted-foreground text-sm">Total Students</p>
+                <p className="text-3xl font-bold text-foreground">{formatNumber(stats.totalStudents)}</p>
                 <div className="flex gap-2 mt-2 text-xs">
                   <span className="text-blue-600">🔬 Nat: {formatNumber(stats.naturalScience)}</span>
                   <span className="text-green-600">📚 Soc: {formatNumber(stats.socialScience)}</span>
@@ -248,11 +248,11 @@ export default function MOEDashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-blue-500 hover:shadow-md transition">
+          <div className="bg-card border-border rounded-xl shadow-sm p-5 border-l-4 border-blue-500 hover:shadow-md transition">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-gray-500 text-sm">Universities</p>
-                <p className="text-3xl font-bold text-gray-800">{formatNumber(stats.totalUniversities)}</p>
+                <p className="text-muted-foreground text-sm">Universities</p>
+                <p className="text-3xl font-bold text-foreground">{formatNumber(stats.totalUniversities)}</p>
                 <div className="flex gap-2 mt-2 text-xs">
                   <span className="text-green-600">✓ Active: {formatNumber(stats.activeUniversities)}</span>
                 </div>
@@ -263,11 +263,11 @@ export default function MOEDashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-green-500 hover:shadow-md transition">
+          <div className="bg-card border-border rounded-xl shadow-sm p-5 border-l-4 border-green-500 hover:shadow-md transition">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-gray-500 text-sm">Applications</p>
-                <p className="text-3xl font-bold text-gray-800">{formatNumber(stats.totalApplications)}</p>
+                <p className="text-muted-foreground text-sm">Applications</p>
+                <p className="text-3xl font-bold text-foreground">{formatNumber(stats.totalApplications)}</p>
                 <div className="flex gap-2 mt-2 text-xs">
                   <span className="text-yellow-600">⏳ Pending: {formatNumber(stats.pendingApplications)}</span>
                 </div>
@@ -278,11 +278,11 @@ export default function MOEDashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-emerald-500 hover:shadow-md transition">
+          <div className="bg-card border-border rounded-xl shadow-sm p-5 border-l-4 border-emerald-500 hover:shadow-md transition">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-gray-500 text-sm">Placements</p>
-                <p className="text-3xl font-bold text-gray-800">{formatNumber(stats.totalPlacements)}</p>
+                <p className="text-muted-foreground text-sm">Placements</p>
+                <p className="text-3xl font-bold text-foreground">{formatNumber(stats.totalPlacements)}</p>
                 <div className="flex gap-2 mt-2 text-xs">
                   <span className="text-emerald-600">📊 Rate: {stats.placementRate || 0}%</span>
                 </div>
@@ -296,29 +296,29 @@ export default function MOEDashboardPage() {
 
         {/* Secondary Statistics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg shadow-sm p-4 text-center">
-            <p className="text-gray-500 text-xs">Registered Students</p>
+          <div className="bg-card border-border rounded-lg shadow-sm p-4 text-center">
+            <p className="text-muted-foreground text-xs">Registered Students</p>
             <p className="text-2xl font-bold text-indigo-600">{formatNumber(stats.registered)}</p>
           </div>
-          <div className="bg-white rounded-lg shadow-sm p-4 text-center">
-            <p className="text-gray-500 text-xs">Active Students</p>
+          <div className="bg-card border-border rounded-lg shadow-sm p-4 text-center">
+            <p className="text-muted-foreground text-xs">Active Students</p>
             <p className="text-2xl font-bold text-green-600">{formatNumber(stats.activeStudents)}</p>
           </div>
-          <div className="bg-white rounded-lg shadow-sm p-4 text-center">
-            <p className="text-gray-500 text-xs">Total Programs</p>
+          <div className="bg-card border-border rounded-lg shadow-sm p-4 text-center">
+            <p className="text-muted-foreground text-xs">Total Programs</p>
             <p className="text-2xl font-bold text-purple-600">{formatNumber(stats.totalPrograms)}</p>
           </div>
-          <div className="bg-white rounded-lg shadow-sm p-4 text-center">
-            <p className="text-gray-500 text-xs">Accepted Apps</p>
+          <div className="bg-card border-border rounded-lg shadow-sm p-4 text-center">
+            <p className="text-muted-foreground text-xs">Accepted Apps</p>
             <p className="text-2xl font-bold text-blue-600">{formatNumber(stats.acceptedApplications)}</p>
           </div>
         </div>
 
         {/* Students by Academic Year */}
         {yearlyData.length > 0 && (
-          <div className="bg-white rounded-xl shadow-sm p-6">
+          <div className="bg-card border-border rounded-xl shadow-sm p-6">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
                 <BarChart3 className="w-5 h-5 text-purple-500" />
                 Students by Academic Year
               </h3>
@@ -329,7 +329,7 @@ export default function MOEDashboardPage() {
                 const percentage = (year.count / maxCount) * 100;
                 return (
                   <div key={year.academicYear} className="flex items-center gap-3">
-                    <div className="w-24 text-sm font-medium text-gray-600">{year.academicYear}</div>
+                    <div className="w-24 text-sm font-medium text-muted-foreground">{year.academicYear}</div>
                     <div className="flex-1">
                       <div className="h-8 bg-purple-100 rounded-full overflow-hidden">
                         <div
@@ -340,7 +340,7 @@ export default function MOEDashboardPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="w-16 text-right text-sm font-semibold text-gray-700">{year.count}</div>
+                    <div className="w-16 text-right text-sm font-semibold text-muted-foreground">{year.count}</div>
                   </div>
                 );
               })}
@@ -352,51 +352,51 @@ export default function MOEDashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <button
             onClick={() => router.push('/moe/students')}
-            className="bg-white rounded-lg shadow-sm p-4 text-center hover:shadow-md transition border border-gray-200 group"
+            className="bg-card border-border rounded-lg shadow-sm p-4 text-center hover:shadow-md transition border border-border group"
           >
             <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-blue-200 transition">
               <Users className="w-6 h-6 text-blue-600" />
             </div>
-            <h4 className="font-semibold text-gray-800">Manage Students</h4>
-            <p className="text-xs text-gray-500 mt-1">View and edit student records</p>
+            <h4 className="font-semibold text-foreground">Manage Students</h4>
+            <p className="text-xs text-muted-foreground mt-1">View and edit student records</p>
           </button>
 
           <button
             onClick={() => router.push('/moe/upload')}
-            className="bg-white rounded-lg shadow-sm p-4 text-center hover:shadow-md transition border border-gray-200 group"
+            className="bg-card border-border rounded-lg shadow-sm p-4 text-center hover:shadow-md transition border border-border group"
           >
             <div className="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-purple-200 transition">
               <Upload className="w-6 h-6 text-purple-600" />
             </div>
-            <h4 className="font-semibold text-gray-800">Upload CSV</h4>
-            <p className="text-xs text-gray-500 mt-1">Bulk import student data</p>
+            <h4 className="font-semibold text-foreground">Upload CSV</h4>
+            <p className="text-xs text-muted-foreground mt-1">Bulk import student data</p>
           </button>
 
           <button
             onClick={() => router.push('/moe/universities')}
-            className="bg-white rounded-lg shadow-sm p-4 text-center hover:shadow-md transition border border-gray-200 group"
+            className="bg-card border-border rounded-lg shadow-sm p-4 text-center hover:shadow-md transition border border-border group"
           >
             <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-green-200 transition">
               <Building2 className="w-6 h-6 text-green-600" />
             </div>
-            <h4 className="font-semibold text-gray-800">Universities</h4>
-            <p className="text-xs text-gray-500 mt-1">Manage university records</p>
+            <h4 className="font-semibold text-foreground">Universities</h4>
+            <p className="text-xs text-muted-foreground mt-1">Manage university records</p>
           </button>
 
           <button
             onClick={() => router.push('/moe/reports')}
-            className="bg-white rounded-lg shadow-sm p-4 text-center hover:shadow-md transition border border-gray-200 group"
+            className="bg-card border-border rounded-lg shadow-sm p-4 text-center hover:shadow-md transition border border-border group"
           >
             <div className="bg-yellow-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-yellow-200 transition">
               <Calendar className="w-6 h-6 text-yellow-600" />
             </div>
-            <h4 className="font-semibold text-gray-800">National Reports</h4>
-            <p className="text-xs text-gray-500 mt-1">Generate FR-M6 national reports</p>
+            <h4 className="font-semibold text-foreground">National Reports</h4>
+            <p className="text-xs text-muted-foreground mt-1">Generate FR-M6 national reports</p>
           </button>
         </div>
 
         {/* Footer Stats */}
-        <div className="bg-gray-50 rounded-lg p-4 text-center text-sm text-gray-500">
+        <div className="bg-muted/30 rounded-lg p-4 text-center text-sm text-muted-foreground">
           <div className="flex justify-center gap-6 flex-wrap">
             <span>📊 Last updated: {new Date().toLocaleDateString()}</span>
             <span>🏫 Active Universities: {formatNumber(stats.activeUniversities)}</span>

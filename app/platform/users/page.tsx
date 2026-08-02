@@ -140,7 +140,7 @@ function PlatformUsersList() {
           className={`px-2 py-1 rounded text-xs font-semibold ${
             value === 'active'
               ? 'bg-green-100 text-green-800'
-              : 'bg-gray-100 text-gray-800'
+              : 'bg-gray-100 text-foreground'
           }`}
         >
           {value.charAt(0).toUpperCase() + value.slice(1)}
@@ -176,16 +176,16 @@ function PlatformUsersList() {
         )}
 
         {/* Filter */}
-        <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+        <div className="bg-card rounded-lg shadow p-6 border border-border">
           <div className="flex items-end gap-4">
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-muted-foreground mb-2">
                 Filter by Role
               </label>
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
               >
                 <option value="">All Roles</option>
                 <option value="student">Students</option>
@@ -199,33 +199,33 @@ function PlatformUsersList() {
 
         {/* Users Table */}
         {loading ? (
-          <div className="bg-white rounded-lg shadow p-12 text-center border border-gray-200">
-            <div className="inline-flex h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-orange-500" />
-            <p className="mt-4 text-gray-600">Loading users…</p>
+          <div className="bg-card rounded-lg shadow p-12 text-center border border-border">
+            <div className="inline-flex h-12 w-12 animate-spin rounded-full border-4 border-border border-t-orange-500" />
+            <p className="mt-4 text-muted-foreground">Loading users…</p>
           </div>
         ) : users.length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-12 text-center border border-gray-200">
-            <p className="text-gray-600">No users found</p>
+          <div className="bg-card rounded-lg shadow p-12 text-center border border-border">
+            <p className="text-muted-foreground">No users found</p>
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
+          <div className="bg-card rounded-lg shadow border border-border overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-gray-50 border-b border-border">
                   <tr>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Email</th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Name</th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Role</th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Status</th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Verified</th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Actions</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">Email</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">Name</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">Role</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">Status</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">Verified</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {users.map((user) => (
                     <tr key={user.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 text-sm text-gray-900">{user.email}</td>
-                      <td className="px-6 py-4 text-sm text-gray-900">{user.name}</td>
+                      <td className="px-6 py-4 text-sm text-foreground">{user.email}</td>
+                      <td className="px-6 py-4 text-sm text-foreground">{user.name}</td>
                       <td className="px-6 py-4 text-sm">
                         <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-semibold capitalize">
                           {user.role}
@@ -236,7 +236,7 @@ function PlatformUsersList() {
                           className={`px-2 py-1 rounded text-xs font-semibold ${
                             user.status === 'active'
                               ? 'bg-green-100 text-green-800'
-                              : 'bg-gray-100 text-gray-800'
+                              : 'bg-gray-100 text-foreground'
                           }`}
                         >
                           {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
@@ -288,8 +288,8 @@ export default function PlatformUsersPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-flex h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-orange-500" />
-          <p className="mt-4 text-gray-600">Loading users management...</p>
+          <div className="inline-flex h-12 w-12 animate-spin rounded-full border-4 border-border border-t-orange-500" />
+          <p className="mt-4 text-muted-foreground">Loading users management...</p>
         </div>
       </div>
     }>

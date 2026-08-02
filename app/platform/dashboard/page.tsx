@@ -117,71 +117,71 @@ export default function PlatformDashboardPage() {
 
         {/* Statistics Grid - Using actual data from API */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md border border-gray-100 dark:border-gray-700">
+          <div className="bg-card rounded-2xl p-6 shadow-md border border-border">
             <div className="flex items-center justify-between mb-3">
               <div className="w-12 h-12 rounded-xl bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
                 <GraduationCap className="w-6 h-6 text-green-600" />
               </div>
-              <span className="text-2xl font-bold text-gray-800 dark:text-white">{stats.totalStudents?.toLocaleString() || 0}</span>
+              <span className="text-2xl font-bold text-card-foreground">{stats.totalStudents?.toLocaleString() || 0}</span>
             </div>
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Students</p>
+            <p className="text-sm font-medium text-muted-foreground">Total Students</p>
             <div className="flex gap-2 mt-2 text-xs">
               <span className="text-blue-600">🔬 Natural: {stats.naturalScience || 0}</span>
               <span className="text-green-600">📚 Social: {stats.socialScience || 0}</span>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md border border-gray-100 dark:border-gray-700">
+          <div className="bg-card rounded-2xl p-6 shadow-md border border-border">
             <div className="flex items-center justify-between mb-3">
               <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
                 <Building2 className="w-6 h-6 text-blue-600" />
               </div>
-              <span className="text-2xl font-bold text-gray-800 dark:text-white">{stats.totalUniversities?.toLocaleString() || 0}</span>
+              <span className="text-2xl font-bold text-card-foreground">{stats.totalUniversities?.toLocaleString() || 0}</span>
             </div>
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Universities</p>
-            <p className="text-xs text-gray-500 mt-1">Active: {stats.totalActiveUniversities || 0}</p>
+            <p className="text-sm font-medium text-muted-foreground">Universities</p>
+            <p className="text-xs text-muted-foreground mt-1">Active: {stats.totalActiveUniversities || 0}</p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md border border-gray-100 dark:border-gray-700">
+          <div className="bg-card rounded-2xl p-6 shadow-md border border-border">
             <div className="flex items-center justify-between mb-3">
               <div className="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
                 <FileText className="w-6 h-6 text-purple-600" />
               </div>
-              <span className="text-2xl font-bold text-gray-800 dark:text-white">{stats.totalApplications?.toLocaleString() || 0}</span>
+              <span className="text-2xl font-bold text-card-foreground">{stats.totalApplications?.toLocaleString() || 0}</span>
             </div>
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Applications</p>
-            <p className="text-xs text-gray-500 mt-1">Submitted applications</p>
+            <p className="text-sm font-medium text-muted-foreground">Applications</p>
+            <p className="text-xs text-muted-foreground mt-1">Submitted applications</p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md border border-gray-100 dark:border-gray-700">
+          <div className="bg-card dark:bg-gray-800 rounded-2xl p-6 shadow-md border border-border dark:border-gray-700">
             <div className="flex items-center justify-between mb-3">
               <div className="w-12 h-12 rounded-xl bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center">
                 <TrendingUp className="w-6 h-6 text-orange-600" />
               </div>
-              <span className="text-2xl font-bold text-gray-800 dark:text-white">{stats.totalPlacements?.toLocaleString() || 0}</span>
+              <span className="text-2xl font-bold text-card-foreground">{stats.totalPlacements?.toLocaleString() || 0}</span>
             </div>
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Placements</p>
+            <p className="text-sm font-medium text-muted-foreground">Placements</p>
             <p className="text-xs text-green-600 mt-1">📈 Rate: {stats.placementRate || 0}%</p>
           </div>
         </div>
 
         {/* Secondary Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 text-center">
-            <p className="text-xs text-gray-500">Registered</p>
-            <p className="text-xl font-bold text-gray-800 dark:text-white">{stats.registered?.toLocaleString() || 0}</p>
+          <div className="bg-muted/50 rounded-xl p-4 text-center">
+            <p className="text-xs text-muted-foreground">Registered</p>
+            <p className="text-xl font-bold text-foreground">{stats.registered?.toLocaleString() || 0}</p>
           </div>
-          <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 text-center">
-            <p className="text-xs text-gray-500">Verified</p>
-            <p className="text-xl font-bold text-gray-800 dark:text-white">{stats.verified?.toLocaleString() || 0}</p>
+          <div className="bg-muted/50 rounded-xl p-4 text-center">
+            <p className="text-xs text-muted-foreground">Verified</p>
+            <p className="text-xl font-bold text-foreground">{stats.verified?.toLocaleString() || 0}</p>
           </div>
-          <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 text-center">
-            <p className="text-xs text-gray-500">Programs</p>
-            <p className="text-xl font-bold text-gray-800 dark:text-white">{stats.totalPrograms?.toLocaleString() || 0}</p>
+          <div className="bg-muted/50 rounded-xl p-4 text-center">
+            <p className="text-xs text-muted-foreground">Programs</p>
+            <p className="text-xl font-bold text-foreground">{stats.totalPrograms?.toLocaleString() || 0}</p>
           </div>
-          <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 text-center">
-            <p className="text-xs text-gray-500">Appeals</p>
-            <p className="text-xl font-bold text-gray-800 dark:text-white">{stats.totalAppeals?.toLocaleString() || 0}</p>
+          <div className="bg-muted/50 rounded-xl p-4 text-center">
+            <p className="text-xs text-muted-foreground">Appeals</p>
+            <p className="text-xl font-bold text-foreground">{stats.totalAppeals?.toLocaleString() || 0}</p>
           </div>
         </div>
 
@@ -191,12 +191,12 @@ export default function PlatformDashboardPage() {
             <Link
               key={idx}
               href={link.href}
-              className="group p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 text-center hover:border-orange-300"
+              className="group p-5 bg-card border border-border rounded-xl shadow-sm hover:shadow-md transition-all duration-300 text-center hover:border-orange-300"
             >
               <div className="w-12 h-12 bg-orange-50 dark:bg-orange-900/20 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-orange-500 transition-all">
                 <link.icon size={20} className="text-orange-600 dark:text-orange-400 group-hover:text-white" />
               </div>
-              <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{link.label}</h3>
+              <h3 className="text-sm font-semibold text-card-foreground">{link.label}</h3>
             </Link>
           ))}
         </div>

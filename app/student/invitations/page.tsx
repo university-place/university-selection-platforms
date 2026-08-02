@@ -8,6 +8,7 @@ import {
   Calendar, MapPin, Clock, CheckCircle, XCircle, Loader2,
   ArrowLeft, Bell, BookOpen, AlertCircle, MessageCircle, Award, FileText
 } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 interface Invitation {
   id: number;
@@ -152,7 +153,7 @@ export default function StudentInvitationsPage() {
       return { text: 'Selected - Check Placement', color: 'bg-green-100 text-green-800', icon: Award };
     }
     if (new Date(invitation.responseDeadline) < new Date()) {
-      return { text: 'Expired', color: 'bg-gray-100 text-gray-600', icon: AlertCircle };
+      return { text: 'Expired', color: 'bg-gray-100 text-muted-foreground', icon: AlertCircle };
     }
     return { text: 'Pending Response', color: 'bg-yellow-100 text-yellow-800', icon: Clock };
   };
@@ -190,17 +191,18 @@ export default function StudentInvitationsPage() {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
-      <header className="bg-white shadow-md sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-6 py-4">
+      <header className="bg-card shadow-md sticky top-0 z-10">
+        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/student/dashboard" className="text-gray-600 hover:text-blue-600 transition">
+            <Link href="/student/dashboard" className="text-muted-foreground hover:text-blue-600 transition">
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">My Invitations</h1>
-              <p className="text-gray-600 text-sm">Review and respond to university invitations</p>
+              <h1 className="text-xl font-bold text-foreground">My Invitations</h1>
+              <p className="text-muted-foreground text-sm">Review and respond to university invitations</p>
             </div>
           </div>
+          <ThemeToggle />
         </div>
       </header>
 
@@ -215,7 +217,7 @@ export default function StudentInvitationsPage() {
         {/* Pending Invitations Section */}
         {pendingInvitations.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
               <Bell className="w-5 h-5 text-yellow-500" />
               Pending Invitations ({pendingInvitations.length})
             </h2>
@@ -225,7 +227,7 @@ export default function StudentInvitationsPage() {
                 const isExpiringSoon = daysLeft <= 3 && daysLeft > 0;
                 
                 return (
-                  <div key={inv.id} className="bg-white rounded-xl shadow-sm border overflow-hidden">
+                  <div key={inv.id} className="bg-card rounded-xl shadow-sm border overflow-hidden">
                     <div className={`p-4 ${isExpiringSoon ? 'bg-gradient-to-r from-red-600 to-orange-600' : 'bg-gradient-to-r from-blue-600 to-indigo-600'}`}>
                       <h3 className="text-xl font-bold text-white">{inv.university.name}</h3>
                       <p className="text-blue-100 text-sm flex items-center gap-2">
@@ -258,15 +260,15 @@ export default function StudentInvitationsPage() {
                       </div>
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-                        <div className="flex items-center gap-2 text-gray-600">
+                        <div className="flex items-center gap-2 text-muted-foreground">
                           <Calendar className="w-4 h-4" />
                           <span>{new Date(inv.date).toLocaleDateString()}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-gray-600">
+                        <div className="flex items-center gap-2 text-muted-foreground">
                           <Clock className="w-4 h-4" />
                           <span>{new Date(inv.date).toLocaleTimeString()}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-gray-600">
+                        <div className="flex items-center gap-2 text-muted-foreground">
                           <MapPin className="w-4 h-4" />
                           <span>{inv.location || 'Location TBA'}</span>
                         </div>
@@ -319,7 +321,7 @@ export default function StudentInvitationsPage() {
         {/* ✅ REJECTED RESULTS SECTION - Added */}
         {rejectedInvitations.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
               <XCircle className="w-5 h-5 text-red-500" />
               Rejection Results ({rejectedInvitations.length})
             </h2>
@@ -328,12 +330,12 @@ export default function StudentInvitationsPage() {
                 <div key={inv.id} className="bg-red-50 border border-red-200 rounded-lg p-4">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-semibold text-gray-900">{inv.university.name}</h3>
-                      <p className="text-sm text-gray-600">
+                      <h3 className="font-semibold text-foreground">{inv.university.name}</h3>
+                      <p className="text-sm text-muted-foreground">
                         {inv.type} on {new Date(inv.date).toLocaleDateString()}
                       </p>
                       {inv.resultNotes && (
-                        <div className="mt-2 p-2 bg-white rounded border border-red-100">
+                        <div className="mt-2 p-2 bg-card rounded border border-red-100">
                           <p className="text-sm text-red-700">
                             <strong>Reason:</strong> {inv.resultNotes}
                           </p>
@@ -353,16 +355,16 @@ export default function StudentInvitationsPage() {
         {/* Placement Results Section (PASS) */}
         {resultInvitations.filter(inv => inv.result === 'PASS').length > 0 && (
           <div className="mb-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
               <Award className="w-5 h-5 text-blue-500" />
               Interview/Exam Results
             </h2>
             <div className="space-y-4">
               {resultInvitations.filter(inv => inv.result === 'PASS').map((inv) => (
-                <div key={inv.id} className="bg-white rounded-xl shadow-sm border overflow-hidden">
+                <div key={inv.id} className="bg-card rounded-xl shadow-sm border overflow-hidden">
                   <div className="bg-gray-50 px-6 py-4 border-b">
                     <div className="flex justify-between items-center">
-                      <h3 className="font-bold text-gray-900">{inv.university.name}</h3>
+                      <h3 className="font-bold text-foreground">{inv.university.name}</h3>
                       <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium flex items-center gap-1">
                         <CheckCircle className="w-4 h-4" /> Passed
                       </span>
@@ -370,7 +372,7 @@ export default function StudentInvitationsPage() {
                   </div>
                   <div className="p-6">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="text-sm text-gray-500">{inv.type} on {new Date(inv.date).toLocaleDateString()}</span>
+                      <span className="text-sm text-muted-foreground">{inv.type} on {new Date(inv.date).toLocaleDateString()}</span>
                     </div>
                     {inv.resultNotes && (
                       <div className="p-3 bg-green-50 rounded-lg">
@@ -402,8 +404,8 @@ export default function StudentInvitationsPage() {
         {/* Responded Invitations Section */}
         {respondedInvitations.length > 0 && (
           <div>
-            <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <FileText className="w-5 h-5 text-gray-500" />
+            <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-muted-foreground" />
               My Responses
             </h2>
             <div className="space-y-3">
@@ -412,11 +414,11 @@ export default function StudentInvitationsPage() {
                 const StatusIcon = status.icon;
                 
                 return (
-                  <div key={inv.id} className="bg-white rounded-lg shadow-sm border p-4">
+                  <div key={inv.id} className="bg-card rounded-lg shadow-sm border p-4">
                     <div className="flex justify-between items-center">
                       <div>
-                        <h3 className="font-semibold text-gray-900">{inv.university.name}</h3>
-                        <p className="text-sm text-gray-500">{inv.type} on {new Date(inv.date).toLocaleDateString()}</p>
+                        <h3 className="font-semibold text-foreground">{inv.university.name}</h3>
+                        <p className="text-sm text-muted-foreground">{inv.type} on {new Date(inv.date).toLocaleDateString()}</p>
                       </div>
                       <div className="flex flex-col items-end gap-2">
                         <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm ${status.color}`}>
@@ -429,7 +431,7 @@ export default function StudentInvitationsPage() {
                     {/* Quick Action Buttons for Changing Response */}
                     {new Date(inv.responseDeadline) > new Date() && (
                        <div className="mt-4 pt-3 border-t flex items-center justify-between">
-                          <span className="text-xs text-gray-500 font-medium">Update your response:</span>
+                          <span className="text-xs text-muted-foreground font-medium">Update your response:</span>
                           <div className="flex gap-2">
                             {inv.studentResponse !== 'ACCEPTED' && (
                               <button
@@ -463,10 +465,10 @@ export default function StudentInvitationsPage() {
 
         {/* No Invitations Message */}
         {pendingInvitations.length === 0 && respondedInvitations.length === 0 && resultInvitations.filter(inv => inv.result === 'PASS').length === 0 && rejectedInvitations.length === 0 && (
-          <div className="bg-white rounded-xl p-12 text-center">
+          <div className="bg-card rounded-xl p-12 text-center">
             <Bell className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Invitations</h3>
-            <p className="text-gray-500">You don't have any invitations at this time.</p>
+            <h3 className="text-lg font-semibold text-foreground mb-2">No Invitations</h3>
+            <p className="text-muted-foreground">You don't have any invitations at this time.</p>
             <Link href="/student/dashboard" className="inline-block mt-4 text-blue-600 hover:text-blue-800">
               ← Back to Dashboard
             </Link>
@@ -477,23 +479,23 @@ export default function StudentInvitationsPage() {
       {/* Decline Reason Modal */}
       {showRejectModal && selectedInvitation && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl w-full max-w-md shadow-2xl">
+          <div className="bg-card rounded-xl w-full max-w-md shadow-2xl">
             <div className="p-6 border-b">
-              <h3 className="text-xl font-bold text-gray-900">Decline Invitation</h3>
-              <p className="text-gray-600 text-sm mt-1">{selectedInvitation.university.name}</p>
+              <h3 className="text-xl font-bold text-foreground">Decline Invitation</h3>
+              <p className="text-muted-foreground text-sm mt-1">{selectedInvitation.university.name}</p>
             </div>
             <div className="p-6">
-              <p className="text-gray-700 mb-4">
+              <p className="text-muted-foreground mb-4">
                 Are you sure you want to decline this invitation?
               </p>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   Reason (Optional)
                 </label>
                 <textarea
                   value={rejectReason}
                   onChange={(e) => setRejectReason(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
                   rows={3}
                   placeholder="e.g., Schedule conflict, Already accepted another university..."
                 />
@@ -512,7 +514,7 @@ export default function StudentInvitationsPage() {
                   setSelectedInvitation(null);
                   setRejectReason('');
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-100 transition"
+                className="px-4 py-2 border border-border rounded-lg font-semibold text-muted-foreground hover:bg-gray-100 transition"
               >
                 Cancel
               </button>

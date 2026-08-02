@@ -441,8 +441,8 @@ export default function UniversitySettingsPage() {
     <DashboardLayout title="University Admin" navLinks={navLinks} theme="green">
       <div className="max-w-6xl mx-auto py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">University Administration Settings</h1>
-          <p className="text-gray-600 mt-1">Configure university information, programs, admission tracks, and rules</p>
+          <h1 className="text-3xl font-bold text-foreground">University Administration Settings</h1>
+          <p className="text-muted-foreground mt-1">Configure university information, programs, admission tracks, and rules</p>
         </div>
 
         {message && (
@@ -462,15 +462,15 @@ export default function UniversitySettingsPage() {
               {periodStatus.status === 'closed' && <AlertCircle className="w-6 h-6 text-red-600" />}
               <div>
                 <p className={`font-semibold text-${periodStatus.color}-800`}>Application Period: {periodStatus.message}</p>
-                <p className="text-sm text-gray-600 mt-1">Students can only apply during this period.</p>
+                <p className="text-sm text-muted-foreground mt-1">Students can only apply during this period.</p>
               </div>
             </div>
           </div>
         )}
 
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden">
           {/* Tabs */}
-          <div className="flex border-b border-gray-200 bg-gray-50 overflow-x-auto">
+          <div className="flex border-b border-border bg-gray-50 overflow-x-auto">
             {tabs.map(tab => {
               const Icon = tab.icon;
               return (
@@ -478,8 +478,8 @@ export default function UniversitySettingsPage() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 px-6 py-4 text-base font-semibold transition whitespace-nowrap ${activeTab === tab.id
-                      ? 'bg-white text-green-700 border-b-4 border-green-600'
-                      : 'text-gray-600 hover:text-green-700'
+                      ? 'bg-card text-green-700 border-b-4 border-green-600'
+                      : 'text-muted-foreground hover:text-green-700'
                     }`}
                 >
                   <Icon className="w-5 h-5" />
@@ -495,34 +495,34 @@ export default function UniversitySettingsPage() {
               <form onSubmit={handleSaveProfile} className="space-y-6">
                 {/* Basic Info Section */}
                 <div className="border-b pb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">Basic Information</h2>
+                  <h2 className="text-2xl font-bold text-foreground mb-6">Basic Information</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-lg font-bold text-gray-900 mb-2">University Name *</label>
+                      <label className="block text-lg font-bold text-foreground mb-2">University Name *</label>
                       <input
                         type="text"
                         value={profile.name}
                         onChange={e => setProfile({ ...profile, name: e.target.value })}
-                        className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-lg font-bold text-gray-900 mb-2">University Code *</label>
+                      <label className="block text-lg font-bold text-foreground mb-2">University Code *</label>
                       <input
                         type="text"
                         value={profile.code}
                         onChange={e => setProfile({ ...profile, code: e.target.value })}
-                        className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-lg font-bold text-gray-900 mb-2">University Type</label>
+                      <label className="block text-lg font-bold text-foreground mb-2">University Type</label>
                       <select
                         value={profile.type}
                         onChange={e => setProfile({ ...profile, type: e.target.value })}
-                        className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       >
                         <option value="public">Public (Non-Autonomous)</option>
                         <option value="autonomous">Autonomous</option>
@@ -530,64 +530,64 @@ export default function UniversitySettingsPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-lg font-bold text-gray-900 mb-2">Region</label>
+                      <label className="block text-lg font-bold text-foreground mb-2">Region</label>
                       <input
                         type="text"
                         value={profile.region || ''}
                         onChange={e => setProfile({ ...profile, region: e.target.value })}
-                        className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       />
                     </div>
                   </div>
 
                   <div className="mt-6">
-                    <label className="block text-lg font-bold text-gray-900 mb-2">Address</label>
+                    <label className="block text-lg font-bold text-foreground mb-2">Address</label>
                     <textarea
                       rows={3}
                       value={profile.address || ''}
                       onChange={e => setProfile({ ...profile, address: e.target.value })}
-                      className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <div>
-                      <label className="block text-lg font-bold text-gray-900 mb-2">Contact Email</label>
+                      <label className="block text-lg font-bold text-foreground mb-2">Contact Email</label>
                       <input
                         type="email"
                         value={profile.contactEmail || ''}
                         onChange={e => setProfile({ ...profile, contactEmail: e.target.value })}
-                        className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-lg font-bold text-gray-900 mb-2">Contact Phone</label>
+                      <label className="block text-lg font-bold text-foreground mb-2">Contact Phone</label>
                       <input
                         type="tel"
                         value={profile.contactPhone || ''}
                         onChange={e => setProfile({ ...profile, contactPhone: e.target.value })}
-                        className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       />
                     </div>
                   </div>
 
                   <div className="mt-6">
-                    <label className="block text-lg font-bold text-gray-900 mb-2">Website</label>
+                    <label className="block text-lg font-bold text-foreground mb-2">Website</label>
                     <input
                       type="url"
                       value={profile.website || ''}
                       onChange={e => setProfile({ ...profile, website: e.target.value })}
-                      className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
                   </div>
 
                   <div className="mt-6">
-                    <label className="block text-lg font-bold text-gray-900 mb-2">Short Description</label>
+                    <label className="block text-lg font-bold text-foreground mb-2">Short Description</label>
                     <textarea
                       rows={4}
                       value={profile.description || ''}
                       onChange={e => setProfile({ ...profile, description: e.target.value })}
-                      className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       placeholder="Brief description of your university..."
                     />
                   </div>
@@ -595,17 +595,17 @@ export default function UniversitySettingsPage() {
 
                 {/* History Section */}
                 <div className="border-b pb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
                     <Clock className="w-6 h-6 text-blue-600" />
                     University History
                   </h2>
                   <div>
-                    <label className="block text-lg font-bold text-gray-900 mb-2">History & Background</label>
+                    <label className="block text-lg font-bold text-foreground mb-2">History & Background</label>
                     <textarea
                       rows={5}
                       value={profile.history || ''}
                       onChange={e => setProfile({ ...profile, history: e.target.value })}
-                      className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       placeholder="Describe the history, founding, and background of your university..."
                     />
                   </div>
@@ -613,17 +613,17 @@ export default function UniversitySettingsPage() {
 
                 {/* Achievements Section */}
                 <div className="border-b pb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
                     <Trophy className="w-6 h-6 text-yellow-600" />
                     Achievements & Recognition
                   </h2>
                   <div>
-                    <label className="block text-lg font-bold text-gray-900 mb-2">Achievements</label>
+                    <label className="block text-lg font-bold text-foreground mb-2">Achievements</label>
                     <textarea
                       rows={5}
                       value={profile.achievements || ''}
                       onChange={e => setProfile({ ...profile, achievements: e.target.value })}
-                      className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       placeholder="List your university's achievements..."
                     />
                   </div>
@@ -631,17 +631,17 @@ export default function UniversitySettingsPage() {
 
                 {/* Facilities Section */}
                 <div className="border-b pb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
                     <Library className="w-6 h-6 text-purple-600" />
                     Campus Facilities
                   </h2>
                   <div>
-                    <label className="block text-lg font-bold text-gray-900 mb-2">Facilities</label>
+                    <label className="block text-lg font-bold text-foreground mb-2">Facilities</label>
                     <textarea
                       rows={5}
                       value={profile.facilities || ''}
                       onChange={e => setProfile({ ...profile, facilities: e.target.value })}
-                      className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       placeholder="List available facilities..."
                     />
                   </div>
@@ -649,17 +649,17 @@ export default function UniversitySettingsPage() {
 
                 {/* Research Areas Section */}
                 <div className="border-b pb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
                     <Microscope className="w-6 h-6 text-indigo-600" />
                     Research Areas
                   </h2>
                   <div>
-                    <label className="block text-lg font-bold text-gray-900 mb-2">Research Areas</label>
+                    <label className="block text-lg font-bold text-foreground mb-2">Research Areas</label>
                     <textarea
                       rows={5}
                       value={profile.researchAreas || ''}
                       onChange={e => setProfile({ ...profile, researchAreas: e.target.value })}
-                      className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       placeholder="List key research areas and centers..."
                     />
                   </div>
@@ -667,17 +667,17 @@ export default function UniversitySettingsPage() {
 
                 {/* Student Life Section */}
                 <div className="border-b pb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
                     <Heart className="w-6 h-6 text-pink-600" />
                     Student Life
                   </h2>
                   <div>
-                    <label className="block text-lg font-bold text-gray-900 mb-2">Student Life & Activities</label>
+                    <label className="block text-lg font-bold text-foreground mb-2">Student Life & Activities</label>
                     <textarea
                       rows={5}
                       value={profile.studentLife || ''}
                       onChange={e => setProfile({ ...profile, studentLife: e.target.value })}
-                      className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       placeholder="Describe student activities, clubs, events..."
                     />
                   </div>
@@ -685,17 +685,17 @@ export default function UniversitySettingsPage() {
 
                 {/* Accreditation Section */}
                 <div className="border-b pb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
                     <Shield className="w-6 h-6 text-green-600" />
                     Accreditation & Partnerships
                   </h2>
                   <div>
-                    <label className="block text-lg font-bold text-gray-900 mb-2">Accreditations</label>
+                    <label className="block text-lg font-bold text-foreground mb-2">Accreditations</label>
                     <textarea
                       rows={4}
                       value={profile.accreditation || ''}
                       onChange={e => setProfile({ ...profile, accreditation: e.target.value })}
-                      className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       placeholder="List accreditations and international partnerships..."
                     />
                   </div>
@@ -703,13 +703,13 @@ export default function UniversitySettingsPage() {
 
                 {/* Key Facts Section */}
                 <div className="border-b pb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
                     <Sparkles className="w-6 h-6 text-orange-600" />
                     Key Facts
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                      <label className="block text-lg font-bold text-gray-900 mb-2">Established Year</label>
+                      <label className="block text-lg font-bold text-foreground mb-2">Established Year</label>
                       <input
                         type="number"
                         value={profile.keyFacts?.established ?? ''}
@@ -717,11 +717,11 @@ export default function UniversitySettingsPage() {
                           ...profile,
                           keyFacts: { ...(profile.keyFacts || {}), established: parseInt(e.target.value) || 0 }
                         })}
-                        className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-lg font-bold text-gray-900 mb-2">Total Students</label>
+                      <label className="block text-lg font-bold text-foreground mb-2">Total Students</label>
                       <input
                         type="number"
                         value={profile.keyFacts?.students ?? ''}
@@ -729,11 +729,11 @@ export default function UniversitySettingsPage() {
                           ...profile,
                           keyFacts: { ...(profile.keyFacts || {}), students: parseInt(e.target.value) || 0 }
                         })}
-                        className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-lg font-bold text-gray-900 mb-2">Number of Programs</label>
+                      <label className="block text-lg font-bold text-foreground mb-2">Number of Programs</label>
                       <input
                         type="number"
                         value={profile.keyFacts?.programs ?? ''}
@@ -741,7 +741,7 @@ export default function UniversitySettingsPage() {
                           ...profile,
                           keyFacts: { ...(profile.keyFacts || {}), programs: parseInt(e.target.value) || 0 }
                         })}
-                        className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       />
                     </div>
                   </div>
@@ -750,7 +750,7 @@ export default function UniversitySettingsPage() {
                   <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
                     <div className="flex items-center gap-3 mb-2">
                       <Users className="w-6 h-6 text-green-600" />
-                      <label className="block text-lg font-bold text-gray-900">Total University Intake Capacity</label>
+                      <label className="block text-lg font-bold text-foreground">Total University Intake Capacity</label>
                     </div>
                     <div className="flex items-center gap-4">
                       <input
@@ -758,12 +758,12 @@ export default function UniversitySettingsPage() {
                         min="0"
                         value={profile.totalCapacity || 0}
                         onChange={e => setProfile({ ...profile, totalCapacity: parseInt(e.target.value) || 0 })}
-                        className="w-48 border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-48 border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       />
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-muted-foreground">
                         Maximum number of student applications accepted platform-wide.
                         <br />
-                        <span className="text-xs text-gray-500 font-normal">Leave 0 for unlimited (default).</span>
+                        <span className="text-xs text-muted-foreground font-normal">Leave 0 for unlimited (default).</span>
                       </p>
                     </div>
                   </div>
@@ -771,30 +771,30 @@ export default function UniversitySettingsPage() {
 
                 {/* ✅ Application Period Settings Section */}
                 <div className="border-b pb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
                     <Calendar className="w-6 h-6 text-blue-600" />
                     Application Period Settings
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-lg font-bold text-gray-900 mb-2">Application Start Date</label>
+                      <label className="block text-lg font-bold text-foreground mb-2">Application Start Date</label>
                       <input
                         type="datetime-local"
                         value={profile.applicationStartDate ? profile.applicationStartDate.slice(0, 16) : ''}
                         onChange={e => setProfile({ ...profile, applicationStartDate: e.target.value })}
-                        className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       />
-                      <p className="text-sm text-gray-500 mt-1">📅 Students can apply on or after this date</p>
+                      <p className="text-sm text-muted-foreground mt-1">📅 Students can apply on or after this date</p>
                     </div>
                     <div>
-                      <label className="block text-lg font-bold text-gray-900 mb-2">Application Deadline</label>
+                      <label className="block text-lg font-bold text-foreground mb-2">Application Deadline</label>
                       <input
                         type="datetime-local"
                         value={profile.applicationDeadline ? profile.applicationDeadline.slice(0, 16) : ''}
                         onChange={e => setProfile({ ...profile, applicationDeadline: e.target.value })}
-                        className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       />
-                      <p className="text-sm text-gray-500 mt-1">⏰ Students cannot apply after this date</p>
+                      <p className="text-sm text-muted-foreground mt-1">⏰ Students cannot apply after this date</p>
                     </div>
                   </div>
 
@@ -825,24 +825,24 @@ export default function UniversitySettingsPage() {
 
                 {/* Instructions Section */}
                 <div className="border-b pb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">Instructions & Policies</h2>
+                  <h2 className="text-2xl font-bold text-foreground mb-6">Instructions & Policies</h2>
                   <div className="mb-6">
-                    <label className="block text-lg font-bold text-gray-900 mb-2">Admission Instructions</label>
+                    <label className="block text-lg font-bold text-foreground mb-2">Admission Instructions</label>
                     <textarea
                       rows={4}
                       value={profile.admissionInstructions || ''}
                       onChange={e => setProfile({ ...profile, admissionInstructions: e.target.value })}
-                      className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       placeholder="Instructions for students on admission process..."
                     />
                   </div>
                   <div>
-                    <label className="block text-lg font-bold text-gray-900 mb-2">Post-Decision Instructions</label>
+                    <label className="block text-lg font-bold text-foreground mb-2">Post-Decision Instructions</label>
                     <textarea
                       rows={4}
                       value={profile.postDecisionInstructions || ''}
                       onChange={e => setProfile({ ...profile, postDecisionInstructions: e.target.value })}
-                      className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-full border-2 border-border rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       placeholder="Instructions after admission decision has been made..."
                     />
                   </div>
@@ -862,18 +862,18 @@ export default function UniversitySettingsPage() {
             {/* ==================== PROGRAMS TAB ==================== */}
             {activeTab === 'programs' && (
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Academic Programs</h2>
+                <h2 className="text-2xl font-bold text-foreground mb-6">Academic Programs</h2>
                 {programs.length === 0 ? (
                   <div className="text-center py-12 bg-gray-50 rounded-lg">
-                    <p className="text-gray-500">No programs found. Add programs to continue.</p>
+                    <p className="text-muted-foreground">No programs found. Add programs to continue.</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 gap-4">
                     {programs.map(program => (
-                      <div key={program.id} className="p-4 border-2 border-gray-200 rounded-lg">
-                        <h3 className="text-xl font-bold text-gray-900">{program.name}</h3>
-                        <p className="text-gray-600">Code: {program.code} | Capacity: {program.intakeCapacity}</p>
-                        {program.description && <p className="text-gray-500 text-sm mt-2">{program.description}</p>}
+                      <div key={program.id} className="p-4 border-2 border-border rounded-lg">
+                        <h3 className="text-xl font-bold text-foreground">{program.name}</h3>
+                        <p className="text-muted-foreground">Code: {program.code} | Capacity: {program.intakeCapacity}</p>
+                        {program.description && <p className="text-muted-foreground text-sm mt-2">{program.description}</p>}
                       </div>
                     ))}
                   </div>
@@ -885,7 +885,7 @@ export default function UniversitySettingsPage() {
             {activeTab === 'tracks' && (
               <div>
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">Admission Tracks</h2>
+                  <h2 className="text-2xl font-bold text-foreground">Admission Tracks</h2>
                   <button
                     onClick={() => {
                       setEditingTrack(null);
@@ -899,17 +899,17 @@ export default function UniversitySettingsPage() {
                 </div>
 
                 {admissionTracks.length === 0 ? (
-                  <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                    <Target className="w-16 h-16 text-gray-400 mx-auto mb-3" />
-                    <p className="text-gray-500 text-lg">No admission tracks added yet</p>
-                    <p className="text-gray-400 text-sm">Click "Add Track" to create your first admission track</p>
+                  <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-border">
+                    <Target className="w-16 h-16 text-muted-foreground mx-auto mb-3" />
+                    <p className="text-muted-foreground text-lg">No admission tracks added yet</p>
+                    <p className="text-muted-foreground text-sm">Click "Add Track" to create your first admission track</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {admissionTracks.map(track => (
-                      <div key={track.id} className="border-2 border-gray-200 rounded-xl p-5 hover:shadow-md transition bg-white">
+                      <div key={track.id} className="border-2 border-border rounded-xl p-5 hover:shadow-md transition bg-card">
                         <div className="flex justify-between items-start mb-3">
-                          <h3 className="text-xl font-bold text-gray-900">{track.name}</h3>
+                          <h3 className="text-xl font-bold text-foreground">{track.name}</h3>
                           <div className="flex gap-2">
                             <button
                               onClick={() => {
@@ -935,11 +935,11 @@ export default function UniversitySettingsPage() {
                             </button>
                           </div>
                         </div>
-                        <p className="text-gray-600 text-sm mb-3">{track.description || 'No description'}</p>
+                        <p className="text-muted-foreground text-sm mb-3">{track.description || 'No description'}</p>
                         <div className="flex flex-wrap gap-2 text-sm">
                           <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Capacity: {track.intakeCapacity}</span>
                           <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full">Audience: {track.targetAudience || 'BOTH'}</span>
-                          {track.programName && <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full">Program: {track.programName}</span>}
+                          {track.programName && <span className="bg-gray-100 text-muted-foreground px-2 py-1 rounded-full">Program: {track.programName}</span>}
                         </div>
                       </div>
                     ))}
@@ -952,7 +952,7 @@ export default function UniversitySettingsPage() {
             {/* {activeTab === 'eligibility' && (
               <div>
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">Eligibility Rules</h2>
+                  <h2 className="text-2xl font-bold text-foreground">Eligibility Rules</h2>
                   <button
                     onClick={() => {
                       setEditingRule(null);
@@ -966,22 +966,22 @@ export default function UniversitySettingsPage() {
                 </div>
 
                 {eligibilityRules.length === 0 ? (
-                  <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                    <Shield className="w-16 h-16 text-gray-400 mx-auto mb-3" />
-                    <p className="text-gray-500 text-lg">No eligibility rules added yet</p>
-                    <p className="text-gray-400 text-sm">Click "Add Rule" to set eligibility requirements</p>
+                  <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-border">
+                    <Shield className="w-16 h-16 text-muted-foreground mx-auto mb-3" />
+                    <p className="text-muted-foreground text-lg">No eligibility rules added yet</p>
+                    <p className="text-muted-foreground text-sm">Click "Add Rule" to set eligibility requirements</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {eligibilityRules.map(rule => (
-                      <div key={rule.id} className="flex justify-between items-center p-4 border-2 border-gray-200 rounded-lg">
+                      <div key={rule.id} className="flex justify-between items-center p-4 border-2 border-border rounded-lg">
                         <div>
-                          <p className="font-semibold text-gray-900">{rule.programName}</p>
+                          <p className="font-semibold text-foreground">{rule.programName}</p>
                           <div className="flex flex-wrap gap-3 mt-2 text-sm">
-                            <span className="text-gray-600">Score: {rule.minScore} - {rule.maxScore}</span>
-                            {rule.region && <span className="text-gray-600">Region: {rule.region}</span>}
-                            {rule.disabilityStatus && <span className="text-gray-600">Disability: {rule.disabilityStatus}</span>}
-                            {rule.stream && <span className="text-gray-600">Stream: {rule.stream}</span>}
+                            <span className="text-muted-foreground">Score: {rule.minScore} - {rule.maxScore}</span>
+                            {rule.region && <span className="text-muted-foreground">Region: {rule.region}</span>}
+                            {rule.disabilityStatus && <span className="text-muted-foreground">Disability: {rule.disabilityStatus}</span>}
+                            {rule.stream && <span className="text-muted-foreground">Stream: {rule.stream}</span>}
                           </div>
                         </div>
                         <button onClick={() => handleDeleteRule(rule.id)} className="text-red-600 hover:text-red-800">
@@ -998,7 +998,7 @@ export default function UniversitySettingsPage() {
             {activeTab === 'intake' && (
               <div>
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">Intake Capacity</h2>
+                  <h2 className="text-2xl font-bold text-foreground">Intake Capacity</h2>
                   <button
                     onClick={() => {
                       setEditingIntakes(intakeItems.map(i => ({ ...i })));
@@ -1011,17 +1011,17 @@ export default function UniversitySettingsPage() {
                 </div>
 
                 {intakeItems.length === 0 ? (
-                  <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                    <Users className="w-16 h-16 text-gray-400 mx-auto mb-3" />
-                    <p className="text-gray-500 text-lg">No intake data available</p>
-                    <p className="text-gray-400 text-sm">Add programs to set intake capacity</p>
+                  <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-border">
+                    <Users className="w-16 h-16 text-muted-foreground mx-auto mb-3" />
+                    <p className="text-muted-foreground text-lg">No intake data available</p>
+                    <p className="text-muted-foreground text-sm">Add programs to set intake capacity</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {intakeItems.map(item => (
-                      <div key={item.programId} className="p-4 border-2 border-gray-200 rounded-lg">
+                      <div key={item.programId} className="p-4 border-2 border-border rounded-lg">
                         <div className="flex justify-between items-center mb-2">
-                          <h3 className="text-lg font-bold text-gray-900">{item.programName}</h3>
+                          <h3 className="text-lg font-bold text-foreground">{item.programName}</h3>
                           <span className="text-sm font-semibold">{item.filled} / {item.totalIntake} filled</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-3">
@@ -1030,7 +1030,7 @@ export default function UniversitySettingsPage() {
                             style={{ width: `${item.totalIntake > 0 ? (item.filled / item.totalIntake) * 100 : 0}%` }}
                           />
                         </div>
-                        <p className="text-sm text-gray-600 mt-2">{item.available} seats available</p>
+                        <p className="text-sm text-muted-foreground mt-2">{item.available} seats available</p>
                       </div>
                     ))}
                   </div>
@@ -1046,40 +1046,40 @@ export default function UniversitySettingsPage() {
                     <Shield className="w-6 h-6 text-indigo-600" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Account Security</h2>
-                    <p className="text-sm text-gray-500">Update your university administration account password</p>
+                    <h2 className="text-2xl font-bold text-foreground">Account Security</h2>
+                    <p className="text-sm text-muted-foreground">Update your university administration account password</p>
                   </div>
                 </div>
 
                 <form onSubmit={handleChangePassword} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-1">Current Password</label>
+                    <label className="block text-sm font-bold text-muted-foreground mb-1">Current Password</label>
                     <input
                       type="password"
                       value={passwordForm.currentPassword}
                       onChange={e => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
-                      className="w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full border-2 border-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-1">New Password</label>
+                    <label className="block text-sm font-bold text-muted-foreground mb-1">New Password</label>
                     <input
                       type="password"
                       value={passwordForm.newPassword}
                       onChange={e => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
-                      className="w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full border-2 border-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       required
                       minLength={6}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-1">Confirm New Password</label>
+                    <label className="block text-sm font-bold text-muted-foreground mb-1">Confirm New Password</label>
                     <input
                       type="password"
                       value={passwordForm.confirmPassword}
                       onChange={e => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
-                      className="w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full border-2 border-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       required
                       minLength={6}
                     />
@@ -1102,61 +1102,61 @@ export default function UniversitySettingsPage() {
       {/* ==================== ADD/EDIT TRACK MODAL ==================== */}
       {showTrackModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
+          <div className="bg-card rounded-2xl w-full max-w-md shadow-2xl">
             <div className="flex justify-between items-center p-6 border-b-2">
-              <h3 className="text-2xl font-bold text-gray-900">{editingTrack ? 'Edit Admission Track' : 'Add Admission Track'}</h3>
-              <button onClick={() => { setShowTrackModal(false); setEditingTrack(null); }} className="text-gray-400 hover:text-gray-600">
+              <h3 className="text-2xl font-bold text-foreground">{editingTrack ? 'Edit Admission Track' : 'Add Admission Track'}</h3>
+              <button onClick={() => { setShowTrackModal(false); setEditingTrack(null); }} className="text-muted-foreground hover:text-muted-foreground">
                 <X className="w-6 h-6" />
               </button>
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Program *</label>
+                <label className="block text-sm font-bold text-muted-foreground mb-1">Program *</label>
                 <select
                   value={trackForm.programId}
                   onChange={e => setTrackForm({ ...trackForm, programId: parseInt(e.target.value) })}
-                  className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full border-2 border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
                   <option value={0}>Select Program</option>
                   {programs.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Track Name *</label>
+                <label className="block text-sm font-bold text-muted-foreground mb-1">Track Name *</label>
                 <input
                   type="text"
                   value={trackForm.name}
                   onChange={e => setTrackForm({ ...trackForm, name: e.target.value })}
-                  className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full border-2 border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                   placeholder="e.g., Regular, Scholarship"
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-bold text-muted-foreground mb-1">Description</label>
                 <textarea
                   rows={3}
                   value={trackForm.description}
                   onChange={e => setTrackForm({ ...trackForm, description: e.target.value })}
-                  className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full border-2 border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                   placeholder="Track description..."
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1">Intake Capacity</label>
+                  <label className="block text-sm font-bold text-muted-foreground mb-1">Intake Capacity</label>
                   <input
                     type="number"
                     value={trackForm.intakeCapacity}
                     onChange={e => setTrackForm({ ...trackForm, intakeCapacity: parseInt(e.target.value) || 0 })}
-                    className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full border-2 border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1">Target Audience</label>
+                  <label className="block text-sm font-bold text-muted-foreground mb-1">Target Audience</label>
                   <select
                     value={trackForm.targetAudience}
                     onChange={e => setTrackForm({ ...trackForm, targetAudience: e.target.value })}
-                    className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full border-2 border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                   >
                     <option value="BOTH">Both</option>
                     <option value="LOCAL">Local Only</option>
@@ -1176,20 +1176,20 @@ export default function UniversitySettingsPage() {
       {/* ==================== ADD/EDIT RULE MODAL ==================== */}
       {showRuleModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
+          <div className="bg-card rounded-2xl w-full max-w-md shadow-2xl">
             <div className="flex justify-between items-center p-6 border-b-2">
-              <h3 className="text-2xl font-bold text-gray-900">{editingRule ? 'Edit Eligibility Rule' : 'Add Eligibility Rule'}</h3>
-              <button onClick={() => { setShowRuleModal(false); setEditingRule(null); }} className="text-gray-400 hover:text-gray-600">
+              <h3 className="text-2xl font-bold text-foreground">{editingRule ? 'Edit Eligibility Rule' : 'Add Eligibility Rule'}</h3>
+              <button onClick={() => { setShowRuleModal(false); setEditingRule(null); }} className="text-muted-foreground hover:text-muted-foreground">
                 <X className="w-6 h-6" />
               </button>
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Program *</label>
+                <label className="block text-sm font-bold text-muted-foreground mb-1">Program *</label>
                 <select
                   value={ruleForm.programId}
                   onChange={e => setRuleForm({ ...ruleForm, programId: parseInt(e.target.value) })}
-                  className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full border-2 border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
                   <option value={0}>Select Program</option>
                   {programs.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -1197,40 +1197,40 @@ export default function UniversitySettingsPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1">Min Score</label>
+                  <label className="block text-sm font-bold text-muted-foreground mb-1">Min Score</label>
                   <input
                     type="number"
                     value={ruleForm.minScore}
                     onChange={e => setRuleForm({ ...ruleForm, minScore: parseInt(e.target.value) || 0 })}
-                    className="w-full border-2 border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border-2 border-border rounded-lg px-3 py-2"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1">Max Score</label>
+                  <label className="block text-sm font-bold text-muted-foreground mb-1">Max Score</label>
                   <input
                     type="number"
                     value={ruleForm.maxScore}
                     onChange={e => setRuleForm({ ...ruleForm, maxScore: parseInt(e.target.value) || 0 })}
-                    className="w-full border-2 border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border-2 border-border rounded-lg px-3 py-2"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Region (Optional)</label>
+                <label className="block text-sm font-bold text-muted-foreground mb-1">Region (Optional)</label>
                 <input
                   type="text"
                   value={ruleForm.region}
                   onChange={e => setRuleForm({ ...ruleForm, region: e.target.value })}
-                  className="w-full border-2 border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border-2 border-border rounded-lg px-3 py-2"
                   placeholder="e.g., Addis Ababa, Oromia"
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Disability Status (Optional)</label>
+                <label className="block text-sm font-bold text-muted-foreground mb-1">Disability Status (Optional)</label>
                 <select
                   value={ruleForm.disabilityStatus}
                   onChange={e => setRuleForm({ ...ruleForm, disabilityStatus: e.target.value })}
-                  className="w-full border-2 border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border-2 border-border rounded-lg px-3 py-2"
                 >
                   <option value="">All</option>
                   <option value="none">No Disability</option>
@@ -1240,11 +1240,11 @@ export default function UniversitySettingsPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Stream (Optional)</label>
+                <label className="block text-sm font-bold text-muted-foreground mb-1">Stream (Optional)</label>
                 <select
                   value={ruleForm.stream}
                   onChange={e => setRuleForm({ ...ruleForm, stream: e.target.value })}
-                  className="w-full border-2 border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border-2 border-border rounded-lg px-3 py-2"
                 >
                   <option value="">Both</option>
                   <option value="Natural Science">Natural Science</option>
@@ -1263,17 +1263,17 @@ export default function UniversitySettingsPage() {
       {/* ==================== EDIT INTAKE MODAL ==================== */}
       {showIntakeModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
+          <div className="bg-card rounded-2xl w-full max-w-md shadow-2xl">
             <div className="flex justify-between items-center p-6 border-b-2">
-              <h3 className="text-2xl font-bold text-gray-900">Edit Intake Capacities</h3>
-              <button onClick={() => setShowIntakeModal(false)} className="text-gray-400 hover:text-gray-600">
+              <h3 className="text-2xl font-bold text-foreground">Edit Intake Capacities</h3>
+              <button onClick={() => setShowIntakeModal(false)} className="text-muted-foreground hover:text-muted-foreground">
                 <X className="w-6 h-6" />
               </button>
             </div>
             <div className="p-6 space-y-4 max-h-96 overflow-y-auto">
               {editingIntakes.map((item, idx) => (
                 <div key={item.programId} className="space-y-2">
-                  <label className="block font-semibold text-gray-900">{item.programName}</label>
+                  <label className="block font-semibold text-foreground">{item.programName}</label>
                   <input
                     type="number"
                     min="0"
@@ -1285,9 +1285,9 @@ export default function UniversitySettingsPage() {
                       updated[idx].available = newVal - updated[idx].filled;
                       setEditingIntakes(updated);
                     }}
-                    className="w-full border-2 border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border-2 border-border rounded-lg px-3 py-2"
                   />
-                  <p className="text-xs text-gray-500">Currently filled: {item.filled}</p>
+                  <p className="text-xs text-muted-foreground">Currently filled: {item.filled}</p>
                 </div>
               ))}
             </div>

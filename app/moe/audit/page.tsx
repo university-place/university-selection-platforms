@@ -26,7 +26,7 @@ interface AuditLog {
 const ACTION_COLOR: Record<string, string> = {
   MOE_UPLOAD: 'bg-purple-100 text-purple-800',
   LOGIN: 'bg-blue-100 text-blue-800',
-  LOGOUT: 'bg-gray-100 text-gray-700',
+  LOGOUT: 'bg-gray-100 text-muted-foreground',
   UPDATE: 'bg-yellow-100 text-yellow-800',
   DELETE: 'bg-red-100 text-red-800',
   CREATE: 'bg-green-100 text-green-800',
@@ -69,12 +69,12 @@ export default function MOEAuditPage() {
               <p className="text-gray-300 text-sm">FR-M7 · Complete record of all system actions</p>
             </div>
           </div>
-          <p className="text-3xl font-bold mt-4">{total.toLocaleString()} <span className="text-lg font-normal text-gray-400">total entries</span></p>
+          <p className="text-3xl font-bold mt-4">{total.toLocaleString()} <span className="text-lg font-normal text-muted-foreground">total entries</span></p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-4 flex gap-3">
-          <div className="flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2">
-            <Filter className="w-4 h-4 text-gray-400" />
+        <div className="bg-card rounded-xl shadow-sm p-4 flex gap-3">
+          <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2">
+            <Filter className="w-4 h-4 text-muted-foreground" />
             <select className="outline-none text-sm bg-transparent" value={actionFilter}
               onChange={(e) => { setActionFilter(e.target.value); setPage(1); }}>
               <option value="">All Actions</option>
@@ -87,7 +87,7 @@ export default function MOEAuditPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="bg-card rounded-xl shadow-sm overflow-hidden">
           {error && <div className="p-4 text-red-600 bg-red-50">{error}</div>}
           {loading ? (
             <div className="flex justify-center items-center h-48">
@@ -99,28 +99,28 @@ export default function MOEAuditPage() {
                 <thead className="bg-gray-50 border-b">
                   <tr>
                     {['Timestamp', 'Action', 'User', 'Role', 'File', 'Records', 'Acad. Year'].map((h) => (
-                      <th key={h} className="text-left px-4 py-3 text-gray-600 font-semibold text-xs uppercase">{h}</th>
+                      <th key={h} className="text-left px-4 py-3 text-muted-foreground font-semibold text-xs uppercase">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {logs.length === 0 ? (
-                    <tr><td colSpan={7} className="text-center py-12 text-gray-400">No audit entries found</td></tr>
+                    <tr><td colSpan={7} className="text-center py-12 text-muted-foreground">No audit entries found</td></tr>
                   ) : logs.map((log) => (
                     <tr key={log.id} className="hover:bg-gray-50 transition">
-                      <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">
+                      <td className="px-4 py-3 text-muted-foreground text-xs whitespace-nowrap">
                         {new Date(log.timestamp).toLocaleString()}
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${ACTION_COLOR[log.action] || 'bg-gray-100 text-gray-700'}`}>
+                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${ACTION_COLOR[log.action] || 'bg-gray-100 text-muted-foreground'}`}>
                           {log.action}
                         </span>
                       </td>
                       <td className="px-4 py-3 font-medium">{log.user?.name || log.userEmail}</td>
-                      <td className="px-4 py-3 text-gray-500 text-xs">{log.user?.role || '—'}</td>
-                      <td className="px-4 py-3 text-gray-600 text-xs max-w-xs truncate">{log.filename || '—'}</td>
+                      <td className="px-4 py-3 text-muted-foreground text-xs">{log.user?.role || '—'}</td>
+                      <td className="px-4 py-3 text-muted-foreground text-xs max-w-xs truncate">{log.filename || '—'}</td>
                       <td className="px-4 py-3 text-center font-semibold">{log.recordsInserted ?? '—'}</td>
-                      <td className="px-4 py-3 text-gray-500">{log.academicYear || '—'}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{log.academicYear || '—'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -131,7 +131,7 @@ export default function MOEAuditPage() {
 
         {total > 30 && (
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-500">Page {page} · {total} total entries</span>
+            <span className="text-sm text-muted-foreground">Page {page} · {total} total entries</span>
             <div className="flex gap-2">
               <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1}
                 className="px-4 py-2 rounded-lg bg-gray-700 text-white text-sm disabled:opacity-40">Previous</button>

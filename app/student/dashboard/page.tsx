@@ -755,7 +755,7 @@ export default function StudentDashboardPage() {
     const canSubmit = !isCancelled && hasAttemptsLeft && !isDeadlinePassed && dateValid;
 
     return (
-      <div key={pref.id} className={`bg-white rounded-lg shadow-md p-5 hover:shadow-lg transition border-l-4 ${isCancelled ? 'border-l-gray-400 bg-gray-50' : 'border-l-blue-500'}`}>
+      <div key={pref.id} className={`bg-card border-border rounded-lg shadow-md p-5 hover:shadow-lg transition border-l-4 ${isCancelled ? 'border-l-gray-400 bg-muted/30' : 'border-l-blue-500'}`}>
         <div className="flex justify-between items-start">
           <div className="flex-1">
             {/* Header section */}
@@ -763,7 +763,7 @@ export default function StudentDashboardPage() {
               <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">
                 {displayIndex}
               </span>
-              <h4 className="font-semibold text-lg text-gray-900">{pref.universityName}</h4>
+              <h4 className="font-semibold text-lg text-foreground">{pref.universityName}</h4>
               {isCancelled && (
                 <span className="px-2 py-1 bg-gray-500 text-white text-xs rounded-full flex items-center gap-1">
                   <XCircle className="w-3 h-3" /> Cancelled
@@ -778,13 +778,13 @@ export default function StudentDashboardPage() {
 
             {/* Program and Track info */}
             <div className="ml-11 space-y-1">
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-muted-foreground">
                 <span className="font-medium">Program:</span>
                 {pref.programName && pref.programName !== 'Program not found'
                   ? pref.programName
                   : 'Not specified (University only)'}
               </p>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-muted-foreground">
                 <span className="font-medium">Track:</span>
                 {pref.admissionTrackName && pref.admissionTrackName !== 'Track not found'
                   ? pref.admissionTrackName
@@ -825,13 +825,13 @@ export default function StudentDashboardPage() {
               {isCancelled ? (
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-2">
-                    <XCircle className="w-4 h-4 text-gray-500" />
-                    <span className="text-xs text-gray-500">
+                    <XCircle className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">
                       Cancelled on {pref.cancelledAt ? new Date(pref.cancelledAt).toLocaleString() : 'Unknown date'}
                     </span>
                   </div>
                   {pref.cancelledReason && (
-                    <div className="text-xs text-gray-400 ml-6">
+                    <div className="text-xs text-muted-foreground ml-6">
                       Reason: {pref.cancelledReason}
                     </div>
                   )}
@@ -1014,7 +1014,7 @@ export default function StudentDashboardPage() {
             {/* Submitted Badge - shows remaining attempts */}
             {isSubmitted && !isCancelled && (
               <div className="flex flex-col items-end gap-1">
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-muted-foreground">
                   {pref.remainingAttempts || 0} attempts left
                 </span>
               </div>
@@ -1027,7 +1027,7 @@ export default function StudentDashboardPage() {
                   <XCircle className="w-4 h-4" />
                   Cancelled
                 </span>
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-muted-foreground">
                   Record kept for MOE
                 </span>
               </div>
@@ -1316,7 +1316,7 @@ export default function StudentDashboardPage() {
   ];
 
   return (
-    <div className={`min-h-screen bg-gray-50 flex ${darkMode ? 'dark' : ''}`}>
+    <div className={`min-h-screen bg-muted/30 flex ${darkMode ? 'dark' : ''}`}>
       {darkMode && (
         <style dangerouslySetInnerHTML={{ __html: `
           .dark {
@@ -1354,12 +1354,12 @@ export default function StudentDashboardPage() {
           .dark main h1, .dark main h2, .dark main h3, .dark main h4, .dark main span:not(.text-blue-100):not(.text-green-700), .dark main p:not(.text-blue-800):not(.text-green-600) {
             color: #F8FAFC !important;
           }
-          .dark main .bg-white {
+          .dark main .bg-card border-border {
             background-color: #131B2E !important;
             border-color: #1E293B !important;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1) !important;
           }
-          .dark main .border, .dark main .border-gray-100, .dark main .border-gray-200 {
+          .dark main .border, .dark main .border-gray-100, .dark main .border-border {
             border-color: #1E293B !important;
           }
           .dark main input, .dark main select {
@@ -1374,27 +1374,27 @@ export default function StudentDashboardPage() {
           .dark main .bg-blue-50 p {
             color: #38BDF8 !important;
           }
-          .dark main .bg-gray-50 {
+          .dark main .bg-muted/30 {
             background-color: #131B2E !important;
             border-color: #1E293B !important;
           }
           .dark main .hover\:bg-gray-50:hover {
             background-color: #1E293B !important;
           }
-          .dark main .text-gray-900 {
+          .dark main .text-foreground {
             color: #F8FAFC !important;
           }
-          .dark main .text-gray-600 {
+          .dark main .text-muted-foreground {
             color: #94A3B8 !important;
           }
-          .dark main .text-gray-500 {
+          .dark main .text-muted-foreground {
             color: #64748B !important;
           }
         `}} />
       )}
       {/* Sidebar */}
-      <aside className="w-72 bg-white/80 backdrop-blur-md shadow-xl fixed h-full overflow-y-auto z-10 border-r border-gray-100">
-        <div className="p-8 border-b border-gray-100 text-center relative overflow-hidden">
+      <aside className="w-72 bg-white/80 backdrop-blur-md shadow-xl fixed h-full overflow-y-auto z-10 border-r border-border">
+        <div className="p-8 border-b border-border text-center relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-blue-500 to-indigo-600 opacity-10"></div>
           <div className="flex flex-col items-center gap-4 relative z-10">
             {profile.photo ? (
@@ -1405,7 +1405,7 @@ export default function StudentDashboardPage() {
               </div>
             )}
             <div>
-              <h2 className="font-bold text-xl text-gray-900 tracking-tight">{profile.firstName} {profile.lastName}</h2>
+              <h2 className="font-bold text-xl text-foreground tracking-tight">{profile.firstName} {profile.lastName}</h2>
               <p className="text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1 rounded-full mt-2 inline-block shadow-sm">ID: {profile.examID}</p>
             </div>
           </div>
@@ -1423,7 +1423,7 @@ export default function StudentDashboardPage() {
                   setActiveTab(item.id);
                 }
               }}
-              className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 font-medium ${activeTab === item.id && item.id !== 'invitations' && item.id !== 'my-placements' ? 'bg-gradient-to-r from-blue-50 to-indigo-50/50 text-blue-700 shadow-sm border-l-4 border-blue-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:translate-x-1'}`}
+              className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 font-medium ${activeTab === item.id && item.id !== 'invitations' && item.id !== 'my-placements' ? 'bg-gradient-to-r from-blue-50 to-indigo-50/50 text-blue-700 shadow-sm border-l-4 border-blue-600' : 'text-muted-foreground hover:bg-muted/30 hover:text-foreground hover:translate-x-1'}`}
             >
               <item.icon className="w-5 h-5" />
               <span>{item.label}</span>
@@ -1431,7 +1431,7 @@ export default function StudentDashboardPage() {
           ))}
           <button
             onClick={() => setDarkMode(!darkMode)}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 mt-8 dark:text-slate-300 dark:hover:bg-slate-800"
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-gray-100 mt-8 dark:text-slate-300 dark:hover:bg-slate-800"
           >
             {darkMode ? (
               <>
@@ -1616,7 +1616,7 @@ export default function StudentDashboardPage() {
                 ) : (
                   <div className="space-y-4">
                     {documents.map(doc => (
-                      <div key={doc.id} className="flex items-center justify-between p-5 bg-white/80 border border-white rounded-2xl hover:bg-white shadow-[0_2px_10px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_20px_rgb(0,0,0,0.06)] hover:-translate-y-0.5 transition-all">
+                      <div key={doc.id} className="flex items-center justify-between p-5 bg-white/80 border border-white rounded-2xl hover:bg-card border-border shadow-[0_2px_10px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_20px_rgb(0,0,0,0.06)] hover:-translate-y-0.5 transition-all">
                         <div className="flex items-center gap-5 flex-1">
                           <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100">
                             <FileText className="w-6 h-6 text-slate-400" />
@@ -1698,7 +1698,7 @@ export default function StudentDashboardPage() {
                     fetchGeneralDocuments();
                     setShowGeneralDocModal(true);
                   }}
-                  className="w-full flex items-center gap-3 p-4 mt-3 bg-gray-50 border border-gray-200 hover:bg-gray-100 hover:-translate-y-0.5 rounded-xl transition-all text-left font-semibold text-gray-700"
+                  className="w-full flex items-center gap-3 p-4 mt-3 bg-muted/30 border border-border hover:bg-gray-100 hover:-translate-y-0.5 rounded-xl transition-all text-left font-semibold text-muted-foreground"
                 >
                   <Upload className="w-5 h-5" />
                   <span>Upload General Docs</span>
@@ -1708,26 +1708,26 @@ export default function StudentDashboardPage() {
 
             {/* Placement Status */}
             {placement && (
-              <div className="mt-6 bg-white rounded-xl shadow-sm p-6 border-l-4 border-green-500">
+              <div className="mt-6 bg-card border-border rounded-xl shadow-sm p-6 border-l-4 border-green-500">
                 <h2 className="text-lg font-bold mb-4">Your Placement</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <p className="text-gray-600 text-sm">University</p>
-                    <p className="text-lg font-semibold text-gray-900">{placement.universityName}</p>
+                    <p className="text-muted-foreground text-sm">University</p>
+                    <p className="text-lg font-semibold text-foreground">{placement.universityName}</p>
                   </div>
                   <div>
-                    <p className="text-gray-600 text-sm">Program</p>
-                    <p className="text-lg font-semibold text-gray-900">{placement.programName}</p>
+                    <p className="text-muted-foreground text-sm">Program</p>
+                    <p className="text-lg font-semibold text-foreground">{placement.programName}</p>
                   </div>
                   <div>
-                    <p className="text-gray-600 text-sm">Status</p>
+                    <p className="text-muted-foreground text-sm">Status</p>
                     <p className={`text-lg font-bold ${placement.status === 'PLACED' ? 'text-green-600' : 'text-red-600'}`}>
                       {placement.status === 'PLACED' ? '✓ Accepted' : placement.status === 'NOT_PLACED' ? '✗ Not Placed' : 'Pending'}
                     </p>
                   </div>
                   <div>
-                    <p className="text-gray-600 text-sm">Deadline</p>
-                    <p className="text-lg font-semibold text-gray-900">{new Date(placement.confirmationDeadline).toLocaleDateString()}</p>
+                    <p className="text-muted-foreground text-sm">Deadline</p>
+                    <p className="text-lg font-semibold text-foreground">{new Date(placement.confirmationDeadline).toLocaleDateString()}</p>
                   </div>
                 </div>
               </div>
@@ -1735,14 +1735,14 @@ export default function StudentDashboardPage() {
 
             {/* Recent Notifications */}
             {notifications.length > 0 && (
-              <div className="mt-6 bg-white rounded-xl shadow-sm p-6">
+              <div className="mt-6 bg-card border-border rounded-xl shadow-sm p-6">
                 <h2 className="text-lg font-bold mb-4">Recent Notifications</h2>
                 <div className="space-y-3 max-h-48 overflow-y-auto">
                   {notifications.slice(0, 5).map(n => (
-                    <div key={n.id} className={`p-3 rounded-lg ${!n.read ? 'bg-blue-50 border-l-4 border-blue-500' : 'bg-gray-50'}`}>
+                    <div key={n.id} className={`p-3 rounded-lg ${!n.read ? 'bg-blue-50 border-l-4 border-blue-500' : 'bg-muted/30'}`}>
                       <p className="font-semibold text-sm">{n.title}</p>
-                      <p className="text-sm text-gray-600">{n.message}</p>
-                      <p className="text-xs text-gray-400 mt-1">{new Date(n.createdAt).toLocaleDateString()}</p>
+                      <p className="text-sm text-muted-foreground">{n.message}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{new Date(n.createdAt).toLocaleDateString()}</p>
                     </div>
                   ))}
                 </div>
@@ -1755,25 +1755,25 @@ export default function StudentDashboardPage() {
         {activeTab === 'profile' && (
           <div>
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">Profile & Documents</h1>
-              <p className="text-gray-600 mt-1">Manage your account information and upload required documents</p>
+              <h1 className="text-3xl font-bold text-foreground">Profile & Documents</h1>
+              <p className="text-muted-foreground mt-1">Manage your account information and upload required documents</p>
             </div>
 
             {/* Personal Information */}
-            <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+            <div className="bg-card border-border rounded-xl shadow-sm p-6 mb-6">
               <h2 className="text-lg font-bold mb-6">Personal Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div className="pb-4 border-b">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Exam ID</p>
-                  <p className="text-lg font-semibold text-gray-900 mt-1">{profile.examID}</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Exam ID</p>
+                  <p className="text-lg font-semibold text-foreground mt-1">{profile.examID}</p>
                 </div>
                 <div className="pb-4 border-b">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Full Name</p>
-                  <p className="text-lg font-semibold text-gray-900 mt-1">{profile.firstName} {profile.lastName}</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Full Name</p>
+                  <p className="text-lg font-semibold text-foreground mt-1">{profile.firstName} {profile.lastName}</p>
                 </div>
                 <div className="pb-4 border-b">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Email</p>
-                  <p className="text-lg font-semibold text-gray-900 mt-1 flex items-center gap-2">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Email</p>
+                  <p className="text-lg font-semibold text-foreground mt-1 flex items-center gap-2">
                     {profile.email}
                     {profile.emailVerified ? (
                       <CheckCircle className="w-5 h-5 text-green-500" title="Verified" />
@@ -1783,30 +1783,30 @@ export default function StudentDashboardPage() {
                   </p>
                 </div>
                 <div className="pb-4 border-b">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Phone</p>
-                  <p className="text-lg font-semibold text-gray-900 mt-1">{profile.phone || 'Not provided'}</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Phone</p>
+                  <p className="text-lg font-semibold text-foreground mt-1">{profile.phone || 'Not provided'}</p>
                 </div>
                 <div className="pb-4 border-b">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Region</p>
-                  <p className="text-lg font-semibold text-gray-900 mt-1">{profile.region || 'Not specified'}</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Region</p>
+                  <p className="text-lg font-semibold text-foreground mt-1">{profile.region || 'Not specified'}</p>
                 </div>
                 <div className="pb-4 border-b">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Date of Birth</p>
-                  <p className="text-lg font-semibold text-gray-900 mt-1">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Date of Birth</p>
+                  <p className="text-lg font-semibold text-foreground mt-1">
                     {profile.dateOfBirth ? new Date(profile.dateOfBirth).toLocaleDateString() : 'Not provided'}
                   </p>
                 </div>
                 <div className="pb-4 border-b">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Gender</p>
-                  <p className="text-lg font-semibold text-gray-900 mt-1">{profile.gender || 'Not specified'}</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Gender</p>
+                  <p className="text-lg font-semibold text-foreground mt-1">{profile.gender || 'Not specified'}</p>
                 </div>
                 <div className="pb-4 border-b">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Disability Status</p>
-                  <p className="text-lg font-semibold text-gray-900 mt-1">{profile.disability}</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Disability Status</p>
+                  <p className="text-lg font-semibold text-foreground mt-1">{profile.disability}</p>
                 </div>
                 <div className="pb-4 border-b">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Stream</p>
-                  <p className="text-lg font-semibold text-gray-900 mt-1">{profile.stream}</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Stream</p>
+                  <p className="text-lg font-semibold text-foreground mt-1">{profile.stream}</p>
                 </div>
               </div>
 
@@ -1815,9 +1815,9 @@ export default function StudentDashboardPage() {
             </div>
 
             {/* Security Section */}
-            <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+            <div className="bg-card border-border rounded-xl shadow-sm p-6 mb-6">
               <h2 className="text-lg font-bold mb-6 flex items-center gap-2">
-                <Shield className="w-5 h-5 text-gray-700" />
+                <Shield className="w-5 h-5 text-muted-foreground" />
                 Security
               </h2>
               <div className="max-w-md">
@@ -1830,30 +1830,30 @@ export default function StudentDashboardPage() {
                     </div>
                   )}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Current Password</label>
+                    <label className="block text-sm font-semibold text-muted-foreground mb-1">Current Password</label>
                     <input
                       type="password"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       value={passwordForm.currentPassword}
                       onChange={e => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">New Password</label>
+                    <label className="block text-sm font-semibold text-muted-foreground mb-1">New Password</label>
                     <input
                       type="password"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       value={passwordForm.newPassword}
                       onChange={e => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Confirm New Password</label>
+                    <label className="block text-sm font-semibold text-muted-foreground mb-1">Confirm New Password</label>
                     <input
                       type="password"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       value={passwordForm.confirmPassword}
                       onChange={e => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
                       required
@@ -1871,7 +1871,7 @@ export default function StudentDashboardPage() {
             </div>
 
             {/* Documents Section */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="bg-card border-border rounded-xl shadow-sm p-6">
               <h2 className="text-lg font-bold mb-6">Required Documents</h2>
 
               {/* Upload Area */}
@@ -1879,10 +1879,10 @@ export default function StudentDashboardPage() {
                 <div className="text-center">
                   <Upload className="w-12 h-12 text-blue-500 mx-auto mb-3" />
                   <label htmlFor="document-upload" className="cursor-pointer">
-                    <span className="font-semibold text-gray-900 hover:text-blue-600">Click to upload</span>
-                    <span className="text-gray-600"> or drag and drop</span>
+                    <span className="font-semibold text-foreground hover:text-blue-600">Click to upload</span>
+                    <span className="text-muted-foreground"> or drag and drop</span>
                   </label>
-                  <p className="text-sm text-gray-500 mt-2">PDF, JPG, or PNG (max 10MB)</p>
+                  <p className="text-sm text-muted-foreground mt-2">PDF, JPG, or PNG (max 10MB)</p>
                   <input
                     id="document-upload"
                     type="file"
@@ -1901,15 +1901,15 @@ export default function StudentDashboardPage() {
 
               {/* Documents List */}
               {documents.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-muted-foreground">
                   <FileText className="w-12 h-12 text-gray-300 mx-auto mb-2" />
                   <p>No documents uploaded yet</p>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-gray-900 mb-4">Uploaded Documents ({documents.length})</h3>
+                  <h3 className="font-semibold text-foreground mb-4">Uploaded Documents ({documents.length})</h3>
                   {documents.map(doc => (
-                    <div key={doc.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                    <div key={doc.id} className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/30 transition">
                       <div className="flex items-center gap-3 flex-1">
                         <div className="flex-shrink-0">
                           {doc.verificationStatus === 'VERIFIED' ? (
@@ -1930,7 +1930,7 @@ export default function StudentDashboardPage() {
                           <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 hover:underline">
                             {doc.name}
                           </a>
-                          <p className="text-sm text-gray-500 mt-1">{new Date(doc.uploadDate).toLocaleDateString()}</p>
+                          <p className="text-sm text-muted-foreground mt-1">{new Date(doc.uploadDate).toLocaleDateString()}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3 flex-shrink-0">
@@ -1984,8 +1984,8 @@ export default function StudentDashboardPage() {
         {activeTab === 'exam-results' && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="mb-8">
-              <h1 className="text-4xl font-black text-gray-900 tracking-tighter">Exam Results</h1>
-              <p className="text-gray-500 font-medium mt-1">Official national examination scores</p>
+              <h1 className="text-4xl font-black text-foreground tracking-tighter">Exam Results</h1>
+              <p className="text-muted-foreground font-medium mt-1">Official national examination scores</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -2006,16 +2006,16 @@ export default function StudentDashboardPage() {
                  </div>
                </div>
 
-               {/* <div className="bg-white rounded-[2rem] p-8 border-2 border-gray-100 shadow-sm flex flex-col justify-center">
-                 <p className="text-gray-400 font-black uppercase tracking-widest text-[10px] mb-4">Percentile Ranking</p>
-                 <div className="text-5xl font-black text-gray-900 tracking-tighter mb-2">
+               {/* <div className="bg-card border-border rounded-[2rem] p-8 border-2 border-border shadow-sm flex flex-col justify-center">
+                 <p className="text-muted-foreground font-black uppercase tracking-widest text-[10px] mb-4">Percentile Ranking</p>
+                 <div className="text-5xl font-black text-foreground tracking-tighter mb-2">
                    {((profile.totalScore / 700) * 100).toFixed(1)}%
                  </div>
-                 <p className="text-gray-500 text-sm font-medium">Top candidate performance in the {profile.academicYear} academic year.</p>
+                 <p className="text-muted-foreground text-sm font-medium">Top candidate performance in the {profile.academicYear} academic year.</p>
                </div> */}
             </div>
 
-            <h2 className="text-xl font-black text-gray-900 mb-6 flex items-center gap-3">
+            <h2 className="text-xl font-black text-foreground mb-6 flex items-center gap-3">
                <div className="w-2 h-8 bg-blue-600 rounded-full"></div>
                Subject Performance Breakdown
             </h2>
@@ -2026,12 +2026,12 @@ export default function StudentDashboardPage() {
                   .filter(([subj]) => subj.toLowerCase() !== 'total')
                   .map(([name, score]) => ({ name, score }))
               ).map((subj: any, index: number) => (
-                <div key={`${subj.name}-${index}`} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+                <div key={`${subj.name}-${index}`} className="bg-card border-border p-6 rounded-3xl border border-border shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-full -mr-12 -mt-12 group-hover:scale-150 transition-transform duration-500"></div>
                   <div className="relative z-10">
-                    <p className="text-gray-400 font-black uppercase tracking-widest text-[10px] mb-1">{subj.name}</p>
+                    <p className="text-muted-foreground font-black uppercase tracking-widest text-[10px] mb-1">{subj.name}</p>
                     <div className="flex justify-between items-end">
-                      <span className="text-3xl font-black text-gray-900 tracking-tighter">{subj.score}</span>
+                      <span className="text-3xl font-black text-foreground tracking-tighter">{subj.score}</span>
                       <span className="text-gray-300 font-bold text-sm mb-1">pts</span>
                     </div>
                   </div>
@@ -2058,8 +2058,8 @@ export default function StudentDashboardPage() {
             </div>
             <div className="grid gap-4">
               {universities.filter(u => u.name.toLowerCase().includes(searchQuery.toLowerCase()) && (filterType === 'all' || u.type === filterType)).map(uni => (
-                <div key={uni.id} className="bg-white rounded-xl shadow-sm p-4 flex justify-between items-center">
-                  <div><h3 className="font-semibold">{uni.name}</h3><p className="text-sm text-gray-500">{uni.region} | {uni.type}</p></div>
+                <div key={uni.id} className="bg-card border-border rounded-xl shadow-sm p-4 flex justify-between items-center">
+                  <div><h3 className="font-semibold">{uni.name}</h3><p className="text-sm text-muted-foreground">{uni.region} | {uni.type}</p></div>
                   <div className="flex gap-2">
                     <button onClick={() => window.open(`/university/${uni.id}`, '_blank')} className="px-3 py-1 text-blue-600 border border-blue-600 rounded-lg">View Profile</button>
                     {/* <button onClick={() => setCompareList(prev => prev.includes(uni) ? prev.filter(u => u.id !== uni.id) : [...prev, uni])} className={`px-3 py-1 rounded-lg ${compareList.includes(uni) ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>Compare</button> */}
@@ -2074,8 +2074,8 @@ export default function StudentDashboardPage() {
         {activeTab === 'preferences' && (
           <div>
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">My Preferences</h1>
-              <p className="text-gray-600 mt-1">Build your ranked list of university preferences by admission track</p>
+              <h1 className="text-3xl font-bold text-foreground">My Preferences</h1>
+              <p className="text-muted-foreground mt-1">Build your ranked list of university preferences by admission track</p>
             </div>
 
             {/* Info Banner */}
@@ -2100,17 +2100,17 @@ export default function StudentDashboardPage() {
                 )}
               </div>
             </div>
-            <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+            <div className="bg-card border-border rounded-xl shadow-sm p-6 mb-6">
               <h2 className="text-lg font-bold mb-4">Add University Preference</h2>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
                 <div>
-                  <label className="text-sm font-semibold text-gray-700 block mb-1">University</label>
+                  <label className="text-sm font-semibold text-muted-foreground block mb-1">University</label>
                   <select
                     value={newPreference.universityId}
                     onChange={e => {
                       setNewPreference({ ...newPreference, universityId: parseInt(e.target.value), programId: 0, admissionTrackId: 0 });
                     }}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value={0}>Choose university...</option>
                     {universities
@@ -2121,14 +2121,14 @@ export default function StudentDashboardPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-sm font-semibold text-gray-700 block mb-1">Program (Optional)</label>
+                  <label className="text-sm font-semibold text-muted-foreground block mb-1">Program (Optional)</label>
                   <select
                     value={newPreference.programId}
                     onChange={e => {
                       const programId = parseInt(e.target.value);
                       setNewPreference({ ...newPreference, programId: programId, admissionTrackId: 0 });
                     }}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={!newPreference.universityId}
                   >
                     <option value={0}>-- No Program (Apply to University only) --</option>
@@ -2136,14 +2136,14 @@ export default function StudentDashboardPage() {
                       <option key={program.id} value={program.id}>{program.name}</option>
                     ))}
                   </select>
-                  <p className="text-xs text-gray-500 mt-1">Select a specific program or leave as "No Program"</p>
+                  <p className="text-xs text-muted-foreground mt-1">Select a specific program or leave as "No Program"</p>
                 </div>
                 <div>
-                  <label className="text-sm font-semibold text-gray-700 block mb-1">Admission Track (Optional)</label>
+                  <label className="text-sm font-semibold text-muted-foreground block mb-1">Admission Track (Optional)</label>
                   <select
                     value={newPreference.admissionTrackId}
                     onChange={e => setNewPreference({ ...newPreference, admissionTrackId: parseInt(e.target.value) })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={!newPreference.programId}
                   >
                     <option value={0}>-- No Track (Use default admission) --</option>
@@ -2151,7 +2151,7 @@ export default function StudentDashboardPage() {
                       <option key={track.id} value={track.id}>{track.name}</option>
                     ))}
                   </select>
-                  <p className="text-xs text-gray-500 mt-1">Select a specific track or leave as "No Track"</p>
+                  <p className="text-xs text-muted-foreground mt-1">Select a specific track or leave as "No Track"</p>
                 </div>
                 <div className="flex items-end">
                   <button
@@ -2166,12 +2166,12 @@ export default function StudentDashboardPage() {
               </div>
             </div>
             {/* Current Preferences List */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="bg-card border-border rounded-xl shadow-sm p-6">
+              <div className="bg-card border-border rounded-xl shadow-sm p-6">
                 <div className="flex justify-between items-center mb-6">
                   <div>
                     <h2 className="text-lg font-bold">Your Preferences</h2>
-                    <p className="text-sm text-gray-600 mt-1">{preferences.length} preference(s) added</p>
+                    <p className="text-sm text-muted-foreground mt-1">{preferences.length} preference(s) added</p>
                   </div>
                   {preferences.length > 0 && (
                     <span className={`px-3 py-1 rounded-full text-sm font-semibold ${submissionAttemptsLeft > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
@@ -2183,8 +2183,8 @@ export default function StudentDashboardPage() {
                 {preferences.length === 0 ? (
                   <div className="text-center py-12">
                     <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500 font-medium">No preferences added yet</p>
-                    <p className="text-gray-400 text-sm mt-1">Add your university preferences above</p>
+                    <p className="text-muted-foreground font-medium">No preferences added yet</p>
+                    <p className="text-muted-foreground text-sm mt-1">Add your university preferences above</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -2199,9 +2199,9 @@ export default function StudentDashboardPage() {
             {/* Confirmation Modal */}
             {showFinalSubmitConfirm && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-xl w-full max-w-md shadow-2xl">
+                <div className="bg-card border-border rounded-xl w-full max-w-md shadow-2xl">
                   <div className="p-6 border-b">
-                    <h3 className="text-xl font-bold text-gray-900">Confirm Submission</h3>
+                    <h3 className="text-xl font-bold text-foreground">Confirm Submission</h3>
                   </div>
                   <div className="p-6">
                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
@@ -2210,25 +2210,25 @@ export default function StudentDashboardPage() {
                         This action cannot be undone
                       </p>
                     </div>
-                    <p className="text-gray-700 mb-4">
+                    <p className="text-muted-foreground mb-4">
                       You are about to submit your final preference list of <span className="font-bold">{preferences.length}</span> preference(s).
                     </p>
-                    <p className="text-gray-600 text-sm mb-6">
+                    <p className="text-muted-foreground text-sm mb-6">
                       After submission, you will have <span className="font-bold">{Math.max(0, submissionAttemptsLeft - 1)}</span> attempt(s) remaining.
                     </p>
-                    <div className="space-y-2 max-h-48 overflow-y-auto mb-6 p-4 bg-gray-50 rounded-lg">
+                    <div className="space-y-2 max-h-48 overflow-y-auto mb-6 p-4 bg-muted/30 rounded-lg">
                       {preferences.sort((a, b) => a.rank - b.rank).map((pref, index) => (
                         <div key={pref.id} className="flex gap-2 text-sm">
                           <span className="font-bold text-blue-600 w-6">{index + 1}.</span>
-                          <span className="text-gray-700">{pref.universityName} - {pref.programName}</span>
+                          <span className="text-muted-foreground">{pref.universityName} - {pref.programName}</span>
                         </div>
                       ))}
                     </div>
                   </div>
-                  <div className="flex justify-end gap-3 p-6 border-t bg-gray-50 rounded-b-xl">
+                  <div className="flex justify-end gap-3 p-6 border-t bg-muted/30 rounded-b-xl">
                     <button
                       onClick={() => setShowFinalSubmitConfirm(false)}
-                      className="px-4 py-2 border border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-100 transition"
+                      className="px-4 py-2 border border-border rounded-lg font-semibold text-muted-foreground hover:bg-gray-100 transition"
                     >
                       Cancel
                     </button>
@@ -2249,14 +2249,14 @@ export default function StudentDashboardPage() {
         {activeTab === 'appeal' && (
           <div>
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">My Appeals Portal</h1>
-              <p className="text-gray-600 mt-1">Submit and track your appeals directly with the Ministry of Education or specific Universities</p>
+              <h1 className="text-3xl font-bold text-foreground">My Appeals Portal</h1>
+              <p className="text-muted-foreground mt-1">Submit and track your appeals directly with the Ministry of Education or specific Universities</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Appeals List */}
               <div className="lg:col-span-2 space-y-4">
-                <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="bg-card border-border rounded-xl shadow-sm p-6">
                   {/* Category sub-tabs */}
                   <div className="flex border-b border-gray-150 mb-6">
                     <button
@@ -2264,7 +2264,7 @@ export default function StudentDashboardPage() {
                       className={`pb-4 px-6 text-sm font-bold transition-all relative ${
                         appealSubTab === 'MOE'
                           ? 'text-purple-600 border-b-2 border-purple-600'
-                          : 'text-gray-500 hover:text-gray-800'
+                          : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
                       Ministry of Education ({appeals.filter(a => a.target === 'MOE').length})
@@ -2274,7 +2274,7 @@ export default function StudentDashboardPage() {
                       className={`pb-4 px-6 text-sm font-bold transition-all relative ${
                         appealSubTab === 'UNIVERSITY'
                           ? 'text-blue-600 border-b-2 border-blue-600'
-                          : 'text-gray-500 hover:text-gray-800'
+                          : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
                       University Appeals ({appeals.filter(a => a.target === 'UNIVERSITY').length})
@@ -2285,7 +2285,7 @@ export default function StudentDashboardPage() {
                     <h2 className="text-lg font-bold">
                       {appealSubTab === 'MOE' ? 'MoE Appeals' : 'University Appeals'} History
                     </h2>
-                    <span className="text-xs font-medium text-gray-500">
+                    <span className="text-xs font-medium text-muted-foreground">
                       {appeals.filter(a => appealSubTab === 'MOE' ? a.target === 'MOE' : a.target === 'UNIVERSITY').length} Total
                     </span>
                   </div>
@@ -2293,8 +2293,8 @@ export default function StudentDashboardPage() {
                   {appeals.filter(a => appealSubTab === 'MOE' ? a.target === 'MOE' : a.target === 'UNIVERSITY').length === 0 ? (
                     <div className="text-center py-12">
                       <MessageCircle className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-                      <p className="text-gray-500 font-medium">No appeals in this category yet</p>
-                      <p className="text-xs text-gray-400 mt-1">Need help? File a new appeal using the form on the right.</p>
+                      <p className="text-muted-foreground font-medium">No appeals in this category yet</p>
+                      <p className="text-xs text-muted-foreground mt-1">Need help? File a new appeal using the form on the right.</p>
                     </div>
                   ) : (
                     <div className="space-y-4">
@@ -2303,7 +2303,7 @@ export default function StudentDashboardPage() {
                         .map(ap => {
                           const isMoe = ap.target === 'MOE';
                           return (
-                            <div key={ap.id} className="p-5 border rounded-2xl hover:shadow-md transition-all duration-300 group border-gray-100 hover:border-orange-200">
+                            <div key={ap.id} className="p-5 border rounded-2xl hover:shadow-md transition-all duration-300 group border-border hover:border-orange-200">
                               <div className="flex items-start justify-between mb-4">
                                 <div>
                                   <div className="flex items-center gap-2 mb-1">
@@ -2312,19 +2312,19 @@ export default function StudentDashboardPage() {
                                     }`}>
                                       #{ap.id} • {ap.type}
                                     </span>
-                                    <span className="text-[10px] text-gray-400 font-medium">
+                                    <span className="text-[10px] text-muted-foreground font-medium">
                                       {new Date(ap.createdAt).toLocaleString()}
                                     </span>
                                   </div>
                                   {ap.preference && (
-                                    <p className="text-sm font-bold text-gray-800">
+                                    <p className="text-sm font-bold text-foreground">
                                       Target: {ap.preference.university?.name || 'N/A'}
                                       <span className="mx-2 text-gray-300">|</span>
-                                      <span className="text-gray-500 font-medium">{ap.preference.program?.name || 'General Appeal'}</span>
+                                      <span className="text-muted-foreground font-medium">{ap.preference.program?.name || 'General Appeal'}</span>
                                     </p>
                                   )}
                                   {!ap.preference && ap.university?.name && (
-                                    <p className="text-sm font-bold text-gray-800">
+                                    <p className="text-sm font-bold text-foreground">
                                       Target University: <span className="text-blue-600 font-semibold">{ap.university.name}</span>
                                     </p>
                                   )}
@@ -2337,7 +2337,7 @@ export default function StudentDashboardPage() {
                                   {ap.status}
                                 </span>
                               </div>
-                              <p className="text-gray-600 text-sm italic bg-gray-50 p-3 rounded-xl border border-gray-100">
+                              <p className="text-muted-foreground text-sm italic bg-muted/30 p-3 rounded-xl border border-border">
                                 "{ap.description}"
                               </p>
 
@@ -2389,12 +2389,12 @@ export default function StudentDashboardPage() {
                   </p>
                 </div>
 
-                <div className="bg-white rounded-3xl shadow-sm p-8 border border-gray-100">
+                <div className="bg-card border-border rounded-3xl shadow-sm p-8 border border-border">
                   <div className="space-y-6">
                     <div>
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 block mb-3">Submit Appeal To</label>
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground block mb-3">Submit Appeal To</label>
                       <select
-                        className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold focus:ring-2 focus:ring-orange-500 transition-all appearance-none cursor-pointer"
+                        className="w-full bg-muted/30 border-none rounded-2xl px-5 py-4 text-sm font-bold focus:ring-2 focus:ring-orange-500 transition-all appearance-none cursor-pointer"
                         value={appealForm.target || 'MOE'}
                         onChange={e => {
                           const val = e.target.value;
@@ -2412,9 +2412,9 @@ export default function StudentDashboardPage() {
 
                     {appealForm.target === 'UNIVERSITY' && (
                       <div>
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 block mb-3">Select Target University</label>
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground block mb-3">Select Target University</label>
                         <select
-                          className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold focus:ring-2 focus:ring-orange-500 transition-all appearance-none cursor-pointer"
+                          className="w-full bg-muted/30 border-none rounded-2xl px-5 py-4 text-sm font-bold focus:ring-2 focus:ring-orange-500 transition-all appearance-none cursor-pointer"
                           value={appealForm.universityId}
                           onChange={e => setAppealForm({ ...appealForm, universityId: e.target.value })}
                         >
@@ -2427,9 +2427,9 @@ export default function StudentDashboardPage() {
                     )}
 
                     <div>
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 block mb-3">Appeal Type</label>
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground block mb-3">Appeal Type</label>
                       <select
-                        className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold focus:ring-2 focus:ring-orange-500 transition-all appearance-none cursor-pointer"
+                        className="w-full bg-muted/30 border-none rounded-2xl px-5 py-4 text-sm font-bold focus:ring-2 focus:ring-orange-500 transition-all appearance-none cursor-pointer"
                         value={appealForm.type || 'placement'}
                         onChange={e => setAppealForm({ ...appealForm, type: e.target.value })}
                       >
@@ -2441,9 +2441,9 @@ export default function StudentDashboardPage() {
                     </div>
 
                     <div>
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 block mb-3">Related Preference</label>
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground block mb-3">Related Preference</label>
                       <select
-                        className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold focus:ring-2 focus:ring-orange-500 transition-all appearance-none cursor-pointer"
+                        className="w-full bg-muted/30 border-none rounded-2xl px-5 py-4 text-sm font-bold focus:ring-2 focus:ring-orange-500 transition-all appearance-none cursor-pointer"
                         value={appealForm.preferenceId || ''}
                         onChange={e => setAppealForm({ ...appealForm, preferenceId: e.target.value })}
                       >
@@ -2457,9 +2457,9 @@ export default function StudentDashboardPage() {
                     </div>
 
                     <div>
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 block mb-3">Description</label>
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground block mb-3">Description</label>
                       <textarea
-                        className="w-full bg-gray-50 border-none rounded-2xl p-5 text-sm font-medium focus:ring-2 focus:ring-orange-500 resize-none min-h-[160px]"
+                        className="w-full bg-muted/30 border-none rounded-2xl p-5 text-sm font-medium focus:ring-2 focus:ring-orange-500 resize-none min-h-[160px]"
                         placeholder="Explain your case in detail..."
                         value={appealForm.description || ''}
                         onChange={e => setAppealForm({ ...appealForm, description: e.target.value })}
@@ -2469,7 +2469,7 @@ export default function StudentDashboardPage() {
                     <button
                       onClick={submitAppeal}
                       disabled={!appealForm.description || (appealForm.target === 'UNIVERSITY' && !appealForm.universityId)}
-                      className="w-full bg-orange-600 hover:bg-orange-700 disabled:bg-gray-200 disabled:text-gray-400 text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs transition-all active:scale-95 shadow-lg shadow-orange-600/20"
+                      className="w-full bg-orange-600 hover:bg-orange-700 disabled:bg-gray-200 disabled:text-muted-foreground text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs transition-all active:scale-95 shadow-lg shadow-orange-600/20"
                     >
                       {appealForm.target === 'UNIVERSITY' 
                         ? `Submit Appeal to ${preferences.find(p => String(p.universityId) === appealForm.universityId)?.universityName || 'University'}` 
@@ -2486,12 +2486,12 @@ export default function StudentDashboardPage() {
         {activeTab === 'my-placements' && (
           <div>
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">📋 My Placement Offers</h1>
-              <p className="text-gray-600 mt-1">Official placement results from the Ministry of Education</p>
+              <h1 className="text-3xl font-bold text-foreground">📋 My Placement Offers</h1>
+              <p className="text-muted-foreground mt-1">Official placement results from the Ministry of Education</p>
             </div>
 
             {placement ? (
-              <div className="bg-white rounded-2xl shadow-xl border-2 border-blue-500 overflow-hidden animate-in fade-in zoom-in duration-500">
+              <div className="bg-card border-border rounded-2xl shadow-xl border-2 border-blue-500 overflow-hidden animate-in fade-in zoom-in duration-500">
                 <div className="bg-blue-600 p-6 text-white flex justify-between items-center">
                   <div className="flex items-center gap-3">
                     <Award className="w-8 h-8" />
@@ -2509,21 +2509,21 @@ export default function StudentDashboardPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                     <div>
                       <div className="mb-6">
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">Assigned University</p>
-                        <h3 className="text-3xl font-black text-gray-900 tracking-tight">{placement.universityName}</h3>
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-2">Assigned University</p>
+                        <h3 className="text-3xl font-black text-foreground tracking-tight">{placement.universityName}</h3>
                       </div>
 
                       <div className="mb-8">
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">Assigned Program</p>
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-2">Assigned Program</p>
                         <h4 className="text-xl font-bold text-blue-700">{placement.programName}</h4>
                       </div>
 
                       <div className="flex flex-col gap-3">
-                        <div className="flex items-center gap-3 text-sm text-gray-600 bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                        <div className="flex items-center gap-3 text-sm text-muted-foreground bg-muted/30 p-4 rounded-2xl border border-border">
                           <Calendar className="w-4 h-4 text-blue-500" />
                           <span>Decision Date: {new Date(placement.decisionDate).toLocaleDateString()}</span>
                         </div>
-                        <div className="flex items-center gap-3 text-sm text-gray-600 bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                        <div className="flex items-center gap-3 text-sm text-muted-foreground bg-muted/30 p-4 rounded-2xl border border-border">
                           <Clock className="w-4 h-4 text-orange-500" />
                           <span>Confirmation Deadline: {new Date(placement.confirmationDeadline).toLocaleDateString()}</span>
                         </div>
@@ -2538,7 +2538,7 @@ export default function StudentDashboardPage() {
                           </div>
                           <h4 className="text-2xl font-black text-green-700 mb-2">Offer Confirmed!</h4>
                           <p className="text-green-600 text-sm font-medium">Confirmed on {new Date(placement.confirmedAt).toLocaleString()}</p>
-                          <button className="mt-8 px-6 py-2 bg-white text-green-700 rounded-full text-xs font-black uppercase tracking-widest border border-green-200 shadow-sm">
+                          <button className="mt-8 px-6 py-2 bg-card border-border text-green-700 rounded-full text-xs font-black uppercase tracking-widest border border-green-200 shadow-sm">
                             Download Certificate
                           </button>
                         </div>
@@ -2564,12 +2564,12 @@ export default function StudentDashboardPage() {
                 </div>
               </div>
             ) : (
-              <div className="bg-white rounded-[40px] shadow-sm p-24 text-center border-2 border-dashed border-gray-100">
-                <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center text-gray-200 mx-auto mb-8">
+              <div className="bg-card border-border rounded-[40px] shadow-sm p-24 text-center border-2 border-dashed border-border">
+                <div className="w-24 h-24 bg-muted/30 rounded-full flex items-center justify-center text-gray-200 mx-auto mb-8">
                   <Award size={48} />
                 </div>
                 <h2 className="text-2xl font-black text-gray-300 mb-3 tracking-tight">No Placement Result Yet</h2>
-                <p className="text-gray-400 max-w-sm mx-auto leading-relaxed text-sm font-medium">
+                <p className="text-muted-foreground max-w-sm mx-auto leading-relaxed text-sm font-medium">
                   The Ministry of Education has not yet published the official placement results. We'll notify you as soon as they're available!
                 </p>
               </div>
@@ -2581,11 +2581,11 @@ export default function StudentDashboardPage() {
         {activeTab === 'notifications' && (
           <div>
             <h1 className="text-2xl font-bold mb-6">Notifications</h1>
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="bg-card border-border rounded-xl shadow-sm p-6">
               {notifications.map(n => (
                 <div key={n.id} className={`p-4 border-b ${!n.read ? 'bg-blue-50' : ''}`}>
-                  <div className="flex justify-between"><h3 className="font-semibold">{n.title}</h3><span className="text-xs text-gray-400">{new Date(n.createdAt).toLocaleString()}</span></div>
-                  <p className="text-gray-600 mt-1">{n.message}</p>
+                  <div className="flex justify-between"><h3 className="font-semibold">{n.title}</h3><span className="text-xs text-muted-foreground">{new Date(n.createdAt).toLocaleString()}</span></div>
+                  <p className="text-muted-foreground mt-1">{n.message}</p>
                 </div>
               ))}
             </div>
@@ -2596,7 +2596,7 @@ export default function StudentDashboardPage() {
         {activeTab === 'settings' && (
           <div>
             <h1 className="text-2xl font-bold mb-6">Settings</h1>
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="bg-card border-border rounded-xl shadow-sm p-6">
               <h2 className="font-semibold mb-4">Account Security</h2>
               <button className="w-full text-left p-3 border rounded mb-2">Change Password</button>
               <button className="w-full text-left p-3 border rounded mb-2">Manage Recovery Contacts</button>
@@ -2608,7 +2608,7 @@ export default function StudentDashboardPage() {
         <button
           key="my-placements"
           onClick={() => router.push('/student/placements')}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-muted-foreground hover:bg-blue-50 hover:text-blue-600"
         >
           <Award className="w-5 h-5" />
           <span>My Placement Offers</span>
@@ -2617,10 +2617,10 @@ export default function StudentDashboardPage() {
       {/* Edit Program/Track Modal */}
       {editingPref && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md">
+          <div className="bg-card border-border rounded-xl shadow-2xl w-full max-w-md">
             <div className="p-6 border-b">
-              <h3 className="text-xl font-bold text-gray-900">Edit Program & Track</h3>
-              <p className="text-sm text-gray-500 mt-1">
+              <h3 className="text-xl font-bold text-foreground">Edit Program & Track</h3>
+              <p className="text-sm text-muted-foreground mt-1">
                 {editingPref.universityName}
               </p>
             </div>
@@ -2628,11 +2628,11 @@ export default function StudentDashboardPage() {
             <div className="p-6 space-y-4">
               {/* Program Selection */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-muted-foreground mb-2">
                   Program
                 </label>
                 <select
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={editingPref.programId}
                   onChange={async (e) => {
                     const newProgramId = parseInt(e.target.value);
@@ -2666,11 +2666,11 @@ export default function StudentDashboardPage() {
 
               {/* Track Selection */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-muted-foreground mb-2">
                   Admission Track
                 </label>
                 <select
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full border border-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   value={editingPref.trackId}
                   onChange={(e) => setEditingPref({ ...editingPref, trackId: parseInt(e.target.value) })}
                   disabled={!editingPref.programId}
@@ -2683,7 +2683,7 @@ export default function StudentDashboardPage() {
                   ))}
                 </select>
                 {!editingPref.programId && (
-                  <p className="text-xs text-gray-500 mt-1">Please select a program first</p>
+                  <p className="text-xs text-muted-foreground mt-1">Please select a program first</p>
                 )}
               </div>
 
@@ -2696,14 +2696,14 @@ export default function StudentDashboardPage() {
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 p-6 border-t bg-gray-50 rounded-b-xl">
+            <div className="flex justify-end gap-3 p-6 border-t bg-muted/30 rounded-b-xl">
               <button
                 onClick={() => {
                   setEditingPref(null);
                   setAvailablePrograms([]);
                   setAvailableTracks([]);
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-100 transition"
+                className="px-4 py-2 border border-border rounded-lg font-semibold text-muted-foreground hover:bg-gray-100 transition"
               >
                 Cancel
               </button>
@@ -2734,13 +2734,13 @@ export default function StudentDashboardPage() {
       {/* General Documents Modal */}
       {showGeneralDocModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[80vh] overflow-auto">
-            <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
+          <div className="bg-card border-border rounded-xl shadow-2xl w-full max-w-lg max-h-[80vh] overflow-auto">
+            <div className="sticky top-0 bg-card border-border border-b p-4 flex justify-between items-center">
               <div>
-                <h3 className="text-xl font-bold text-gray-900">General Documents</h3>
-                <p className="text-sm text-gray-500">(For all universities)</p>
+                <h3 className="text-xl font-bold text-foreground">General Documents</h3>
+                <p className="text-sm text-muted-foreground">(For all universities)</p>
               </div>
-              <button onClick={() => setShowGeneralDocModal(false)} className="text-gray-500 hover:text-gray-700">
+              <button onClick={() => setShowGeneralDocModal(false)} className="text-muted-foreground hover:text-muted-foreground">
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -2767,7 +2767,7 @@ export default function StudentDashboardPage() {
                 </div>
               </div>
               {generalDocuments.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-muted-foreground">
                   <FileText className="w-12 h-12 text-gray-300 mx-auto mb-2" />
                   <p>No general documents uploaded</p>
                 </div>
@@ -2776,10 +2776,10 @@ export default function StudentDashboardPage() {
                   {generalDocuments.map(doc => (
                     <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex items-center gap-3 flex-1">
-                        <FileText className="w-5 h-5 text-gray-400" />
+                        <FileText className="w-5 h-5 text-muted-foreground" />
                         <div>
                           <p className="font-medium text-sm">{doc.fileName}</p>
-                          <p className="text-xs text-gray-500">Type: {doc.type} | Uploaded: {new Date(doc.uploadDate).toLocaleDateString()}</p>
+                          <p className="text-xs text-muted-foreground">Type: {doc.type} | Uploaded: {new Date(doc.uploadDate).toLocaleDateString()}</p>
                           <p className="text-xs">Status: {doc.verificationStatus === 'VERIFIED' ? '✅ Verified' : doc.verificationStatus === 'REJECTED' ? '❌ Rejected' : '⏳ Pending'}</p>
                         </div>
                       </div>
@@ -2798,14 +2798,14 @@ export default function StudentDashboardPage() {
       {/* University-Specific Documents Modal */}
       {showUniversityDocModal && selectedUniversityForDocs && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[80vh] overflow-auto">
-            <div className="sticky top-0 bg-white border-b p-4">
+          <div className="bg-card border-border rounded-xl shadow-2xl w-full max-w-lg max-h-[80vh] overflow-auto">
+            <div className="sticky top-0 bg-card border-border border-b p-4">
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">Documents for {selectedUniversityForDocs.universityName}</h3>
-                  <p className="text-sm text-gray-500">(Specific to this university)</p>
+                  <h3 className="text-xl font-bold text-foreground">Documents for {selectedUniversityForDocs.universityName}</h3>
+                  <p className="text-sm text-muted-foreground">(Specific to this university)</p>
                 </div>
-                <button onClick={() => setShowUniversityDocModal(false)} className="text-gray-500 hover:text-gray-700">
+                <button onClick={() => setShowUniversityDocModal(false)} className="text-muted-foreground hover:text-muted-foreground">
                   <X className="w-6 h-6" />
                 </button>
               </div>
@@ -2838,7 +2838,7 @@ export default function StudentDashboardPage() {
                 </div>
               </div>
               {universityDocuments.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-muted-foreground">
                   <FileText className="w-12 h-12 text-gray-300 mx-auto mb-2" />
                   <p>No documents uploaded for this university yet</p>
                 </div>
@@ -2847,10 +2847,10 @@ export default function StudentDashboardPage() {
                   {universityDocuments.map(doc => (
                     <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex items-center gap-3 flex-1">
-                        <FileText className="w-5 h-5 text-gray-400" />
+                        <FileText className="w-5 h-5 text-muted-foreground" />
                         <div>
                           <p className="font-medium text-sm">{doc.fileName}</p>
-                          <p className="text-xs text-gray-500">Type: {doc.type} | Uploaded: {new Date(doc.uploadDate).toLocaleDateString()}</p>
+                          <p className="text-xs text-muted-foreground">Type: {doc.type} | Uploaded: {new Date(doc.uploadDate).toLocaleDateString()}</p>
                           <p className="text-xs">Status: {doc.verificationStatus === 'VERIFIED' ? '✅ Verified' : doc.verificationStatus === 'REJECTED' ? '❌ Rejected' : '⏳ Pending'}</p>
                         </div>
                       </div>

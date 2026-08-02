@@ -117,8 +117,8 @@ export default function StudentApplicationsPage() {
       </div>
 
       {applications.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-12 text-center border border-gray-200">
-          <p className="text-gray-600 mb-4">You have no applications yet.</p>
+        <div className="bg-card rounded-lg shadow p-12 text-center border border-border">
+          <p className="text-muted-foreground mb-4">You have no applications yet.</p>
           <a
             href="/student/apply"
             className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
@@ -129,11 +129,11 @@ export default function StudentApplicationsPage() {
       ) : (
         <div className="space-y-4">
           {applications.map((app) => (
-            <div key={app.id} className="bg-white rounded-lg shadow p-6 border border-gray-200">
+            <div key={app.id} className="bg-card rounded-lg shadow p-6 border border-border">
               <div className="flex justify-between items-start">
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">{app.universityName}</h3>
-                  <p className="text-xs text-gray-400 mt-2">
+                  <h3 className="text-lg font-bold text-foreground">{app.universityName}</h3>
+                  <p className="text-xs text-muted-foreground mt-2">
                     Applied: {formatDate(app.submittedAt)}
                   </p>
                 </div>

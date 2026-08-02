@@ -103,11 +103,11 @@ export default function PlatformStudentsPage() {
         )}
 
         {/* Search and Filter */}
-        <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+        <div className="bg-card rounded-lg shadow p-6 border border-border">
           <form onSubmit={handleSearch} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-muted-foreground mb-2">
                   Search by Exam ID, Name, or Email
                 </label>
                 <Input
@@ -117,7 +117,7 @@ export default function PlatformStudentsPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-muted-foreground mb-2">
                   Filter by Stream
                 </label>
                 <select
@@ -126,7 +126,7 @@ export default function PlatformStudentsPage() {
                     setStream(e.target.value);
                     setPage(1);
                   }}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                 >
                   <option value="">All Streams</option>
                   <option value="Natural Science">Natural Science</option>
@@ -163,7 +163,7 @@ export default function PlatformStudentsPage() {
             >
               Previous
             </Button>
-            <span className="px-4 py-2 text-gray-600">
+            <span className="px-4 py-2 text-muted-foreground">
               Page {page} of {Math.ceil(total / 10)}
             </span>
             <Button

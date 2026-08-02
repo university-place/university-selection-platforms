@@ -260,14 +260,14 @@ export default function PlatformSettingsPage() {
         )}
 
         {/* ── Academic Year Management ── */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+        <div className="bg-card rounded-2xl shadow-sm border border-border p-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-blue-100 p-3 rounded-xl">
               <Calendar className="w-6 h-6 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Academic Year Management</h2>
-              <p className="text-sm text-gray-500">Activate an academic year to make it the current working year</p>
+              <h2 className="text-xl font-bold text-foreground">Academic Year Management</h2>
+              <p className="text-sm text-muted-foreground">Activate an academic year to make it the current working year</p>
             </div>
           </div>
 
@@ -278,7 +278,7 @@ export default function PlatformSettingsPage() {
               value={newYear}
               onChange={e => setNewYear(e.target.value)}
               placeholder="e.g. 2025, 2025/2026"
-              className="flex-1 border-2 border-gray-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+              className="flex-1 border-2 border-border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
             />
             <button
               onClick={handleAddYear}
@@ -295,7 +295,7 @@ export default function PlatformSettingsPage() {
               <div className="animate-spin rounded-full h-8 w-8 border-4 border-orange-500/20 border-t-orange-500" />
             </div>
           ) : years.length === 0 ? (
-            <div className="text-center py-8 text-gray-400">
+            <div className="text-center py-8 text-muted-foreground">
               <Calendar className="w-12 h-12 mx-auto mb-3 opacity-30" />
               <p>No academic years found. Add one above.</p>
             </div>
@@ -303,16 +303,16 @@ export default function PlatformSettingsPage() {
             <div className="space-y-3">
               {years.map(year => (
                 <div key={year.id} className={`flex items-center justify-between p-4 rounded-xl border-2 transition ${
-                  year.isActive ? 'border-green-500 bg-green-50' : 'border-gray-100 bg-gray-50'
+                  year.isActive ? 'border-green-500 bg-green-50' : 'border-border bg-gray-50'
                 }`}>
                   <div className="flex items-center gap-3">
                     {year.isActive
                       ? <CheckCircle className="w-5 h-5 text-green-600" />
-                      : <Clock className="w-5 h-5 text-gray-400" />
+                      : <Clock className="w-5 h-5 text-muted-foreground" />
                     }
                     <div>
-                      <p className="font-bold text-gray-900 text-lg">{year.year}</p>
-                      <p className="text-xs text-gray-500">{year.studentCount} students enrolled</p>
+                      <p className="font-bold text-foreground text-lg">{year.year}</p>
+                      <p className="text-xs text-muted-foreground">{year.studentCount} students enrolled</p>
                     </div>
                     {year.isActive && (
                       <span className="ml-3 px-3 py-1 bg-green-600 text-white text-xs font-bold rounded-full">
@@ -344,26 +344,26 @@ export default function PlatformSettingsPage() {
         </div>
 
         {/* ── System Config ── */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+        <div className="bg-card rounded-2xl shadow-sm border border-border p-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-orange-100 p-3 rounded-xl">
               <Settings className="w-6 h-6 text-orange-600" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900">System Configuration</h2>
-              <p className="text-sm text-gray-500">Control platform-wide behavioral limits</p>
+              <h2 className="text-xl font-bold text-foreground">System Configuration</h2>
+              <p className="text-sm text-muted-foreground">Control platform-wide behavioral limits</p>
             </div>
           </div>
 
-          <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
-            <label className="block text-sm font-bold text-gray-800 mb-2">Max Submission Attempts per Student</label>
+          <div className="p-5 bg-gray-50 rounded-xl border border-border">
+            <label className="block text-sm font-bold text-foreground mb-2">Max Submission Attempts per Student</label>
             <div className="flex gap-3">
               <input
                 type="number"
                 min="1"
                 value={maxAttempts}
                 onChange={e => setMaxAttempts(parseInt(e.target.value) || 1)}
-                className="w-32 border-2 border-gray-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-32 border-2 border-border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
               <button
                 onClick={handleSaveMaxAttempts}
@@ -374,51 +374,51 @@ export default function PlatformSettingsPage() {
                 {saving ? 'Saving...' : 'Save'}
               </button>
             </div>
-            <p className="text-xs text-gray-500 mt-2">Number of times a student can submit per university preference</p>
+            <p className="text-xs text-muted-foreground mt-2">Number of times a student can submit per university preference</p>
           </div>
         </div>
 
         {/* ── Change Password ── */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+        <div className="bg-card rounded-2xl shadow-sm border border-border p-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-indigo-100 p-3 rounded-xl">
               <Lock className="w-6 h-6 text-indigo-600" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Change Password</h2>
-              <p className="text-sm text-gray-500">Update your Platform Admin account credentials</p>
+              <h2 className="text-xl font-bold text-foreground">Change Password</h2>
+              <p className="text-sm text-muted-foreground">Update your Platform Admin account credentials</p>
             </div>
           </div>
 
           <form onSubmit={handleChangePassword} className="space-y-4 max-w-md">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Current Password</label>
+              <label className="block text-sm font-bold text-muted-foreground mb-1">Current Password</label>
               <input
                 type="password"
                 value={passwordForm.currentPassword}
                 onChange={e => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
-                className="w-full border-2 border-gray-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full border-2 border-border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">New Password</label>
+              <label className="block text-sm font-bold text-muted-foreground mb-1">New Password</label>
               <input
                 type="password"
                 value={passwordForm.newPassword}
                 onChange={e => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
-                className="w-full border-2 border-gray-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full border-2 border-border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 required
                 minLength={6}
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Confirm New Password</label>
+              <label className="block text-sm font-bold text-muted-foreground mb-1">Confirm New Password</label>
               <input
                 type="password"
                 value={passwordForm.confirmPassword}
                 onChange={e => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
-                className="w-full border-2 border-gray-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full border-2 border-border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 required
                 minLength={6}
               />

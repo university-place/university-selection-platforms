@@ -11,10 +11,14 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 import { apiClient } from '@/lib/api';
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const { login } = useAuth();
+  const { isDarkMode } = useTheme();
   const [formData, setFormData] = useState({
     examID: '',
     firstName: '',
@@ -143,18 +147,18 @@ export default function RegisterScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, isDarkMode && { backgroundColor: '#111' }]}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>Register Student</Text>
-          <Text style={styles.subtitle}>Ethiopian University Selection Platform</Text>
+          <Text style={[styles.title, isDarkMode && { color: '#fff' }]}>Register Student</Text>
+          <Text style={[styles.subtitle, isDarkMode && { color: '#aaa' }]}>Ethiopian University Selection Platform</Text>
         </View>
 
 
 
         {/* Form Section */}
-        <View style={styles.formCard}>
+        <View style={[styles.formCard, isDarkMode && { backgroundColor: '#222' }]}>
           {apiError ? (
             <View style={styles.globalErrorContainer}>
               <Text style={styles.globalErrorText}>{apiError}</Text>

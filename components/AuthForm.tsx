@@ -99,12 +99,12 @@ export function AuthForm({
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col items-center justify-center p-4 relative overflow-hidden select-none">
+    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 relative overflow-hidden select-none">
       {/* Background gradients */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-500/10 blur-[120px]" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-violet-500/10 blur-[120px]" />
 
-      <div className="w-full max-w-md bg-slate-800/50 border border-slate-700/50 backdrop-blur-xl rounded-3xl p-8 shadow-2xl relative z-10 animate-in fade-in zoom-in duration-300">
+      <div className="w-full max-w-md bg-card/50 border border-border/50 backdrop-blur-xl rounded-3xl p-8 shadow-2xl relative z-10 animate-in fade-in zoom-in duration-300">
         <div className="flex flex-col items-center text-center mb-8">
           <div className="w-14 h-14 bg-gradient-to-tr from-blue-500 to-violet-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20 mb-4 animate-bounce">
             <HeaderIcon className="w-6 h-6 text-white" />
@@ -113,7 +113,7 @@ export function AuthForm({
             {title}
           </h1>
           {description && (
-            <p className="text-slate-400 text-sm mt-2">
+            <p className="text-muted-foreground text-sm mt-2">
               {description}
             </p>
           )}
@@ -136,7 +136,7 @@ export function AuthForm({
         <form onSubmit={handleSubmit} className="space-y-5">
           {fields.map((field) => (
             <div key={field.name} className="space-y-2">
-              <label htmlFor={field.name} className="block text-xs font-black uppercase tracking-wider text-slate-400">
+              <label htmlFor={field.name} className="block text-xs font-black uppercase tracking-wider text-muted-foreground">
                 {field.label}
               </label>
               <div className="relative">
@@ -149,13 +149,13 @@ export function AuthForm({
                   onChange={handleChange}
                   required={field.required !== false}
                   disabled={isSubmitting || loading}
-                  className="w-full bg-slate-900/60 border border-slate-700 focus:border-blue-500 rounded-2xl px-4 py-3.5 text-sm font-semibold outline-none transition text-slate-100 placeholder-slate-500"
+                  className="w-full bg-background/60 border border-input focus:border-primary rounded-2xl px-4 py-3.5 text-sm font-semibold outline-none transition text-foreground placeholder:text-muted-foreground"
                 />
                 {field.type === 'password' && (
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility(field.name)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition focus:outline-none"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition focus:outline-none"
                   >
                     {showPassword[field.name] ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
@@ -188,7 +188,7 @@ export function AuthForm({
         </form>
 
         {footerText && footerLink && (
-          <p className="mt-6 text-center text-slate-400 text-sm font-bold">
+          <p className="mt-6 text-center text-muted-foreground text-sm font-bold">
             {footerText}{' '}
             <a href={footerLink.href} className="text-blue-400 hover:underline underline-offset-4 decoration-2 transition-all">
               {footerLink.text}

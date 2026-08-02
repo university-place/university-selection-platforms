@@ -48,26 +48,26 @@ export default function MOEStudentDetailPage() {
   return (
     <MOEDashboardLayout title="MOE Admin Dashboard" navLinks={NAV_LINKS} theme="purple">
       <div className="space-y-6">
-        {loading && <div className="bg-white rounded-lg p-6">Loading...</div>}
+        {loading && <div className="bg-card rounded-lg p-6">Loading...</div>}
         {error && <div className="bg-red-50 text-red-700 rounded-lg p-4">{error}</div>}
 
         {student && (
           <>
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="bg-card rounded-lg shadow-sm p-6">
               <h2 className="text-2xl font-bold">{student.fullName}</h2>
-              <p className="text-gray-600 mt-1">Exam ID: {student.examID}</p>
-              <p className="text-gray-600 mt-1">
+              <p className="text-muted-foreground mt-1">Exam ID: {student.examID}</p>
+              <p className="text-muted-foreground mt-1">
                 Email: {student.email || 'N/A'} · Phone: {student.phone || 'N/A'} · Region: {student.region || 'N/A'}
               </p>
-              <p className="text-gray-600 mt-1">
+              <p className="text-muted-foreground mt-1">
                 Stream: {student.stream || 'N/A'} · Age: {student.age || 'N/A'} · Disability: {student.disability || 'None'}
               </p>
-              <p className="text-gray-600 mt-1">
+              <p className="text-muted-foreground mt-1">
                 Total Score: {student.totalScore || 'N/A'} · Placement Status: {student.placementStatus}
               </p>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="bg-card rounded-lg shadow-sm overflow-hidden">
               <div className="p-4 border-b"><h3 className="font-semibold">University Status Timeline</h3></div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -84,14 +84,14 @@ export default function MOEStudentDetailPage() {
                   </thead>
                   <tbody>
                     {(student.universityStatuses || []).length === 0 ? (
-                      <tr><td colSpan={7} className="px-4 py-6 text-gray-500">No university records</td></tr>
+                      <tr><td colSpan={7} className="px-4 py-6 text-muted-foreground">No university records</td></tr>
                     ) : (
                       (student.universityStatuses || []).map((u: any) => (
                         <tr key={u.preferenceId} className="border-t hover:bg-gray-50 transition-colors">
                           <td className="px-4 py-3 font-medium text-purple-700">{u.universityName || 'N/A'}</td>
                           <td className="px-4 py-3">{u.programName || 'N/A'}</td>
                           <td className="px-4 py-3">
-                            <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
+                            <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-muted-foreground">
                               {u.preferenceStatus || 'N/A'}
                             </span>
                           </td>
@@ -107,7 +107,7 @@ export default function MOEStudentDetailPage() {
                           </td>
                           <td className="px-4 py-3 text-xs">{u.invitationStatus || 'N/A'}</td>
                           <td className="px-4 py-3 text-xs">{u.confirmationStatus || 'N/A'}</td>
-                          <td className="px-4 py-3 text-xs text-gray-500">
+                          <td className="px-4 py-3 text-xs text-muted-foreground">
                             {u.timestamp ? new Date(u.timestamp).toLocaleString() : 'N/A'}
                           </td>
                         </tr>
@@ -118,7 +118,7 @@ export default function MOEStudentDetailPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="bg-card rounded-lg shadow-sm overflow-hidden">
               <div className="p-4 border-b"><h3 className="font-semibold">Invitations</h3></div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -133,7 +133,7 @@ export default function MOEStudentDetailPage() {
                   </thead>
                   <tbody>
                     {(student.invitations || []).length === 0 ? (
-                      <tr><td colSpan={5} className="px-4 py-6 text-gray-500">No invitations</td></tr>
+                      <tr><td colSpan={5} className="px-4 py-6 text-muted-foreground">No invitations</td></tr>
                     ) : (
                       (student.invitations || []).map((inv: any) => (
                         <tr key={inv.id} className="border-t">
@@ -150,7 +150,7 @@ export default function MOEStudentDetailPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="bg-card rounded-lg shadow-sm overflow-hidden">
               <div className="p-4 border-b"><h3 className="font-semibold">Documents (CSV/Profile Records)</h3></div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -164,7 +164,7 @@ export default function MOEStudentDetailPage() {
                   </thead>
                   <tbody>
                     {(student.documents || []).length === 0 ? (
-                      <tr><td colSpan={4} className="px-4 py-6 text-gray-500">No documents</td></tr>
+                      <tr><td colSpan={4} className="px-4 py-6 text-muted-foreground">No documents</td></tr>
                     ) : (
                       (student.documents || []).map((d: any) => (
                         <tr key={d.id} className="border-t">

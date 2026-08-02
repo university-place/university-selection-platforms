@@ -310,56 +310,56 @@ export default function DocumentEvaluationPage() {
 
         {/* Stats Blocks */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex items-center gap-4">
+          <div className="bg-card rounded-xl shadow-sm border border-border p-5 flex items-center gap-4">
             <div className="p-3 bg-green-50 text-green-600 rounded-xl">
               <Users className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase">Total Candidates</p>
-              <h3 className="text-xl font-black text-gray-900 mt-1">{stats.total}</h3>
+              <p className="text-xs font-semibold text-muted-foreground uppercase">Total Candidates</p>
+              <h3 className="text-xl font-black text-foreground mt-1">{stats.total}</h3>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex items-center gap-4">
+          <div className="bg-card rounded-xl shadow-sm border border-border p-5 flex items-center gap-4">
             <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
               <CheckCircle className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase">Evaluated / Graded</p>
-              <h3 className="text-xl font-black text-gray-900 mt-1">{stats.graded}</h3>
+              <p className="text-xs font-semibold text-muted-foreground uppercase">Evaluated / Graded</p>
+              <h3 className="text-xl font-black text-foreground mt-1">{stats.graded}</h3>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex items-center gap-4">
+          <div className="bg-card rounded-xl shadow-sm border border-border p-5 flex items-center gap-4">
             <div className="p-3 bg-yellow-50 text-yellow-600 rounded-xl">
               <AlertCircle className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase">Pending Evaluation</p>
-              <h3 className="text-xl font-black text-gray-900 mt-1">{stats.pending}</h3>
+              <p className="text-xs font-semibold text-muted-foreground uppercase">Pending Evaluation</p>
+              <h3 className="text-xl font-black text-foreground mt-1">{stats.pending}</h3>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex items-center gap-4">
+          <div className="bg-card rounded-xl shadow-sm border border-border p-5 flex items-center gap-4">
             <div className="p-3 bg-orange-50 text-orange-600 rounded-xl">
               <Percent className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase">Avg Document Score</p>
-              <h3 className="text-xl font-black text-gray-900 mt-1">{stats.avgScore}%</h3>
+              <p className="text-xs font-semibold text-muted-foreground uppercase">Avg Document Score</p>
+              <h3 className="text-xl font-black text-foreground mt-1">{stats.avgScore}%</h3>
             </div>
           </div>
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 space-y-4">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-4 space-y-4">
           <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
             {/* Search */}
             <div className="relative w-full xl:max-w-xs">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <input
                 type="text"
                 placeholder="Search candidate name or ID..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                className="w-full pl-9 pr-4 py-2 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-card"
               />
             </div>
 
@@ -368,19 +368,19 @@ export default function DocumentEvaluationPage() {
               <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl">
                 <button
                   onClick={() => setStreamFilter('all')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${streamFilter === 'all' ? 'bg-white shadow-sm text-green-700' : 'text-gray-600 hover:text-gray-900'}`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${streamFilter === 'all' ? 'bg-card shadow-sm text-green-700' : 'text-muted-foreground hover:text-foreground'}`}
                 >
                   All Streams
                 </button>
                 <button
                   onClick={() => setStreamFilter('Natural Science')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${streamFilter === 'Natural Science' ? 'bg-white shadow-sm text-green-700' : 'text-gray-600 hover:text-gray-900'}`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${streamFilter === 'Natural Science' ? 'bg-card shadow-sm text-green-700' : 'text-muted-foreground hover:text-foreground'}`}
                 >
                   Natural Science
                 </button>
                 <button
                   onClick={() => setStreamFilter('Social Science')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${streamFilter === 'Social Science' ? 'bg-white shadow-sm text-green-700' : 'text-gray-600 hover:text-gray-900'}`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${streamFilter === 'Social Science' ? 'bg-card shadow-sm text-green-700' : 'text-muted-foreground hover:text-foreground'}`}
                 >
                   Social Science
                 </button>
@@ -389,7 +389,7 @@ export default function DocumentEvaluationPage() {
               <select
                 value={genderFilter}
                 onChange={(e: any) => setGenderFilter(e.target.value)}
-                className="px-3 py-1.5 border border-gray-300 rounded-xl text-xs font-semibold bg-white"
+                className="px-3 py-1.5 border border-border rounded-xl text-xs font-semibold bg-card"
               >
                 <option value="all">All Genders</option>
                 <option value="Male">Male</option>
@@ -399,13 +399,13 @@ export default function DocumentEvaluationPage() {
           </div>
 
           {/* Advanced Score Filters & Clear All */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-3 border-t border-gray-100">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-3 border-t border-border">
             <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-              <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Score Status:</span>
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Score Status:</span>
               <select
                 value={scoreOperator}
                 onChange={(e: any) => setScoreOperator(e.target.value)}
-                className="px-3 py-1.5 border border-gray-300 rounded-xl text-xs font-semibold bg-white"
+                className="px-3 py-1.5 border border-border rounded-xl text-xs font-semibold bg-card"
               >
                 <option value="all">All Scores</option>
                 <option value="none">Unevaluated (No Score)</option>
@@ -423,7 +423,7 @@ export default function DocumentEvaluationPage() {
                   placeholder="Threshold score %"
                   value={scoreThreshold}
                   onChange={(e) => setScoreThreshold(e.target.value)}
-                  className="px-3 py-1.5 border border-gray-300 rounded-xl text-xs font-semibold bg-white w-32 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="px-3 py-1.5 border border-border rounded-xl text-xs font-semibold bg-card w-32 focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
               )}
             </div>
@@ -434,7 +434,7 @@ export default function DocumentEvaluationPage() {
 
         {/* Action Controls for Selection */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-          <div className="text-sm text-gray-500 font-semibold">
+          <div className="text-sm text-muted-foreground font-semibold">
             Showing {getFilteredCandidates().length} of {candidates.length} candidates
           </div>
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
@@ -464,7 +464,7 @@ export default function DocumentEvaluationPage() {
         )}
 
         {/* Table Container */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
           {loading ? (
             <div className="flex items-center justify-center min-h-[300px]">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
@@ -472,15 +472,15 @@ export default function DocumentEvaluationPage() {
           ) : getFilteredCandidates().length === 0 ? (
             <div className="text-center py-16">
               <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-500 font-semibold">No candidates match your filters.</p>
+              <p className="text-muted-foreground font-semibold">No candidates match your filters.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-left">
                 <thead>
-                  <tr className="bg-gray-50 border-b border-gray-200 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  <tr className="bg-gray-50 border-b border-border text-xs font-bold text-muted-foreground uppercase tracking-wider">
                     <th className="p-4 w-12 text-center">
-                      <button onClick={handleSelectAll} className="text-gray-500 hover:text-green-600">
+                      <button onClick={handleSelectAll} className="text-muted-foreground hover:text-green-600">
                         {getFilteredCandidates().every(c => c.selected) ? (
                           <CheckSquare className="w-5 h-5 text-green-600" />
                         ) : (
@@ -493,13 +493,13 @@ export default function DocumentEvaluationPage() {
                     <th className="p-4">Target Program</th>
                     <th className="p-4">Uploaded Documents</th>
                     <th className="p-4 text-center cursor-pointer" onClick={() => toggleSort('examScore')}>
-                      <div className="flex items-center justify-center gap-1 hover:text-gray-900">
+                      <div className="flex items-center justify-center gap-1 hover:text-foreground">
                         Exam Score
                         <ArrowUpDown className="w-3.5 h-3.5" />
                       </div>
                     </th>
                     <th className="p-4 text-center cursor-pointer" onClick={() => toggleSort('documentScore')}>
-                      <div className="flex items-center justify-center gap-1 hover:text-gray-900">
+                      <div className="flex items-center justify-center gap-1 hover:text-foreground">
                         Document Score (%)
                         <ArrowUpDown className="w-3.5 h-3.5" />
                       </div>
@@ -516,7 +516,7 @@ export default function DocumentEvaluationPage() {
                       <td className="p-4 text-center">
                         <button
                           onClick={() => handleSelectCandidate(c.preferenceId)}
-                          className="text-gray-500 hover:text-green-600"
+                          className="text-muted-foreground hover:text-green-600"
                         >
                           {c.selected ? (
                             <CheckSquare className="w-5 h-5 text-green-600" />
@@ -526,8 +526,8 @@ export default function DocumentEvaluationPage() {
                         </button>
                       </td>
                       <td className="p-4">
-                        <div className="font-bold text-gray-900">{c.name}</div>
-                        <div className="text-xs text-gray-500 font-semibold">{c.examID} • {c.gender} • {c.region}</div>
+                        <div className="font-bold text-foreground">{c.name}</div>
+                        <div className="text-xs text-muted-foreground font-semibold">{c.examID} • {c.gender} • {c.region}</div>
                       </td>
                       <td className="p-4">
                         <span className={`px-2.5 py-1 text-xs font-bold rounded-full ${c.stream === 'Natural Science' ? 'bg-teal-50 text-teal-700 border border-teal-200' : 'bg-orange-50 text-orange-700 border border-orange-200'}`}>
@@ -535,7 +535,7 @@ export default function DocumentEvaluationPage() {
                         </span>
                       </td>
                       <td className="p-4">
-                        <div className="font-semibold text-gray-800">{c.programName}</div>
+                        <div className="font-semibold text-foreground">{c.programName}</div>
                       </td>
                       <td className="p-4">
                         <div className="flex flex-col gap-1 max-w-[200px]">
@@ -555,7 +555,7 @@ export default function DocumentEvaluationPage() {
                           ))}
                         </div>
                       </td>
-                      <td className="p-4 text-center font-black text-gray-800">
+                      <td className="p-4 text-center font-black text-foreground">
                         {c.examScore}
                       </td>
                       <td className="p-4 text-center">
@@ -568,7 +568,7 @@ export default function DocumentEvaluationPage() {
                             value={c.documentScore === null || c.documentScore === undefined ? '' : c.documentScore}
                             onChange={(e) => handleScoreChange(c.preferenceId, e.target.value)}
                             placeholder="Score %"
-                            className="w-20 text-center border border-gray-300 rounded-lg px-2 py-1 font-bold text-sm bg-white focus:ring-2 focus:ring-green-500"
+                            className="w-20 text-center border border-border rounded-lg px-2 py-1 font-bold text-sm bg-card focus:ring-2 focus:ring-green-500"
                           />
                         </div>
                       </td>
@@ -577,10 +577,10 @@ export default function DocumentEvaluationPage() {
                           <button
                             onClick={() => handleSaveRow(c)}
                             disabled={saving}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 border border-gray-300 ${
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 border border-border ${
                               unlockedRowIds.includes(c.preferenceId)
                                 ? 'bg-green-600 hover:bg-green-700 text-white border-green-600 shadow-sm'
-                                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                                : 'bg-gray-100 hover:bg-gray-200 text-muted-foreground'
                             }`}
                           >
                             <Save className="w-3.5 h-3.5" />

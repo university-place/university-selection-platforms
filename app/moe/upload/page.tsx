@@ -271,7 +271,7 @@ export default function MOEUploadPage() {
             className={`px-6 py-2 text-sm font-medium transition-colors ${
               uploadType === 'students'
                 ? 'border-b-2 border-purple-600 text-purple-600'
-                : 'text-gray-500 hover:text-gray-700'
+                : 'text-muted-foreground hover:text-muted-foreground'
             }`}
           >
             📚 Upload Students
@@ -286,7 +286,7 @@ export default function MOEUploadPage() {
             className={`px-6 py-2 text-sm font-medium transition-colors ${
               uploadType === 'universities'
                 ? 'border-b-2 border-purple-600 text-purple-600'
-                : 'text-gray-500 hover:text-gray-700'
+                : 'text-muted-foreground hover:text-muted-foreground'
             }`}
           >
             🏫 Upload Universities
@@ -295,7 +295,7 @@ export default function MOEUploadPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Upload Form */}
-          <div className="lg:col-span-2 bg-white rounded-lg shadow p-6 border border-gray-200">
+          <div className="lg:col-span-2 bg-card rounded-lg shadow p-6 border border-border">
             <h2 className="text-xl font-bold mb-4">
               {uploadType === 'students' ? 'Upload Student Data' : 'Upload University Data'}
             </h2>
@@ -317,7 +317,7 @@ export default function MOEUploadPage() {
               {uploadType === 'students' && (
                 <>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">
                       Academic Year *
                     </label>
                     <input
@@ -325,12 +325,12 @@ export default function MOEUploadPage() {
                       value={academicYear}
                       onChange={(e) => setAcademicYear(e.target.value)}
                       placeholder="e.g., 2024"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                    <label className="block text-sm font-medium text-muted-foreground mb-3">
                       Upload Mode
                     </label>
                     <div className="space-y-2">
@@ -343,7 +343,7 @@ export default function MOEUploadPage() {
                           onChange={(e) => setUploadMode(e.target.value as 'upsert')}
                           className="mr-2"
                         />
-                        <span className="text-gray-700">
+                        <span className="text-muted-foreground">
                           Upsert (Insert new, update existing)
                         </span>
                       </label>
@@ -356,7 +356,7 @@ export default function MOEUploadPage() {
                           onChange={(e) => setUploadMode(e.target.value as 'replace')}
                           className="mr-2"
                         />
-                        <span className="text-gray-700">
+                        <span className="text-muted-foreground">
                           Replace (Clear and re-import all for this academic year)
                         </span>
                       </label>
@@ -370,24 +370,24 @@ export default function MOEUploadPage() {
                       onChange={(e) => setActivateNow(e.target.checked)}
                       className="mr-2 rounded"
                     />
-                    <span className="text-gray-700">Activate these records immediately</span>
+                    <span className="text-muted-foreground">Activate these records immediately</span>
                   </label>
                 </>
               )}
 
               {/* File Input */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-muted-foreground mb-2">
                   CSV File *
                 </label>
                 <div className="flex items-center justify-center w-full">
                   <label className="flex flex-col w-full h-32 border-2 border-dashed border-purple-300 rounded-lg p-4 cursor-pointer hover:bg-purple-50">
                     <div className="flex flex-col items-center justify-center pt-7">
                       <span className="text-2xl mb-2">📁</span>
-                      <span className="text-sm font-semibold text-gray-700">
+                      <span className="text-sm font-semibold text-muted-foreground">
                         Click to upload or drag and drop
                       </span>
-                      <span className="text-xs text-gray-600">CSV files up to 10MB</span>
+                      <span className="text-xs text-muted-foreground">CSV files up to 10MB</span>
                     </div>
                     <input
                       ref={uploadType === 'students' ? studentFileInputRef : universityFileInputRef}
@@ -421,30 +421,30 @@ export default function MOEUploadPage() {
           </div>
 
           {/* CSV Format Example */}
-          <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+          <div className="bg-card rounded-lg shadow p-6 border border-border">
             <h3 className="text-lg font-bold mb-3">CSV Format</h3>
             
             {uploadType === 'students' ? (
               <>
                 <div className="bg-gray-50 p-3 rounded text-xs overflow-x-auto">
-                  <pre className="text-gray-700">
+                  <pre className="text-muted-foreground">
 {`examID,firstName,lastName,email,dateOfBirth,studentNationalID,mathScore,englishScore,physicsScore,chemistryScore,biologyScore,total
 EXM-2024-001,Abebe,Kebede,abebe@email.com,2000-01-15,1234567890,85,78,92,88,90,433`}
                   </pre>
                 </div>
-                <p className="text-xs text-gray-600 mt-3">
+                <p className="text-xs text-muted-foreground mt-3">
                   <strong>Required columns:</strong> examID, firstName, lastName, email, dateOfBirth, studentNationalID
                 </p>
               </>
             ) : (
               <>
                 <div className="bg-gray-50 p-3 rounded text-xs overflow-x-auto">
-                  <pre className="text-gray-700">
+                  <pre className="text-muted-foreground">
 {`code,name,type,region,address,contactEmail,contactPhone,website,description
 AAU,Addis Ababa University,Public,Addis Ababa,5 kilo,info@aau.edu.et,+251111234567,www.aau.edu.et,Leading university`}
                   </pre>
                 </div>
-                <p className="text-xs text-gray-600 mt-3">
+                <p className="text-xs text-muted-foreground mt-3">
                   <strong>Required columns:</strong> code, name, type
                 </p>
               </>

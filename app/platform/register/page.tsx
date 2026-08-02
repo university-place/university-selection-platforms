@@ -61,8 +61,8 @@ export default function PlatformRegisterPage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4">
         <div className="w-full max-w-md bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl shadow-xl border border-orange-200 p-8 text-center">
           <div className="text-5xl mb-4">✓</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Registration Successful!</h1>
-          <p className="text-gray-600 mb-4">Redirecting to login page in 3 seconds...</p>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Registration Successful!</h1>
+          <p className="text-muted-foreground mb-4">Redirecting to login page in 3 seconds...</p>
           <div className="animate-spin rounded-full h-8 w-8 border-4 border-orange-600 border-t-transparent mx-auto"></div>
         </div>
       </div>

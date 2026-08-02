@@ -137,9 +137,9 @@ export default function MOEApplicationsPage() {
           })}
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-4 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          <div className="flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2">
-            <Search className="w-4 h-4 text-gray-400" />
+        <div className="bg-card rounded-xl shadow-sm p-4 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2">
+            <Search className="w-4 h-4 text-muted-foreground" />
             <input
               className="outline-none text-sm w-full"
               placeholder="Student/university..."
@@ -147,8 +147,8 @@ export default function MOEApplicationsPage() {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <div className="flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2">
-            <Filter className="w-4 h-4 text-gray-400" />
+          <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2">
+            <Filter className="w-4 h-4 text-muted-foreground" />
             <select className="outline-none text-sm bg-transparent w-full" value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}>
               <option value="">All Statuses</option>
               <option value="PLACED">Placed</option>
@@ -159,18 +159,18 @@ export default function MOEApplicationsPage() {
               <option value="PENDING">Pending</option>
             </select>
           </div>
-          <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm" value={streamFilter} onChange={(e) => { setStreamFilter(e.target.value); setPage(1); }}>
+          <select className="border border-border rounded-lg px-3 py-2 text-sm" value={streamFilter} onChange={(e) => { setStreamFilter(e.target.value); setPage(1); }}>
             <option value="">All Streams</option>
             <option value="natural">Natural Science</option>
             <option value="social">Social Science</option>
           </select>
-          <input className="border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="Region" value={regionFilter} onChange={(e) => setRegionFilter(e.target.value)} />
-          <input className="border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="Min score" value={minScore} onChange={(e) => setMinScore(e.target.value)} />
-          <input className="border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="Max score" value={maxScore} onChange={(e) => setMaxScore(e.target.value)} />
+          <input className="border border-border rounded-lg px-3 py-2 text-sm" placeholder="Region" value={regionFilter} onChange={(e) => setRegionFilter(e.target.value)} />
+          <input className="border border-border rounded-lg px-3 py-2 text-sm" placeholder="Min score" value={minScore} onChange={(e) => setMinScore(e.target.value)} />
+          <input className="border border-border rounded-lg px-3 py-2 text-sm" placeholder="Max score" value={maxScore} onChange={(e) => setMaxScore(e.target.value)} />
           <button onClick={() => { setPage(1); fetchRows(); }} className="px-4 py-2 rounded-lg bg-purple-600 text-white text-sm">Apply Filters</button>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="bg-card rounded-xl shadow-sm overflow-hidden">
           {error && <div className="p-4 text-red-600 bg-red-50">{error}</div>}
           {loading ? (
             <div className="flex justify-center items-center h-48">
@@ -182,26 +182,26 @@ export default function MOEApplicationsPage() {
                 <thead className="bg-gray-50 border-b">
                   <tr>
                     {['#', 'Student', 'Exam ID', 'Stream', 'Score', 'University', 'Program', 'Status', 'Date'].map((h) => (
-                      <th key={h} className="text-left px-4 py-3 text-gray-600 font-semibold text-xs uppercase tracking-wide">{h}</th>
+                      <th key={h} className="text-left px-4 py-3 text-muted-foreground font-semibold text-xs uppercase tracking-wide">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {applications.length === 0 ? (
-                    <tr><td colSpan={9} className="text-center py-12 text-gray-400">No applications found</td></tr>
+                    <tr><td colSpan={9} className="text-center py-12 text-muted-foreground">No applications found</td></tr>
                   ) : applications.map((app, i) => (
                     <tr key={app.id} className="hover:bg-gray-50 transition cursor-pointer" onClick={() => router.push(`/moe/students/${app.student?.id}`)}>
-                      <td className="px-4 py-3 text-gray-500">{(page - 1) * 30 + i + 1}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{(page - 1) * 30 + i + 1}</td>
                       <td className="px-4 py-3 font-medium">{app.student?.firstName} {app.student?.lastName}</td>
                       <td className="px-4 py-3 font-mono text-purple-700 text-xs">{app.student?.examID}</td>
-                      <td className="px-4 py-3 text-gray-600">{app.student?.stream}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{app.student?.stream}</td>
                       <td className="px-4 py-3 font-semibold">{app.student?.totalScore ?? '—'}</td>
                       <td className="px-4 py-3">{app.university?.name}</td>
                       <td className="px-4 py-3">{app.program?.name || '—'}</td>
                       <td className="px-4 py-3">
-                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[app.status] || 'bg-gray-100 text-gray-700'}`}>{app.status}</span>
+                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[app.status] || 'bg-gray-100 text-muted-foreground'}`}>{app.status}</span>
                       </td>
-                      <td className="px-4 py-3 text-gray-500 text-xs">{new Date(app.createdAt).toLocaleDateString()}</td>
+                      <td className="px-4 py-3 text-muted-foreground text-xs">{new Date(app.createdAt).toLocaleDateString()}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -212,7 +212,7 @@ export default function MOEApplicationsPage() {
 
         {total > 30 && (
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-500">Showing {Math.min((page - 1) * 30 + 1, total)}–{Math.min(page * 30, total)} of {total}</span>
+            <span className="text-sm text-muted-foreground">Showing {Math.min((page - 1) * 30 + 1, total)}–{Math.min(page * 30, total)} of {total}</span>
             <div className="flex gap-2">
               <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1} className="px-4 py-2 rounded-lg bg-purple-600 text-white text-sm disabled:opacity-40">Previous</button>
               <button onClick={() => setPage(page + 1)} disabled={page * 30 >= total} className="px-4 py-2 rounded-lg bg-purple-600 text-white text-sm disabled:opacity-40">Next</button>

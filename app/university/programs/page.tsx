@@ -131,8 +131,8 @@ export default function UniversityProgramsPage() {
       <div className="max-w-6xl mx-auto py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Academic Programs</h1>
-            <p className="text-gray-600 mt-1">Manage programs, admission tracks, and intake capacities</p>
+            <h1 className="text-3xl font-bold text-foreground">Academic Programs</h1>
+            <p className="text-muted-foreground mt-1">Manage programs, admission tracks, and intake capacities</p>
           </div>
           <button
             onClick={() => {
@@ -154,17 +154,17 @@ export default function UniversityProgramsPage() {
         )}
 
         {programs.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-lg border-2 border-dashed border-gray-300">
-            <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-3" />
-            <p className="text-gray-500 text-lg">No programs found</p>
-            <p className="text-gray-400 text-sm">Click "Add Program" to create your first program</p>
+          <div className="text-center py-12 bg-card rounded-lg border-2 border-dashed border-border">
+            <BookOpen className="w-16 h-16 text-muted-foreground mx-auto mb-3" />
+            <p className="text-muted-foreground text-lg">No programs found</p>
+            <p className="text-muted-foreground text-sm">Click "Add Program" to create your first program</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {programs.map(program => (
-              <div key={program.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition">
+              <div key={program.id} className="bg-card rounded-xl shadow-sm border border-border p-6 hover:shadow-md transition">
                 <div className="flex justify-between items-start mb-3">
-                  <h3 className="text-xl font-bold text-gray-900">{program.name}</h3>
+                  <h3 className="text-xl font-bold text-foreground">{program.name}</h3>
                   <div className="flex gap-2">
                     <button
                       onClick={() => {
@@ -189,10 +189,10 @@ export default function UniversityProgramsPage() {
                     </button>
                   </div>
                 </div>
-                <p className="text-gray-600 text-sm mb-2">Code: {program.code}</p>
-                <p className="text-gray-500 text-sm mb-3">{program.description || 'No description'}</p>
-                <div className="flex justify-between items-center pt-3 border-t border-gray-100">
-                  <span className="text-sm text-gray-600">Intake Capacity</span>
+                <p className="text-muted-foreground text-sm mb-2">Code: {program.code}</p>
+                <p className="text-muted-foreground text-sm mb-3">{program.description || 'No description'}</p>
+                <div className="flex justify-between items-center pt-3 border-t border-border">
+                  <span className="text-sm text-muted-foreground">Intake Capacity</span>
                   <span className="text-lg font-bold text-green-600">{program.intakeCapacity}</span>
                 </div>
               </div>
@@ -204,53 +204,53 @@ export default function UniversityProgramsPage() {
       {/* Add/Edit Program Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
+          <div className="bg-card rounded-2xl w-full max-w-md shadow-2xl">
             <div className="flex justify-between items-center p-6 border-b-2">
-              <h3 className="text-2xl font-bold text-gray-900">
+              <h3 className="text-2xl font-bold text-foreground">
                 {editingProgram ? 'Edit Program' : 'Add Program'}
               </h3>
-              <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600">
+              <button onClick={() => setShowModal(false)} className="text-muted-foreground hover:text-muted-foreground">
                 <X className="w-6 h-6" />
               </button>
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Program Name *</label>
+                <label className="block text-sm font-bold text-muted-foreground mb-1">Program Name *</label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={e => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full border-2 border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                   placeholder="e.g., Computer Science"
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Program Code *</label>
+                <label className="block text-sm font-bold text-muted-foreground mb-1">Program Code *</label>
                 <input
                   type="text"
                   value={formData.code}
                   onChange={e => setFormData({ ...formData, code: e.target.value })}
-                  className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full border-2 border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                   placeholder="e.g., CS001"
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-bold text-muted-foreground mb-1">Description</label>
                 <textarea
                   rows={3}
                   value={formData.description}
                   onChange={e => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full border-2 border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                   placeholder="Program description..."
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Intake Capacity</label>
+                <label className="block text-sm font-bold text-muted-foreground mb-1">Intake Capacity</label>
                 <input
                   type="number"
                   value={formData.intakeCapacity}
                   onChange={e => setFormData({ ...formData, intakeCapacity: parseInt(e.target.value) || 0 })}
-                  className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full border-2 border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                   placeholder="e.g., 100"
                 />
               </div>

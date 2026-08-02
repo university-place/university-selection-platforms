@@ -133,9 +133,9 @@ export default function MOEAppealsPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-4 flex flex-wrap gap-4">
-          <div className="flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2">
-            <Filter className="w-4 h-4 text-gray-400" />
+        <div className="bg-card rounded-xl shadow-sm p-4 flex flex-wrap gap-4">
+          <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2">
+            <Filter className="w-4 h-4 text-muted-foreground" />
             <select className="outline-none text-sm bg-transparent" value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}>
               <option value="">All Statuses</option>
@@ -149,7 +149,7 @@ export default function MOEAppealsPage() {
             <button
               onClick={() => setStreamFilter('')}
               className={`px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all ${
-                streamFilter === '' ? 'bg-purple-600 text-white shadow-lg' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                streamFilter === '' ? 'bg-purple-600 text-white shadow-lg' : 'bg-gray-100 text-muted-foreground hover:bg-gray-200'
               }`}
             >
               All Streams ({summary.totalAppeals})
@@ -173,7 +173,7 @@ export default function MOEAppealsPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="bg-card rounded-xl shadow-sm overflow-hidden">
           {error && <div className="p-4 text-red-600 bg-red-50">{error}</div>}
           {loading ? (
             <div className="flex justify-center items-center h-48">
@@ -185,13 +185,13 @@ export default function MOEAppealsPage() {
                 <thead className="bg-gray-50 border-b">
                   <tr>
                     {['Student', 'Exam ID', 'Stream', 'Type', 'Description', 'Status', 'Filed', 'Actions'].map((h) => (
-                      <th key={h} className="text-left px-4 py-3 text-gray-600 font-semibold text-xs uppercase">{h}</th>
+                      <th key={h} className="text-left px-4 py-3 text-muted-foreground font-semibold text-xs uppercase">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {appeals.length === 0 ? (
-                    <tr><td colSpan={8} className="text-center py-12 text-gray-400">No appeals found</td></tr>
+                    <tr><td colSpan={8} className="text-center py-12 text-muted-foreground">No appeals found</td></tr>
                   ) : appeals.map((a) => (
                     <tr key={a.id} className="hover:bg-gray-50 transition">
                       <td className="px-4 py-3 font-medium">{a.student?.firstName} {a.student?.lastName}</td>
@@ -203,17 +203,17 @@ export default function MOEAppealsPage() {
                           {a.student?.stream}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-gray-600 font-medium uppercase text-xs">{a.type}</td>
+                      <td className="px-4 py-3 text-muted-foreground font-medium uppercase text-xs">{a.type}</td>
                       <td className="px-4 py-3 max-w-xs">
-                        <p className="truncate text-gray-700" title={a.description}>{a.description}</p>
+                        <p className="truncate text-muted-foreground" title={a.description}>{a.description}</p>
                         {a.resolution && <p className="text-xs text-green-600 mt-1 truncate">Resolution: {a.resolution}</p>}
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`px-2 py-1 rounded-full text-xs font-semibold uppercase ${STATUS_COLOR[a.status] || 'bg-gray-100 text-gray-700'}`}>
+                        <span className={`px-2 py-1 rounded-full text-xs font-semibold uppercase ${STATUS_COLOR[a.status] || 'bg-gray-100 text-muted-foreground'}`}>
                           {a.status}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-gray-500 text-xs">{new Date(a.createdAt).toLocaleDateString()}</td>
+                      <td className="px-4 py-3 text-muted-foreground text-xs">{new Date(a.createdAt).toLocaleDateString()}</td>
                       <td className="px-4 py-3">
                         {a.status === 'pending' && (
                           <button onClick={() => { setSelectedAppeal(a); setNewStatus('resolved'); }}
@@ -233,13 +233,13 @@ export default function MOEAppealsPage() {
         {/* Resolution Modal */}
         {selectedAppeal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-            <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg p-8 animate-in zoom-in-95 duration-200">
+            <div className="bg-card rounded-[2rem] shadow-2xl w-full max-w-lg p-8 animate-in zoom-in-95 duration-200">
               <h3 className="text-2xl font-black mb-2 tracking-tight">Resolve Appeal</h3>
-              <p className="text-sm text-gray-600 mb-6">
+              <p className="text-sm text-muted-foreground mb-6">
                 Student: <strong className="text-foreground">{selectedAppeal.student?.firstName} {selectedAppeal.student?.lastName}</strong> ({selectedAppeal.student?.examID})
               </p>
-              <div className="bg-gray-50 rounded-2xl p-4 mb-6 text-sm text-gray-700 border border-gray-100">
-                <p className="font-bold uppercase text-[10px] tracking-widest text-gray-400 mb-2">Appeal Description</p>
+              <div className="bg-gray-50 rounded-2xl p-4 mb-6 text-sm text-muted-foreground border border-border">
+                <p className="font-bold uppercase text-[10px] tracking-widest text-muted-foreground mb-2">Appeal Description</p>
                 {selectedAppeal.description}
               </div>
               <div className="space-y-6">
@@ -264,7 +264,7 @@ export default function MOEAppealsPage() {
                     {updating ? 'Processing…' : 'Submit Decision'}
                   </button>
                   <button onClick={() => setSelectedAppeal(null)}
-                    className="flex-1 bg-gray-100 text-gray-600 py-4 rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-gray-200 active:scale-95 transition-all">
+                    className="flex-1 bg-gray-100 text-muted-foreground py-4 rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-gray-200 active:scale-95 transition-all">
                     Cancel
                   </button>
                 </div>

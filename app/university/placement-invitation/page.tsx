@@ -356,56 +356,56 @@ export default function BulkInvitationPlacementPage() {
 
         {/* Stats Blocks */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex items-center gap-4">
+          <div className="bg-card rounded-xl shadow-sm border border-border p-5 flex items-center gap-4">
             <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
               <Users className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase">Total Interviewees</p>
-              <h3 className="text-xl font-black text-gray-900 mt-1">{stats.total}</h3>
+              <p className="text-xs font-semibold text-muted-foreground uppercase">Total Interviewees</p>
+              <h3 className="text-xl font-black text-foreground mt-1">{stats.total}</h3>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex items-center gap-4">
+          <div className="bg-card rounded-xl shadow-sm border border-border p-5 flex items-center gap-4">
             <div className="p-3 bg-green-50 text-green-600 rounded-xl">
               <CheckCircle className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase">Successfully Placed</p>
-              <h3 className="text-xl font-black text-gray-900 mt-1">{stats.placed}</h3>
+              <p className="text-xs font-semibold text-muted-foreground uppercase">Successfully Placed</p>
+              <h3 className="text-xl font-black text-foreground mt-1">{stats.placed}</h3>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex items-center gap-4">
+          <div className="bg-card rounded-xl shadow-sm border border-border p-5 flex items-center gap-4">
             <div className="p-3 bg-yellow-50 text-yellow-600 rounded-xl">
               <AlertCircle className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase">Pending Review</p>
-              <h3 className="text-xl font-black text-gray-900 mt-1">{stats.pending}</h3>
+              <p className="text-xs font-semibold text-muted-foreground uppercase">Pending Review</p>
+              <h3 className="text-xl font-black text-foreground mt-1">{stats.pending}</h3>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex items-center gap-4">
+          <div className="bg-card rounded-xl shadow-sm border border-border p-5 flex items-center gap-4">
             <div className="p-3 bg-orange-50 text-orange-600 rounded-xl">
               <Percent className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase">Average Score</p>
-              <h3 className="text-xl font-black text-gray-900 mt-1">{stats.avgScore}%</h3>
+              <p className="text-xs font-semibold text-muted-foreground uppercase">Average Score</p>
+              <h3 className="text-xl font-black text-foreground mt-1">{stats.avgScore}%</h3>
             </div>
           </div>
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 space-y-4">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-4 space-y-4">
           <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
             {/* Search */}
             <div className="relative w-full xl:max-w-xs">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <input
                 type="text"
                 placeholder="Search candidate name or ID..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full pl-9 pr-4 py-2 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card"
               />
             </div>
 
@@ -414,19 +414,19 @@ export default function BulkInvitationPlacementPage() {
               <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl">
                 <button
                   onClick={() => setStreamFilter('all')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${streamFilter === 'all' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${streamFilter === 'all' ? 'bg-card shadow-sm text-blue-600' : 'text-muted-foreground hover:text-foreground'}`}
                 >
                   All Streams
                 </button>
                 <button
                   onClick={() => setStreamFilter('Natural Science')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${streamFilter === 'Natural Science' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${streamFilter === 'Natural Science' ? 'bg-card shadow-sm text-blue-600' : 'text-muted-foreground hover:text-foreground'}`}
                 >
                   Natural Science
                 </button>
                 <button
                   onClick={() => setStreamFilter('Social Science')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${streamFilter === 'Social Science' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${streamFilter === 'Social Science' ? 'bg-card shadow-sm text-blue-600' : 'text-muted-foreground hover:text-foreground'}`}
                 >
                   Social Science
                 </button>
@@ -435,7 +435,7 @@ export default function BulkInvitationPlacementPage() {
               <select
                 value={genderFilter}
                 onChange={(e: any) => setGenderFilter(e.target.value)}
-                className="px-3 py-1.5 border border-gray-300 rounded-xl text-xs font-semibold bg-white"
+                className="px-3 py-1.5 border border-border rounded-xl text-xs font-semibold bg-card"
               >
                 <option value="all">All Genders</option>
                 <option value="Male">Male</option>
@@ -445,7 +445,7 @@ export default function BulkInvitationPlacementPage() {
               <select
                 value={statusFilter}
                 onChange={(e: any) => setStatusFilter(e.target.value)}
-                className="px-3 py-1.5 border border-gray-300 rounded-xl text-xs font-semibold bg-white"
+                className="px-3 py-1.5 border border-border rounded-xl text-xs font-semibold bg-card"
               >
                 <option value="all">All Placement Statuses</option>
                 <option value="pending">Pending Decision</option>
@@ -457,13 +457,13 @@ export default function BulkInvitationPlacementPage() {
           </div>
 
           {/* Advanced Score Filters & Clear All */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-3 border-t border-gray-100">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-3 border-t border-border">
             <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-              <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Filter Score %:</span>
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Filter Score %:</span>
               <select
                 value={scoreOperator}
                 onChange={(e: any) => setScoreOperator(e.target.value)}
-                className="px-3 py-1.5 border border-gray-300 rounded-xl text-xs font-semibold bg-white"
+                className="px-3 py-1.5 border border-border rounded-xl text-xs font-semibold bg-card"
               >
                 <option value="all">All Scores</option>
                 <option value="gt">Greater Than (&gt;)</option>
@@ -480,7 +480,7 @@ export default function BulkInvitationPlacementPage() {
                   placeholder="Threshold score %"
                   value={scoreThreshold}
                   onChange={(e) => setScoreThreshold(e.target.value)}
-                  className="px-3 py-1.5 border border-gray-300 rounded-xl text-xs font-semibold bg-white w-32 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-3 py-1.5 border border-border rounded-xl text-xs font-semibold bg-card w-32 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               )}
             </div>
@@ -488,7 +488,7 @@ export default function BulkInvitationPlacementPage() {
             <button
               type="button"
               onClick={handleResetFilters}
-              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-gray-200 shadow-sm"
+              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-muted-foreground hover:text-foreground rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-border shadow-sm"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               Reset / Clear All Filters
@@ -498,16 +498,16 @@ export default function BulkInvitationPlacementPage() {
 
         {/* Action Controls for Selection */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-          <div className="text-sm text-gray-500 font-semibold">
+          <div className="text-sm text-muted-foreground font-semibold">
             Showing {getFilteredCandidates().length} of {candidates.length} interviewees
           </div>
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             <button
               onClick={() => handleBulkAction('saveScores')}
               disabled={saving}
-              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 hover:bg-gray-50 rounded-xl text-sm font-semibold transition"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 border border-border hover:bg-gray-50 rounded-xl text-sm font-semibold transition"
             >
-              <Save className="w-4 h-4 text-gray-600" />
+              <Save className="w-4 h-4 text-muted-foreground" />
               Save Selected Scores
             </button>
             <button
@@ -544,7 +544,7 @@ export default function BulkInvitationPlacementPage() {
         )}
 
         {/* Table Container */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
           {loading ? (
             <div className="flex items-center justify-center min-h-[300px]">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -552,15 +552,15 @@ export default function BulkInvitationPlacementPage() {
           ) : getFilteredCandidates().length === 0 ? (
             <div className="text-center py-16">
               <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-500 font-semibold">No interview candidates match your filters.</p>
+              <p className="text-muted-foreground font-semibold">No interview candidates match your filters.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-left">
                 <thead>
-                  <tr className="bg-gray-50 border-b border-gray-200 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  <tr className="bg-gray-50 border-b border-border text-xs font-bold text-muted-foreground uppercase tracking-wider">
                     <th className="p-4 w-12 text-center">
-                      <button onClick={handleSelectAll} className="text-gray-500 hover:text-blue-600">
+                      <button onClick={handleSelectAll} className="text-muted-foreground hover:text-blue-600">
                         {getFilteredCandidates().every(c => c.selected) ? (
                           <CheckSquare className="w-5 h-5 text-blue-600" />
                         ) : (
@@ -572,13 +572,13 @@ export default function BulkInvitationPlacementPage() {
                     <th className="p-4">Academic Stream</th>
                     <th className="p-4">Target Program</th>
                     <th className="p-4 text-center cursor-pointer" onClick={() => toggleSort('examScore')}>
-                      <div className="flex items-center justify-center gap-1 hover:text-gray-900">
+                      <div className="flex items-center justify-center gap-1 hover:text-foreground">
                         Exam Score
                         <ArrowUpDown className="w-3.5 h-3.5" />
                       </div>
                     </th>
                     <th className="p-4 text-center cursor-pointer" onClick={() => toggleSort('invitationScore')}>
-                      <div className="flex items-center justify-center gap-1 hover:text-gray-900">
+                      <div className="flex items-center justify-center gap-1 hover:text-foreground">
                         Interview Score (%)
                         <ArrowUpDown className="w-3.5 h-3.5" />
                       </div>
@@ -596,7 +596,7 @@ export default function BulkInvitationPlacementPage() {
                       <td className="p-4 text-center">
                         <button
                           onClick={() => handleSelectCandidate(c.invitationId)}
-                          className="text-gray-500 hover:text-blue-600"
+                          className="text-muted-foreground hover:text-blue-600"
                         >
                           {c.selected ? (
                             <CheckSquare className="w-5 h-5 text-blue-600" />
@@ -606,8 +606,8 @@ export default function BulkInvitationPlacementPage() {
                         </button>
                       </td>
                       <td className="p-4">
-                        <div className="font-bold text-gray-900">{c.name}</div>
-                        <div className="text-xs text-gray-500 font-semibold">{c.examID} • {c.gender} • {c.region}</div>
+                        <div className="font-bold text-foreground">{c.name}</div>
+                        <div className="text-xs text-muted-foreground font-semibold">{c.examID} • {c.gender} • {c.region}</div>
                       </td>
                       <td className="p-4">
                         <span className={`px-2.5 py-1 text-xs font-bold rounded-full ${c.stream === 'Natural Science' ? 'bg-teal-50 text-teal-700 border border-teal-200' : 'bg-orange-50 text-orange-700 border border-orange-200'}`}>
@@ -615,9 +615,9 @@ export default function BulkInvitationPlacementPage() {
                         </span>
                       </td>
                       <td className="p-4">
-                        <div className="font-semibold text-gray-800">{c.programName}</div>
+                        <div className="font-semibold text-foreground">{c.programName}</div>
                       </td>
-                      <td className="p-4 text-center font-black text-gray-800">
+                      <td className="p-4 text-center font-black text-foreground">
                         {c.examScore}
                       </td>
                       <td className="p-4 text-center">
@@ -631,7 +631,7 @@ export default function BulkInvitationPlacementPage() {
                             onChange={(e) => handleScoreChange(c.invitationId, e.target.value)}
                             placeholder="Score %"
                             disabled={c.status === 'COMPLETED' && !unlockedRowIds.includes(c.invitationId)}
-                            className="w-20 text-center border border-gray-300 rounded-lg px-2 py-1 font-bold text-sm bg-white focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500"
+                            className="w-20 text-center border border-border rounded-lg px-2 py-1 font-bold text-sm bg-card focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-muted-foreground"
                           />
                         </div>
                       </td>
@@ -661,7 +661,7 @@ export default function BulkInvitationPlacementPage() {
                               <button
                                 onClick={() => handleSaveRow(c)}
                                 disabled={saving}
-                                className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-bold transition flex items-center gap-1 border border-gray-300"
+                                className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-muted-foreground rounded-lg text-xs font-bold transition flex items-center gap-1 border border-border"
                               >
                                 Save Score
                               </button>

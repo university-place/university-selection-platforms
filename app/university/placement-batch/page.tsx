@@ -668,47 +668,47 @@ export default function UniversityPlacementBatchPage() {
 
         {/* University Settings Panel */}
         {showUniSettings && (
-          <div className="bg-white rounded-xl shadow-sm border p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">University Placement Settings</h2>
+          <div className="bg-card rounded-xl shadow-sm border p-6">
+            <h2 className="text-lg font-bold text-foreground mb-4">University Placement Settings</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:col-span-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Total Capacity
                   </label>
                   <input
                     type="number"
                     value={universitySettings.totalIntakeCapacity}
                     onChange={(e) => setUniversitySettings({ ...universitySettings, totalIntakeCapacity: parseInt(e.target.value) || 0 })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-border rounded-lg px-3 py-2"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Natural Stream
                   </label>
                   <input
                     type="number"
                     value={universitySettings.naturalIntakeCapacity}
                     onChange={(e) => setUniversitySettings({ ...universitySettings, naturalIntakeCapacity: parseInt(e.target.value) || 0 })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-border rounded-lg px-3 py-2"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Social Stream
                   </label>
                   <input
                     type="number"
                     value={universitySettings.socialIntakeCapacity}
                     onChange={(e) => setUniversitySettings({ ...universitySettings, socialIntakeCapacity: parseInt(e.target.value) || 0 })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-border rounded-lg px-3 py-2"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   Allow Over Capacity
                 </label>
                 <div className="flex items-center gap-3">
@@ -719,7 +719,7 @@ export default function UniversityPlacementBatchPage() {
                     onChange={(e) => setUniversitySettings({ ...universitySettings, allowOverCapacity: e.target.checked })}
                     className="w-4 h-4"
                   />
-                  <label htmlFor="allowOverCapacity" className="text-sm text-gray-700">
+                  <label htmlFor="allowOverCapacity" className="text-sm text-muted-foreground">
                     Allow placement beyond capacity (not recommended)
                   </label>
                 </div>
@@ -727,7 +727,7 @@ export default function UniversityPlacementBatchPage() {
               </div>
 
               {/* <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   Notification Email
                 </label>
                 <input
@@ -735,9 +735,9 @@ export default function UniversityPlacementBatchPage() {
                   value={universitySettings.notificationEmail}
                   onChange={(e) => setUniversitySettings({ ...universitySettings, notificationEmail: e.target.value })}
                   placeholder="admin@university.edu.et"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-border rounded-lg px-3 py-2"
                 />
-                <p className="text-xs text-gray-500 mt-1">Email for placement completion notifications</p>
+                <p className="text-xs text-muted-foreground mt-1">Email for placement completion notifications</p>
               </div> */}
 
               <div className="md:col-span-2 flex justify-end">
@@ -753,8 +753,8 @@ export default function UniversityPlacementBatchPage() {
         )}
 
         {/* Stream Filter */}
-        <div className="bg-white rounded-xl shadow-sm border p-6">
-          <label className="block text-sm font-medium text-gray-700 mb-3">Academic Stream Filter</label>
+        <div className="bg-card rounded-xl shadow-sm border p-6">
+          <label className="block text-sm font-medium text-muted-foreground mb-3">Academic Stream Filter</label>
           <div className="flex flex-wrap gap-3">
             {[
               { id: 'all', label: 'All Students', icon: Users, color: 'blue' },
@@ -766,26 +766,26 @@ export default function UniversityPlacementBatchPage() {
                 onClick={() => setSelectedStream(stream.id as any)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${selectedStream === stream.id
                     ? `border-${stream.color}-500 bg-${stream.color}-50 text-${stream.color}-700 shadow-sm`
-                    : 'border-gray-100 bg-gray-50 text-gray-600 hover:border-gray-200'
+                    : 'border-border bg-gray-50 text-muted-foreground hover:border-border'
                   }`}
               >
-                <stream.icon className={`w-4 h-4 ${selectedStream === stream.id ? `text-${stream.color}-600` : 'text-gray-400'}`} />
+                <stream.icon className={`w-4 h-4 ${selectedStream === stream.id ? `text-${stream.color}-600` : 'text-muted-foreground'}`} />
                 <span className="font-medium text-sm">{stream.label}</span>
               </button>
             ))}
           </div>
-          <p className="mt-2 text-xs text-gray-500 italic">
+          <p className="mt-2 text-xs text-muted-foreground italic">
             Placement algorithm will only run for students in the selected stream.
           </p>
         </div>
 
         {/* Priority Selection */}
-        <div className="bg-white rounded-xl shadow-sm border p-6">
+        <div className="bg-card rounded-xl shadow-sm border p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold text-gray-900">Placement Priority Method</h2>
+            <h2 className="text-lg font-bold text-foreground">Placement Priority Method</h2>
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className="flex items-center gap-2 px-3 py-1 text-gray-600 hover:bg-gray-100 rounded-lg"
+              className="flex items-center gap-2 px-3 py-1 text-muted-foreground hover:bg-gray-100 rounded-lg"
             >
               <Settings className="w-4 h-4" />
               Weighting Settings
@@ -798,14 +798,14 @@ export default function UniversityPlacementBatchPage() {
               onClick={() => setPlacementMethod('weighted')}
               className={`p-4 rounded-xl border-2 transition-all ${placementMethod === 'weighted'
                   ? 'border-purple-500 bg-purple-50'
-                  : 'border-gray-200 hover:border-purple-200'
+                  : 'border-border hover:border-purple-200'
                 }`}
             >
               <div className="flex items-center gap-3 mb-2">
                 <BarChart3 className="w-6 h-6 text-purple-600" />
-                <h3 className="font-semibold text-gray-900">Weighted Analytics</h3>
+                <h3 className="font-semibold text-foreground">Weighted Analytics</h3>
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 Places students based on weighted score including exam results,
                 disability bonus, region preference, and gender balance.
               </p>
@@ -818,14 +818,14 @@ export default function UniversityPlacementBatchPage() {
               onClick={() => setPlacementMethod('timestamp')}
               className={`p-4 rounded-xl border-2 transition-all ${placementMethod === 'timestamp'
                   ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-blue-200'
+                  : 'border-border hover:border-blue-200'
                 }`}
             >
               <div className="flex items-center gap-3 mb-2">
                 <Clock className="w-6 h-6 text-blue-600" />
-                <h3 className="font-semibold text-gray-900">Timestamp Priority</h3>
+                <h3 className="font-semibold text-foreground">Timestamp Priority</h3>
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 First Come First Serve basis. Students who submitted applications
                 earlier get priority regardless of exam scores.
               </p>
@@ -838,7 +838,7 @@ export default function UniversityPlacementBatchPage() {
           {/* Weighting Settings Panel */}
           {showSettings && placementMethod === 'weighted' && (
             <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
-              <h3 className="font-semibold text-gray-900 mb-3">Weighting Settings</h3>
+              <h3 className="font-semibold text-foreground mb-3">Weighting Settings</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="flex items-center gap-3">
                   <input
@@ -848,7 +848,7 @@ export default function UniversityPlacementBatchPage() {
                     onChange={(e) => setSettings({ ...settings, includeDisability: e.target.checked })}
                     className="w-4 h-4"
                   />
-                  <label htmlFor="includeDisability" className="text-sm text-gray-700">
+                  <label htmlFor="includeDisability" className="text-sm text-muted-foreground">
                     Disability Bonus (+{settings.disabilityBonus} points)
                   </label>
                 </div>
@@ -861,7 +861,7 @@ export default function UniversityPlacementBatchPage() {
                     onChange={(e) => setSettings({ ...settings, includeGender: e.target.checked })}
                     className="w-4 h-4"
                   />
-                  <label htmlFor="includeGender" className="text-sm text-gray-700">
+                  <label htmlFor="includeGender" className="text-sm text-muted-foreground">
                     Gender Balance
                   </label>
                 </div>
@@ -874,7 +874,7 @@ export default function UniversityPlacementBatchPage() {
                     onChange={(e) => setSettings({ ...settings, includeRegion: e.target.checked })}
                     className="w-4 h-4"
                   />
-                  <label htmlFor="includeRegion" className="text-sm text-gray-700">
+                  <label htmlFor="includeRegion" className="text-sm text-muted-foreground">
                     Region Preference
                   </label>
                 </div>
@@ -903,17 +903,17 @@ export default function UniversityPlacementBatchPage() {
         {/* Program Capacity Overview Removed */}
 
         {/* Placement Options & Deadline */}
-        <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
+        <div className="bg-card rounded-xl shadow-sm border p-6 mb-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex-1">
-              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+              <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-blue-600" />
                 Response Deadline
               </h3>
-              <p className="text-sm text-gray-500">Set the date by which students must accept or decline their placement offer.</p>
+              <p className="text-sm text-muted-foreground">Set the date by which students must accept or decline their placement offer.</p>
             </div>
             <div className="flex items-center gap-3">
-              <label htmlFor="deadline" className="text-sm font-medium text-gray-700">Deadline Date:</label>
+              <label htmlFor="deadline" className="text-sm font-medium text-muted-foreground">Deadline Date:</label>
               <input
                 id="deadline"
                 type="date"
@@ -974,27 +974,27 @@ export default function UniversityPlacementBatchPage() {
 
         {/* Results Table */}
         {showResults && (
-          <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+          <div className="bg-card rounded-xl shadow-sm border overflow-hidden">
             <div className="px-6 py-4 border-b bg-gradient-to-r from-green-50 to-blue-50">
               <div className="flex justify-between items-center flex-wrap gap-3">
                 <div>
-                  <h2 className="text-lg font-bold text-gray-900">Placement Results</h2>
-                  <p className="text-sm text-gray-600">
+                  <h2 className="text-lg font-bold text-foreground">Placement Results</h2>
+                  <p className="text-sm text-muted-foreground">
                     Using: {placementMethod === 'weighted' ? 'Weighted Analytics' : 'Timestamp Priority'}
                   </p>
                 </div>
                 <div className="flex gap-4 text-center">
                   <div>
                     <p className="text-2xl font-bold text-green-600">{stats.placed}</p>
-                    <p className="text-xs text-gray-500">Newly Placed</p>
+                    <p className="text-xs text-muted-foreground">Newly Placed</p>
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-yellow-600">{stats.alreadyPlaced}</p>
-                    <p className="text-xs text-gray-500">Already Placed</p>
+                    <p className="text-xs text-muted-foreground">Already Placed</p>
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-red-600">{stats.notPlaced}</p>
-                    <p className="text-xs text-gray-500">Not Placed</p>
+                    <p className="text-xs text-muted-foreground">Not Placed</p>
                   </div>
                 </div>
               </div>
@@ -1004,23 +1004,23 @@ export default function UniversityPlacementBatchPage() {
               <table className="w-full">
                 <thead className="bg-gray-50 sticky top-0">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Rank</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Exam ID</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Student Name</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Score</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Weight %</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Status</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Reason</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Rank</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Exam ID</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Student Name</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Score</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Weight %</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Status</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Reason</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {results.map((res, index) => (
                     <tr key={res.examID} className={`hover:bg-gray-50 ${editingRow === res.examID ? 'bg-blue-50' : ''}`}>
-                      <td className="px-4 py-3 text-xs font-medium text-gray-500">{index + 1}</td>
+                      <td className="px-4 py-3 text-xs font-medium text-muted-foreground">{index + 1}</td>
                       <td className="px-4 py-3 font-mono text-xs">{res.examID}</td>
                       <td className="px-4 py-3 font-medium text-sm">{res.studentName}</td>
-                      <td className="px-4 py-3 text-sm font-medium text-gray-600">{res.weightedScore}</td>
-                      <td className="px-4 py-3 text-sm font-medium text-gray-600">{res.weightPercent.toFixed(2)}%</td>
+                      <td className="px-4 py-3 text-sm font-medium text-muted-foreground">{res.weightedScore}</td>
+                      <td className="px-4 py-3 text-sm font-medium text-muted-foreground">{res.weightPercent.toFixed(2)}%</td>
                       <td className="px-4 py-3">
                         {editingRow === res.examID ? (
                           <select
@@ -1041,13 +1041,13 @@ export default function UniversityPlacementBatchPage() {
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-xs text-gray-500">{res.reason}</td>
+                      <td className="px-4 py-3 text-xs text-muted-foreground">{res.reason}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               {results.length > 100 && (
-                <div className="p-4 text-center text-gray-500 text-sm">
+                <div className="p-4 text-center text-muted-foreground text-sm">
                   Showing first 100 of {results.length} results. Export CSV to see all.
                 </div>
               )}

@@ -8,6 +8,7 @@ import {
     CheckCircle, XCircle, Clock, Calendar, AlertCircle, Award,
     MapPin, GraduationCap, MessageCircle, Loader2, ArrowLeft
 } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 interface PlacementOffer {
     id: number;
@@ -127,16 +128,17 @@ export default function StudentPlacementsPage() {
     return (
         <div className="min-h-screen bg-gray-100">
             {/* Header */}
-            <header className="bg-white shadow-md px-6 py-4 sticky top-0 z-10">
-                <div className="max-w-4xl mx-auto flex items-center gap-4">
-                    <Link href="/student/dashboard" className="text-gray-600 hover:text-blue-600 transition">
+            <header className="bg-card shadow-md px-6 py-4 sticky top-0 z-10 flex justify-between items-center">
+                <div className="max-w-4xl mx-auto flex items-center gap-4 w-full">
+                    <Link href="/student/dashboard" className="text-muted-foreground hover:text-blue-600 transition">
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
                     <div>
-                        <h1 className="text-xl font-bold text-gray-900">My Placement Offers</h1>
-                        <p className="text-gray-600 text-sm">Review and respond to your offers</p>
+                        <h1 className="text-xl font-bold text-foreground">My Placement Offers</h1>
+                        <p className="text-muted-foreground text-sm">Review and respond to your offers</p>
                     </div>
                 </div>
+                <ThemeToggle />
             </header>
 
             <div className="max-w-4xl mx-auto px-6 py-8">
@@ -160,12 +162,12 @@ export default function StudentPlacementsPage() {
 
                 {/* No Placements */}
                 {placements.length === 0 ? (
-                    <div className="bg-white rounded-xl shadow-sm p-12 text-center">
+                    <div className="bg-card rounded-xl shadow-sm p-12 text-center">
                         <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Award className="w-12 h-12 text-gray-400" />
+                            <Award className="w-12 h-12 text-muted-foreground" />
                         </div>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">No Placement Offers Yet</h3>
-                        <p className="text-gray-500">You don't have any placement offers at this time.</p>
+                        <h3 className="text-lg font-semibold text-foreground mb-2">No Placement Offers Yet</h3>
+                        <p className="text-muted-foreground">You don't have any placement offers at this time.</p>
                         <Link
                             href="/student/dashboard"
                             className="inline-block mt-4 text-blue-600 hover:text-blue-800 font-medium"
@@ -181,7 +183,7 @@ export default function StudentPlacementsPage() {
                             const canRespond = !expired && placement.status !== 'NOT_PLACED';
 
                             return (
-                                <div key={placement.id} className="bg-white rounded-xl shadow-sm border overflow-hidden transition hover:shadow-md">
+                                <div key={placement.id} className="bg-card rounded-xl shadow-sm border overflow-hidden transition hover:shadow-md">
                                     {/* University Banner */}
                                     <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
                                         <h2 className="text-xl font-bold text-white">{placement.universityName}</h2>
@@ -197,16 +199,16 @@ export default function StudentPlacementsPage() {
                                         <div className="flex flex-col sm:flex-row justify-between items-start gap-3 mb-4">
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                                    <GraduationCap className="w-5 h-5 text-gray-500" />
-                                                    <span className="font-semibold text-gray-900">
+                                                    <GraduationCap className="w-5 h-5 text-muted-foreground" />
+                                                    <span className="font-semibold text-foreground">
                                                         {placement.status === 'NOT_PLACED' ? 'Not Placed' : (placement.programName || 'Program not specified')}
                                                     </span>
                                                 </div>
                                                 {placement.status !== 'NOT_PLACED' && (
                                                     <div className="flex items-center gap-2 flex-wrap">
-                                                        <Calendar className="w-4 h-4 text-gray-500" />
-                                                        <span className="text-gray-600">Deadline:</span>
-                                                        <span className={`font-medium ${daysLeft <= 2 && daysLeft > 0 ? 'text-red-600' : 'text-gray-900'}`}>
+                                                        <Calendar className="w-4 h-4 text-muted-foreground" />
+                                                        <span className="text-muted-foreground">Deadline:</span>
+                                                        <span className={`font-medium ${daysLeft <= 2 && daysLeft > 0 ? 'text-red-600' : 'text-foreground'}`}>
                                                             {placement.confirmationDeadline ? new Date(placement.confirmationDeadline).toLocaleDateString() : 'N/A'}
                                                         </span>
                                                         {!expired && daysLeft > 0 && (
@@ -222,7 +224,7 @@ export default function StudentPlacementsPage() {
                                                 placement.status === 'NOT_PLACED' ? 'bg-red-100 text-red-800' :
                                                 placement.status === 'CONFIRMED' ? 'bg-green-100 text-green-800' :
                                                 placement.status === 'DECLINED' ? 'bg-orange-100 text-orange-800' :
-                                                expired ? 'bg-gray-100 text-gray-600' : 
+                                                expired ? 'bg-gray-100 text-muted-foreground' : 
                                                 'bg-yellow-100 text-yellow-800'
                                                 }`}>
                                                 {placement.status === 'NOT_PLACED' ? <XCircle className="w-4 h-4" /> :
@@ -311,15 +313,15 @@ export default function StudentPlacementsPage() {
             {/* Confirmation Modal */}
             {showConfirmModal && selectedPlacement && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl w-full max-w-md shadow-2xl">
+                    <div className="bg-card rounded-xl w-full max-w-md shadow-2xl">
                         <div className="p-6 border-b">
-                            <h3 className="text-xl font-bold text-gray-900">
+                            <h3 className="text-xl font-bold text-foreground">
                                 {confirmAction === 'confirm' ? 'Accept Offer' : 'Decline Offer'}
                             </h3>
                         </div>
 
                         <div className="p-6">
-                            <p className="text-gray-700 mb-4">
+                            <p className="text-muted-foreground mb-4">
                                 {confirmAction === 'confirm'
                                     ? `Are you sure you want to accept the offer from ${selectedPlacement.universityName}?`
                                     : `Are you sure you want to decline the offer from ${selectedPlacement.universityName}?`
@@ -346,7 +348,7 @@ export default function StudentPlacementsPage() {
                         <div className="flex justify-end gap-3 p-6 border-t bg-gray-50 rounded-b-xl">
                             <button
                                 onClick={() => setShowConfirmModal(false)}
-                                className="px-4 py-2 border border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-100 transition"
+                                className="px-4 py-2 border border-border rounded-lg font-semibold text-muted-foreground hover:bg-gray-100 transition"
                             >
                                 Cancel
                             </button>

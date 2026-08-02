@@ -215,11 +215,11 @@ export default function PlacementPolicyPage() {
         )}
 
         {/* Policy Header */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+        <div className="bg-card rounded-xl shadow-sm p-6 mb-6">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Placement Policy Configuration</h2>
-              <p className="text-gray-600 mt-1">Define rules for automatic student placement</p>
+              <h2 className="text-xl font-bold text-foreground">Placement Policy Configuration</h2>
+              <p className="text-muted-foreground mt-1">Define rules for automatic student placement</p>
             </div>
             <button
               onClick={handleSavePolicy}
@@ -235,31 +235,31 @@ export default function PlacementPolicyPage() {
           {selectedPolicy && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Policy Name</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Policy Name</label>
                 <input
                   type="text"
                   value={selectedPolicy.name}
                   onChange={(e) => setSelectedPolicy({ ...selectedPolicy, name: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Academic Year</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Academic Year</label>
                 <input
                   type="text"
                   value={selectedPolicy.academicYear}
                   onChange={(e) => setSelectedPolicy({ ...selectedPolicy, academicYear: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                   placeholder="e.g., 2024/2025"
                 />
               </div>
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Description</label>
                 <textarea
                   value={selectedPolicy.description}
                   onChange={(e) => setSelectedPolicy({ ...selectedPolicy, description: e.target.value })}
                   rows={3}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
               </div>
               <div>
@@ -270,7 +270,7 @@ export default function PlacementPolicyPage() {
                     onChange={(e) => setSelectedPolicy({ ...selectedPolicy, isActive: e.target.checked })}
                     className="w-4 h-4 text-green-600 focus:ring-green-500"
                   />
-                  <span className="text-sm text-gray-700">Active Policy</span>
+                  <span className="text-sm text-muted-foreground">Active Policy</span>
                 </label>
               </div>
             </div>
@@ -278,11 +278,11 @@ export default function PlacementPolicyPage() {
         </div>
 
         {/* Placement Rules Section */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="bg-card rounded-xl shadow-sm p-6">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h3 className="text-lg font-bold text-gray-900">Placement Rules</h3>
-              <p className="text-sm text-gray-500">Rules are evaluated in priority order</p>
+              <h3 className="text-lg font-bold text-foreground">Placement Rules</h3>
+              <p className="text-sm text-muted-foreground">Rules are evaluated in priority order</p>
             </div>
             <button
               onClick={() => setShowAddRule(true)}
@@ -297,13 +297,13 @@ export default function PlacementPolicyPage() {
           {selectedPolicy?.rules.length === 0 ? (
             <div className="text-center py-12 bg-gray-50 rounded-lg">
               <Target className="w-16 h-16 text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-500">No placement rules defined</p>
-              <p className="text-sm text-gray-400 mt-1">Click "Add Rule" to create your first placement rule</p>
+              <p className="text-muted-foreground">No placement rules defined</p>
+              <p className="text-sm text-muted-foreground mt-1">Click "Add Rule" to create your first placement rule</p>
             </div>
           ) : (
             <div className="space-y-3">
               {selectedPolicy?.rules.sort((a, b) => a.priority - b.priority).map((rule, index) => (
-                <div key={rule.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div key={rule.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-border">
                   <div className="flex items-center gap-4 flex-1">
                     <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">
                       {index + 1}
@@ -311,15 +311,15 @@ export default function PlacementPolicyPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         {getRuleTypeIcon(rule.type)}
-                        <span className="font-semibold text-gray-900">{rule.name}</span>
+                        <span className="font-semibold text-foreground">{rule.name}</span>
                         <span className={`px-2 py-0.5 rounded-full text-xs ${
-                          rule.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                          rule.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-muted-foreground'
                         }`}>
                           {rule.isActive ? 'Active' : 'Inactive'}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-600">Condition: {rule.condition}</p>
-                      <p className="text-sm text-gray-600">Action: {rule.action.replace('_', ' ')}</p>
+                      <p className="text-sm text-muted-foreground">Condition: {rule.condition}</p>
+                      <p className="text-sm text-muted-foreground">Action: {rule.action.replace('_', ' ')}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -340,30 +340,30 @@ export default function PlacementPolicyPage() {
       {/* Add Rule Modal */}
       {showAddRule && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md">
+          <div className="bg-card rounded-xl shadow-2xl w-full max-w-md">
             <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-bold text-gray-900">Add Placement Rule</h3>
-              <button onClick={() => setShowAddRule(false)} className="text-gray-500 hover:text-gray-700">
+              <h3 className="text-lg font-bold text-foreground">Add Placement Rule</h3>
+              <button onClick={() => setShowAddRule(false)} className="text-muted-foreground hover:text-muted-foreground">
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="p-4 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Rule Name</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Rule Name</label>
                 <input
                   type="text"
                   value={newRule.name}
                   onChange={(e) => setNewRule({ ...newRule, name: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                   placeholder="e.g., High Achiever Auto Accept"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Rule Type</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Rule Type</label>
                 <select
                   value={newRule.type}
                   onChange={(e) => setNewRule({ ...newRule, type: e.target.value as any })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
                   <option value="score">Score Based</option>
                   <option value="region">Region Based</option>
@@ -374,30 +374,30 @@ export default function PlacementPolicyPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Condition</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Condition</label>
                 <input
                   type="text"
                   value={newRule.condition}
                   onChange={(e) => setNewRule({ ...newRule, condition: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                   placeholder="e.g., score >= 500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Priority (Lower = Higher Priority)</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Priority (Lower = Higher Priority)</label>
                 <input
                   type="number"
                   value={newRule.priority}
                   onChange={(e) => setNewRule({ ...newRule, priority: parseInt(e.target.value) || 0 })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Action</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Action</label>
                 <select
                   value={newRule.action}
                   onChange={(e) => setNewRule({ ...newRule, action: e.target.value as any })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
                   <option value="auto_accept">Auto Accept</option>
                   <option value="priority_consideration">Priority Consideration</option>
@@ -412,14 +412,14 @@ export default function PlacementPolicyPage() {
                     onChange={(e) => setNewRule({ ...newRule, isActive: e.target.checked })}
                     className="w-4 h-4 text-green-600 focus:ring-green-500"
                   />
-                  <span className="text-sm text-gray-700">Active Rule</span>
+                  <span className="text-sm text-muted-foreground">Active Rule</span>
                 </label>
               </div>
             </div>
             <div className="flex justify-end gap-3 p-4 border-t bg-gray-50">
               <button
                 onClick={() => setShowAddRule(false)}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition"
+                className="px-4 py-2 border border-border rounded-lg text-muted-foreground hover:bg-gray-100 transition"
               >
                 Cancel
               </button>

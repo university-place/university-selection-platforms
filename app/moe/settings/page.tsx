@@ -243,29 +243,29 @@ export default function MOESettingsPage() {
   return (
     <MOEDashboardLayout title="MOE Settings" navLinks={NAV_LINKS} theme="purple">
       <div className="max-w-4xl mx-auto space-y-8">
-        <div className="bg-white rounded-2xl shadow-sm p-8 border border-gray-100">
+        <div className="bg-card rounded-2xl shadow-sm p-8 border border-border">
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-purple-100 p-3 rounded-xl text-purple-600">
               <Settings className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">System Rules & Configuration</h2>
-              <p className="text-gray-500 text-sm">Configure national placement behavior and student limits</p>
+              <h2 className="text-2xl font-bold text-foreground">System Rules & Configuration</h2>
+              <p className="text-muted-foreground text-sm">Configure national placement behavior and student limits</p>
             </div>
           </div>
 
           <div className="space-y-6">
-            <div className="p-6 bg-gray-50 rounded-2xl border border-gray-100">
-              <label className="block text-sm font-bold text-gray-800 mb-2">Max University Acceptances per Student</label>
+            <div className="p-6 bg-gray-50 rounded-2xl border border-border">
+              <label className="block text-sm font-bold text-foreground mb-2">Max University Acceptances per Student</label>
               <div className="flex gap-4 items-center">
                 <input
                   type="number"
                   min="1"
                   value={maxAcceptances}
                   onChange={(e) => setMaxAcceptances(parseInt(e.target.value) || 1)}
-                  className="w-32 border-2 border-gray-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-32 border-2 border-border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
-                <p className="text-sm text-gray-500">Students can accept up to this many placements from different universities.</p>
+                <p className="text-sm text-muted-foreground">Students can accept up to this many placements from different universities.</p>
               </div>
             </div>
             <button
@@ -279,45 +279,45 @@ export default function MOESettingsPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm p-8 border border-gray-100">
+        <div className="bg-card rounded-2xl shadow-sm p-8 border border-border">
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-blue-100 p-3 rounded-xl text-blue-600">
               <ClipboardList className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Custom Student Attributes</h2>
-              <p className="text-gray-500 text-sm">Define additional fields for students (e.g., School, Woreda, Subjects)</p>
+              <h2 className="text-2xl font-bold text-foreground">Custom Student Attributes</h2>
+              <p className="text-muted-foreground text-sm">Define additional fields for students (e.g., School, Woreda, Subjects)</p>
             </div>
           </div>
 
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end bg-gray-50 p-6 rounded-2xl border border-gray-100">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end bg-gray-50 p-6 rounded-2xl border border-border">
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Field Name (ID)</label>
+                <label className="block text-xs font-bold text-muted-foreground uppercase mb-1">Field Name (ID)</label>
                 <input
                   type="text"
                   placeholder="e.g. school_name"
                   value={newAttr.name}
                   onChange={(e) => setNewAttr({ ...newAttr, name: e.target.value.toLowerCase() })}
-                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  className="w-full border-2 border-border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Display Label</label>
+                <label className="block text-xs font-bold text-muted-foreground uppercase mb-1">Display Label</label>
                 <input
                   type="text"
                   placeholder="e.g. Previous School"
                   value={newAttr.label}
                   onChange={(e) => setNewAttr({ ...newAttr, label: e.target.value })}
-                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  className="w-full border-2 border-border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Data Type</label>
+                <label className="block text-xs font-bold text-muted-foreground uppercase mb-1">Data Type</label>
                 <select
                   value={newAttr.type}
                   onChange={(e) => setNewAttr({ ...newAttr, type: e.target.value as any })}
-                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  className="w-full border-2 border-border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 >
                   <option value="string">Text</option>
                   <option value="number">Number (Score)</option>
@@ -333,22 +333,22 @@ export default function MOESettingsPage() {
             </div>
 
             {customAttributes.length > 0 && (
-              <div className="border border-gray-200 rounded-2xl overflow-hidden">
+              <div className="border border-border rounded-2xl overflow-hidden">
                 <table className="w-full text-left">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-xs font-bold text-gray-500 uppercase">Field ID</th>
-                      <th className="px-6 py-3 text-xs font-bold text-gray-500 uppercase">Display Label</th>
-                      <th className="px-6 py-3 text-xs font-bold text-gray-500 uppercase">Type</th>
-                      <th className="px-6 py-3 text-xs font-bold text-gray-500 uppercase">Action</th>
+                      <th className="px-6 py-3 text-xs font-bold text-muted-foreground uppercase">Field ID</th>
+                      <th className="px-6 py-3 text-xs font-bold text-muted-foreground uppercase">Display Label</th>
+                      <th className="px-6 py-3 text-xs font-bold text-muted-foreground uppercase">Type</th>
+                      <th className="px-6 py-3 text-xs font-bold text-muted-foreground uppercase">Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                     {customAttributes.map((attr) => (
                       <tr key={attr.name}>
-                        <td className="px-6 py-4 font-mono text-sm text-gray-700">{attr.name}</td>
-                        <td className="px-6 py-4 text-sm font-medium text-gray-900">{attr.label}</td>
-                        <td className="px-6 py-4 text-sm text-gray-500 capitalize">{attr.type}</td>
+                        <td className="px-6 py-4 font-mono text-sm text-muted-foreground">{attr.name}</td>
+                        <td className="px-6 py-4 text-sm font-medium text-foreground">{attr.label}</td>
+                        <td className="px-6 py-4 text-sm text-muted-foreground capitalize">{attr.type}</td>
                         <td className="px-6 py-4">
                           <button
                             onClick={() => removeAttribute(attr.name)}
@@ -375,48 +375,48 @@ export default function MOESettingsPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm p-8 border border-gray-100">
+        <div className="bg-card rounded-2xl shadow-sm p-8 border border-border">
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-green-100 p-3 rounded-xl text-green-600">
               <ClipboardList className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Stream Subject Configuration</h2>
-              <p className="text-gray-500 text-sm">Define dynamic subjects for Natural and Social streams for score calculations</p>
+              <h2 className="text-2xl font-bold text-foreground">Stream Subject Configuration</h2>
+              <p className="text-muted-foreground text-sm">Define dynamic subjects for Natural and Social streams for score calculations</p>
             </div>
           </div>
 
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end bg-gray-50 p-6 rounded-2xl border border-gray-100">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end bg-gray-50 p-6 rounded-2xl border border-border">
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Stream</label>
+                <label className="block text-xs font-bold text-muted-foreground uppercase mb-1">Stream</label>
                 <select
                   value={newSubject.stream}
                   onChange={(e) => setNewSubject({ ...newSubject, stream: e.target.value as 'Natural' | 'Social' })}
-                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                  className="w-full border-2 border-border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                 >
                   <option value="Natural">Natural Science</option>
                   <option value="Social">Social Science</option>
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Subject Key (ID)</label>
+                <label className="block text-xs font-bold text-muted-foreground uppercase mb-1">Subject Key (ID)</label>
                 <input
                   type="text"
                   placeholder="e.g. math_social"
                   value={newSubject.key}
                   onChange={(e) => setNewSubject({ ...newSubject, key: e.target.value.toLowerCase() })}
-                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                  className="w-full border-2 border-border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Display Name</label>
+                <label className="block text-xs font-bold text-muted-foreground uppercase mb-1">Display Name</label>
                 <input
                   type="text"
                   placeholder="e.g. Mathematics"
                   value={newSubject.name}
                   onChange={(e) => setNewSubject({ ...newSubject, name: e.target.value })}
-                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                  className="w-full border-2 border-border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                 />
               </div>
               <button
@@ -429,23 +429,23 @@ export default function MOESettingsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {['Natural', 'Social'].map((stream) => (
-                <div key={stream} className="border border-gray-200 rounded-2xl overflow-hidden">
+                <div key={stream} className="border border-border rounded-2xl overflow-hidden">
                   <div className={`px-6 py-3 font-bold text-white ${stream === 'Natural' ? 'bg-blue-600' : 'bg-purple-600'}`}>
                     {stream} Science Subjects
                   </div>
                   <table className="w-full text-left">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-xs font-bold text-gray-500 uppercase">Key</th>
-                        <th className="px-6 py-3 text-xs font-bold text-gray-500 uppercase">Name</th>
-                        <th className="px-6 py-3 text-xs font-bold text-gray-500 uppercase">Action</th>
+                        <th className="px-6 py-3 text-xs font-bold text-muted-foreground uppercase">Key</th>
+                        <th className="px-6 py-3 text-xs font-bold text-muted-foreground uppercase">Name</th>
+                        <th className="px-6 py-3 text-xs font-bold text-muted-foreground uppercase">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
                       {streamSubjects[stream as 'Natural' | 'Social']?.map((subject) => (
                         <tr key={subject.key}>
-                          <td className="px-6 py-3 font-mono text-xs text-gray-700">{subject.key}</td>
-                          <td className="px-6 py-3 text-sm font-medium text-gray-900">{subject.name}</td>
+                          <td className="px-6 py-3 font-mono text-xs text-muted-foreground">{subject.key}</td>
+                          <td className="px-6 py-3 text-sm font-medium text-foreground">{subject.name}</td>
                           <td className="px-6 py-3">
                             <button
                               onClick={() => removeSubject(stream as 'Natural' | 'Social', subject.key)}
@@ -458,7 +458,7 @@ export default function MOESettingsPage() {
                       ))}
                       {(!streamSubjects[stream as 'Natural' | 'Social'] || streamSubjects[stream as 'Natural' | 'Social'].length === 0) && (
                         <tr>
-                          <td colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500">No subjects defined</td>
+                          <td colSpan={3} className="px-6 py-4 text-center text-sm text-muted-foreground">No subjects defined</td>
                         </tr>
                       )}
                     </tbody>
@@ -478,46 +478,46 @@ export default function MOESettingsPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm p-8 border border-gray-100">
+        <div className="bg-card rounded-2xl shadow-sm p-8 border border-border">
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-indigo-100 p-3 rounded-xl text-indigo-600">
               <Lock className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Security & Password</h2>
-              <p className="text-gray-500 text-sm">Manage your administrator account credentials</p>
+              <h2 className="text-2xl font-bold text-foreground">Security & Password</h2>
+              <p className="text-muted-foreground text-sm">Manage your administrator account credentials</p>
             </div>
           </div>
 
           <form onSubmit={handleChangePassword} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
-                <label className="block text-sm font-bold text-gray-800 mb-1">Current Password</label>
+                <label className="block text-sm font-bold text-foreground mb-1">Current Password</label>
                 <input
                   type="password"
                   value={passwordForm.currentPassword}
                   onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
-                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border-2 border-border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-800 mb-1">New Password</label>
+                <label className="block text-sm font-bold text-foreground mb-1">New Password</label>
                 <input
                   type="password"
                   value={passwordForm.newPassword}
                   onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
-                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border-2 border-border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-800 mb-1">Confirm New Password</label>
+                <label className="block text-sm font-bold text-foreground mb-1">Confirm New Password</label>
                 <input
                   type="password"
                   value={passwordForm.confirmPassword}
                   onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
-                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border-2 border-border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   required
                 />
               </div>

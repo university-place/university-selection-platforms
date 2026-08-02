@@ -107,14 +107,14 @@ export default function ApplyPage() {
     <DashboardLayout title="New Application" navLinks={navLinks} theme="blue">
       <div className="max-w-3xl mx-auto">
         {/* Tabs */}
-        <div className="bg-white rounded-xl shadow mb-6">
+        <div className="bg-card rounded-xl shadow mb-6">
           <div className="flex border-b">
             <button
               onClick={() => setApplicationType('non-autonomous')}
               className={`flex-1 py-3 text-center font-medium transition ${
                 applicationType === 'non-autonomous'
                   ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-500 hover:text-gray-700'
+                  : 'text-muted-foreground hover:text-muted-foreground'
               }`}
             >
               Non‑Autonomous Universities
@@ -124,7 +124,7 @@ export default function ApplyPage() {
               className={`flex-1 py-3 text-center font-medium transition ${
                 applicationType === 'autonomous'
                   ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-500 hover:text-gray-700'
+                  : 'text-muted-foreground hover:text-muted-foreground'
               }`}
             >
               Autonomous Universities
@@ -134,7 +134,7 @@ export default function ApplyPage() {
               className={`flex-1 py-3 text-center font-medium transition ${
                 applicationType === 'scholarship'
                   ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-500 hover:text-gray-700'
+                  : 'text-muted-foreground hover:text-muted-foreground'
               }`}
             >
               Scholarship (Foreign Students)
@@ -143,7 +143,7 @@ export default function ApplyPage() {
         </div>
 
         {/* Form */}
-        <div className="bg-white rounded-xl shadow p-6">
+        <div className="bg-card rounded-xl shadow p-6">
           <h2 className="text-2xl font-bold mb-6">
             {applicationType === 'scholarship' && 'Apply for Scholarship'}
             {applicationType === 'autonomous' && 'Apply to Autonomous University'}
@@ -160,7 +160,7 @@ export default function ApplyPage() {
             <div>
               <label className="block font-medium mb-1">University</label>
               {fetchingUniversities ? (
-                <div className="text-gray-500">Loading...</div>
+                <div className="text-muted-foreground">Loading...</div>
               ) : universities.length === 0 ? (
                 <div className="text-red-500">No universities available for this category.</div>
               ) : (

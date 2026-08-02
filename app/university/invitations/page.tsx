@@ -421,7 +421,7 @@ export default function UniversityInvitationsPage() {
       ACCEPTED: 'bg-green-100 text-green-800',
       REJECTED: 'bg-red-100 text-red-800',
       COMPLETED: 'bg-blue-100 text-blue-800',
-      CANCELLED: 'bg-gray-100 text-gray-800'
+      CANCELLED: 'bg-gray-100 text-foreground'
     };
     return (
       <span className={`px-2 py-1 text-xs font-medium rounded-full ${styles[status] || 'bg-gray-100'}`}>
@@ -471,7 +471,7 @@ export default function UniversityInvitationsPage() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            className="px-3 py-2 border border-border rounded-lg text-sm"
           >
             <option value="all">All Status</option>
             <option value="PENDING">Pending</option>
@@ -483,7 +483,7 @@ export default function UniversityInvitationsPage() {
           <select
             value={academicYear}
             onChange={(e) => setAcademicYear(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            className="px-3 py-2 border border-border rounded-lg text-sm"
           >
             <option value="2024">2024 Academic Year</option>
             <option value="2025">2025 Academic Year</option>
@@ -492,7 +492,7 @@ export default function UniversityInvitationsPage() {
           <select
             value={streamFilter}
             onChange={(e) => setStreamFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            className="px-3 py-2 border border-border rounded-lg text-sm"
           >
             <option value="all">All Streams</option>
             <option value="Natural Science">Natural Science</option>
@@ -530,24 +530,24 @@ export default function UniversityInvitationsPage() {
       </div>
 
       {/* Invitations Table */}
-      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+      <div className="bg-card rounded-xl shadow-sm border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Student</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date & Time</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Location</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Response</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Student</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Type</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Date & Time</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Location</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Response</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {invitations.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">
                     No invitations sent yet. Click "Send Invitation" to get started.
                   </td>
                 </tr>
@@ -567,17 +567,17 @@ export default function UniversityInvitationsPage() {
                   <tr key={inv.id} className="hover:bg-gray-50 transition">
                     <td className="px-6 py-4">
                       <div>
-                        <p className="font-medium text-gray-900">
+                        <p className="font-medium text-foreground">
                           {inv.student?.firstName} {inv.student?.lastName}
                         </p>
-                        <p className="text-xs text-gray-500">{inv.student?.examID}</p>
+                        <p className="text-xs text-muted-foreground">{inv.student?.examID}</p>
                       </div>
                     </td>
                     <td className="px-6 py-4">{getTypeBadge(inv.type)}</td>
                     <td className="px-6 py-4">
                       <div>
                         <p className="text-sm">{new Date(inv.date).toLocaleDateString()}</p>
-                        <p className="text-xs text-gray-500">{new Date(inv.date).toLocaleTimeString()}</p>
+                        <p className="text-xs text-muted-foreground">{new Date(inv.date).toLocaleTimeString()}</p>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-sm">{inv.location || 'TBD'}</td>
@@ -637,7 +637,7 @@ export default function UniversityInvitationsPage() {
                         </button>
                         <button
                           onClick={() => window.open(`/api/universities/interviews/${inv.id}`, '_blank')}
-                          className="text-gray-600 hover:text-gray-800"
+                          className="text-muted-foreground hover:text-foreground"
                           title="View Details"
                         >
                           <Eye className="w-4 h-4" />
@@ -655,33 +655,33 @@ export default function UniversityInvitationsPage() {
       {/* Send Invitation Modal */}
       {showSendModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-auto">
-            <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
+          <div className="bg-card rounded-xl w-full max-w-lg max-h-[90vh] overflow-auto">
+            <div className="sticky top-0 bg-card border-b p-4 flex justify-between items-center">
               <h3 className="text-xl font-bold">Send Invitation</h3>
-              <button onClick={() => setShowSendModal(false)} className="text-gray-500 hover:text-gray-700">
+              <button onClick={() => setShowSendModal(false)} className="text-muted-foreground hover:text-muted-foreground">
                 <XCircle className="w-6 h-6" />
               </button>
             </div>
             
             <form onSubmit={handleSendInvitation} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Exam ID *</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Exam ID *</label>
                 <input
                   type="text"
                   value={inviteForm.examID}
                   onChange={(e) => setInviteForm({ ...inviteForm, examID: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-border rounded-lg px-3 py-2"
                   placeholder="e.g., EXM-2024-001"
                   required
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Invitation Type *</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Invitation Type *</label>
                 <select
                   value={inviteForm.type}
                   onChange={(e) => setInviteForm({ ...inviteForm, type: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-border rounded-lg px-3 py-2"
                 >
                   <option value="INTERVIEW">Interview</option>
                   <option value="EXAM">Entrance Exam</option>
@@ -691,56 +691,56 @@ export default function UniversityInvitationsPage() {
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">Date *</label>
                   <input
                     type="date"
                     value={inviteForm.date}
                     onChange={(e) => setInviteForm({ ...inviteForm, date: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-border rounded-lg px-3 py-2"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Time *</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">Time *</label>
                   <input
                     type="time"
                     value={inviteForm.time}
                     onChange={(e) => setInviteForm({ ...inviteForm, time: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-border rounded-lg px-3 py-2"
                     required
                   />
                 </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Location</label>
                 <input
                   type="text"
                   value={inviteForm.location}
                   onChange={(e) => setInviteForm({ ...inviteForm, location: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-border rounded-lg px-3 py-2"
                   placeholder="e.g., Room 101, Main Building"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Instructions</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Instructions</label>
                 <textarea
                   value={inviteForm.instructions}
                   onChange={(e) => setInviteForm({ ...inviteForm, instructions: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-border rounded-lg px-3 py-2"
                   rows={3}
                   placeholder="What should the student bring? Any special requirements?"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Program (Optional)</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Program (Optional)</label>
                 <input
                   type="text"
                   value={inviteForm.programName}
                   onChange={(e) => setInviteForm({ ...inviteForm, programName: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-border rounded-lg px-3 py-2"
                   placeholder="e.g., Software Engineering"
                 />
               </div>
@@ -749,7 +749,7 @@ export default function UniversityInvitationsPage() {
                 <button
                   type="button"
                   onClick={() => setShowSendModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg"
+                  className="px-4 py-2 border border-border rounded-lg"
                 >
                   Cancel
                 </button>
@@ -768,27 +768,27 @@ export default function UniversityInvitationsPage() {
       {/* Update Result Modal */}
       {showResultModal && selectedInvitation && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-auto">
-            <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
+          <div className="bg-card rounded-xl w-full max-w-lg max-h-[90vh] overflow-auto">
+            <div className="sticky top-0 bg-card border-b p-4 flex justify-between items-center">
               <h3 className="text-xl font-bold">Update Student Result</h3>
-              <button onClick={() => setShowResultModal(false)} className="text-gray-500 hover:text-gray-700">
+              <button onClick={() => setShowResultModal(false)} className="text-muted-foreground hover:text-muted-foreground">
                 <XCircle className="w-6 h-6" />
               </button>
             </div>
             
             <div className="p-6 space-y-4">
               <div className="bg-gray-50 p-3 rounded-lg">
-                <p className="text-sm text-gray-600">Student: <strong>{selectedInvitation.student?.firstName} {selectedInvitation.student?.lastName}</strong></p>
-                <p className="text-sm text-gray-600">Exam ID: <strong>{selectedInvitation.student?.examID}</strong></p>
-                <p className="text-sm text-gray-600">Invitation Type: <strong>{selectedInvitation.type}</strong></p>
+                <p className="text-sm text-muted-foreground">Student: <strong>{selectedInvitation.student?.firstName} {selectedInvitation.student?.lastName}</strong></p>
+                <p className="text-sm text-muted-foreground">Exam ID: <strong>{selectedInvitation.student?.examID}</strong></p>
+                <p className="text-sm text-muted-foreground">Invitation Type: <strong>{selectedInvitation.type}</strong></p>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Result *</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Result *</label>
                 <select
                   value={resultForm.result}
                   onChange={(e) => setResultForm({ ...resultForm, result: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-border rounded-lg px-3 py-2"
                 >
                   <option value="PASS">✅ Pass - Accept Student</option>
                   <option value="FAIL">❌ Fail - Reject Student</option>
@@ -797,7 +797,7 @@ export default function UniversityInvitationsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Invitation/Interview Score (out of 100)</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Invitation/Interview Score (out of 100)</label>
                 <input
                   type="number"
                   min="0"
@@ -806,17 +806,17 @@ export default function UniversityInvitationsPage() {
                   value={resultForm.invitationScore}
                   onChange={(e) => setResultForm({ ...resultForm, invitationScore: e.target.value })}
                   placeholder="e.g., 85.5"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white"
+                  className="w-full border border-border rounded-lg px-3 py-2 bg-card"
                 />
               </div>
               
               {(resultForm.result === 'PASS' || resultForm.result === 'FAIL') && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Result Notes</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">Result Notes</label>
                   <textarea
                     value={resultForm.resultNotes}
                     onChange={(e) => setResultForm({ ...resultForm, resultNotes: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-border rounded-lg px-3 py-2"
                     rows={3}
                     placeholder={resultForm.result === 'PASS' 
                       ? "Congratulations message for the student..." 
@@ -828,25 +828,25 @@ export default function UniversityInvitationsPage() {
               {resultForm.result === 'PASS' && (
                 <>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Acceptance Message</label>
+                    <label className="block text-sm font-medium text-muted-foreground mb-1">Acceptance Message</label>
                     <textarea
                       value={resultForm.acceptanceMessage}
                       onChange={(e) => setResultForm({ ...resultForm, acceptanceMessage: e.target.value })}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                      className="w-full border border-border rounded-lg px-3 py-2"
                       rows={2}
                       placeholder="Congratulations! You have been accepted to our program..."
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Confirmation Deadline</label>
+                    <label className="block text-sm font-medium text-muted-foreground mb-1">Confirmation Deadline</label>
                     <input
                       type="date"
                       value={resultForm.confirmationDeadline}
                       onChange={(e) => setResultForm({ ...resultForm, confirmationDeadline: e.target.value })}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                      className="w-full border border-border rounded-lg px-3 py-2"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Student must confirm by this date</p>
+                    <p className="text-xs text-muted-foreground mt-1">Student must confirm by this date</p>
                   </div>
                 </>
               )}
@@ -854,7 +854,7 @@ export default function UniversityInvitationsPage() {
               <div className="flex justify-end gap-3 pt-4">
                 <button
                   onClick={() => setShowResultModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg"
+                  className="px-4 py-2 border border-border rounded-lg"
                 >
                   Cancel
                 </button>
@@ -873,10 +873,10 @@ export default function UniversityInvitationsPage() {
       {/* Edit Invitation Modal */}
       {showEditModal && selectedInvitation && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-auto">
-            <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
+          <div className="bg-card rounded-xl w-full max-w-lg max-h-[90vh] overflow-auto">
+            <div className="sticky top-0 bg-card border-b p-4 flex justify-between items-center">
               <h3 className="text-xl font-bold">Edit / Reinvite Student</h3>
-              <button onClick={() => setShowEditModal(false)} className="text-gray-500 hover:text-gray-700">
+              <button onClick={() => setShowEditModal(false)} className="text-muted-foreground hover:text-muted-foreground">
                 <XCircle className="w-6 h-6" />
               </button>
             </div>
@@ -890,11 +890,11 @@ export default function UniversityInvitationsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Invitation Type *</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Invitation Type *</label>
                 <select
                   value={editForm.type}
                   onChange={(e) => setEditForm({ ...editForm, type: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-border rounded-lg px-3 py-2"
                 >
                   <option value="INTERVIEW">Interview</option>
                   <option value="EXAM">Entrance Exam</option>
@@ -904,54 +904,54 @@ export default function UniversityInvitationsPage() {
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">Date *</label>
                   <input
                     type="date"
                     value={editForm.date}
                     onChange={(e) => setEditForm({ ...editForm, date: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-border rounded-lg px-3 py-2"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Time *</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">Time *</label>
                   <input
                     type="time"
                     value={editForm.time}
                     onChange={(e) => setEditForm({ ...editForm, time: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-border rounded-lg px-3 py-2"
                     required
                   />
                 </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Location</label>
                 <input
                   type="text"
                   value={editForm.location}
                   onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-border rounded-lg px-3 py-2"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Instructions</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Instructions</label>
                 <textarea
                   value={editForm.instructions}
                   onChange={(e) => setEditForm({ ...editForm, instructions: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-border rounded-lg px-3 py-2"
                   rows={3}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Response Deadline</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Response Deadline</label>
                 <input
                   type="date"
                   value={editForm.responseDeadline}
                   onChange={(e) => setEditForm({ ...editForm, responseDeadline: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-border rounded-lg px-3 py-2"
                 />
               </div>
               
@@ -959,7 +959,7 @@ export default function UniversityInvitationsPage() {
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg"
+                  className="px-4 py-2 border border-border rounded-lg"
                 >
                   Cancel
                 </button>
@@ -978,13 +978,13 @@ export default function UniversityInvitationsPage() {
       {/* Bulk Invitation Modal */}
       {showBulkInviteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-auto">
-            <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
+          <div className="bg-card rounded-xl w-full max-w-lg max-h-[90vh] overflow-auto">
+            <div className="sticky top-0 bg-card border-b p-4 flex justify-between items-center">
               <h3 className="text-xl font-bold flex items-center gap-2">
                 <Users className="w-5 h-5 text-blue-600" />
                 Bulk Invite Students
               </h3>
-              <button onClick={() => setShowBulkInviteModal(false)} className="text-gray-500 hover:text-gray-700">
+              <button onClick={() => setShowBulkInviteModal(false)} className="text-muted-foreground hover:text-muted-foreground">
                 <XCircle className="w-6 h-6" />
               </button>
             </div>
@@ -998,23 +998,23 @@ export default function UniversityInvitationsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Filter By *</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">Filter By *</label>
                   <select
                     value={bulkInviteForm.filterType}
                     onChange={(e) => setBulkInviteForm({ ...bulkInviteForm, filterType: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-border rounded-lg px-3 py-2"
                   >
                     <option value="WEIGHTED_SCORE">Weight Analysis Score</option>
                     <option value="RAW_SCORE">Raw Exam Score</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Minimum Score *</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">Minimum Score *</label>
                   <input
                     type="number"
                     value={bulkInviteForm.threshold}
                     onChange={(e) => setBulkInviteForm({ ...bulkInviteForm, threshold: parseInt(e.target.value) || 0 })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-border rounded-lg px-3 py-2"
                     placeholder="e.g., 350"
                     required
                   />
@@ -1023,11 +1023,11 @@ export default function UniversityInvitationsPage() {
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Target Stream *</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">Target Stream *</label>
                   <select
                     value={bulkInviteForm.stream}
                     onChange={(e) => setBulkInviteForm({ ...bulkInviteForm, stream: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-border rounded-lg px-3 py-2"
                   >
                     <option value="all">All Streams</option>
                     <option value="Natural Science">Natural Science</option>
@@ -1035,11 +1035,11 @@ export default function UniversityInvitationsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Invitation Type *</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">Invitation Type *</label>
                   <select
                     value={bulkInviteForm.type}
                     onChange={(e) => setBulkInviteForm({ ...bulkInviteForm, type: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-border rounded-lg px-3 py-2"
                   >
                     <option value="INTERVIEW">Interview</option>
                     <option value="EXAM">Entrance Exam</option>
@@ -1050,56 +1050,56 @@ export default function UniversityInvitationsPage() {
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">Date *</label>
                   <input
                     type="date"
                     value={bulkInviteForm.date}
                     onChange={(e) => setBulkInviteForm({ ...bulkInviteForm, date: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-border rounded-lg px-3 py-2"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Time *</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">Time *</label>
                   <input
                     type="time"
                     value={bulkInviteForm.time}
                     onChange={(e) => setBulkInviteForm({ ...bulkInviteForm, time: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-border rounded-lg px-3 py-2"
                     required
                   />
                 </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Location</label>
                 <input
                   type="text"
                   value={bulkInviteForm.location}
                   onChange={(e) => setBulkInviteForm({ ...bulkInviteForm, location: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-border rounded-lg px-3 py-2"
                   placeholder="e.g., Room 101, Main Building"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Instructions</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Instructions</label>
                 <textarea
                   value={bulkInviteForm.instructions}
                   onChange={(e) => setBulkInviteForm({ ...bulkInviteForm, instructions: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-border rounded-lg px-3 py-2"
                   rows={3}
                   placeholder="What should the students bring?"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Program (Optional)</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Program (Optional)</label>
                 <input
                   type="text"
                   value={bulkInviteForm.programName}
                   onChange={(e) => setBulkInviteForm({ ...bulkInviteForm, programName: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-border rounded-lg px-3 py-2"
                   placeholder="e.g., Software Engineering"
                 />
               </div>
@@ -1108,7 +1108,7 @@ export default function UniversityInvitationsPage() {
                 <button
                   type="button"
                   onClick={() => setShowBulkInviteModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg"
+                  className="px-4 py-2 border border-border rounded-lg"
                 >
                   Cancel
                 </button>

@@ -258,7 +258,7 @@ export default function UniversityApplicantsPage() {
       case 'REJECTED': 
         return <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 flex items-center gap-1"><XCircle className="w-3 h-3" /> Rejected</span>;
       default: 
-        return <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> Pending Process</span>;
+        return <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-foreground flex items-center gap-1"><AlertCircle className="w-3 h-3" /> Pending Process</span>;
     }
   };
 
@@ -373,26 +373,26 @@ export default function UniversityApplicantsPage() {
 
   return (
     <DashboardLayout title="Applicants" navLinks={navLinks} theme="green">
-      <div className="bg-white rounded-xl shadow overflow-hidden">
+      <div className="bg-card rounded-xl shadow overflow-hidden">
         {/* Header with Search and Filters */}
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-4 border-b border-border">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-              <h2 className="text-lg font-semibold text-gray-800">All Applicants</h2>
-              <p className="text-sm text-gray-500 mt-1">
+              <h2 className="text-lg font-semibold text-foreground">All Applicants</h2>
+              <p className="text-sm text-muted-foreground mt-1">
                 Showing {filteredApplicants.length} of {applicants.length} student(s)
               </p>
             </div>
             
             <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
                   type="text"
                   placeholder="Search by name or exam ID..."
                   value={filters.searchQuery}
                   onChange={(e) => setFilters({ ...filters, searchQuery: e.target.value })}
-                  className="pl-9 pr-4 py-2 border border-gray-300 rounded-lg w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="pl-9 pr-4 py-2 border border-border rounded-lg w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
               </div>
               
@@ -400,7 +400,7 @@ export default function UniversityApplicantsPage() {
                 <button
                   onClick={() => setShowFilters(!showFilters)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition ${
-                    showFilters ? 'bg-green-50 border-green-500 text-green-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                    showFilters ? 'bg-green-50 border-green-500 text-green-700' : 'border-border text-muted-foreground hover:bg-gray-50'
                   }`}
                 >
                   <Filter className="w-4 h-4" />
@@ -430,8 +430,8 @@ export default function UniversityApplicantsPage() {
           {/* Statistics Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2 mt-4">
             <div className="bg-gray-100 rounded-lg p-2 text-center">
-              <p className="text-xs text-gray-600 font-medium">Total</p>
-              <p className="text-lg font-bold text-gray-800">{stats.total}</p>
+              <p className="text-xs text-muted-foreground font-medium">Total</p>
+              <p className="text-lg font-bold text-foreground">{stats.total}</p>
             </div>
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2 text-center">
               <p className="text-xs text-yellow-700 font-medium">Pending</p>
@@ -463,7 +463,7 @@ export default function UniversityApplicantsPage() {
           <div className="flex gap-2 mt-4 border-b pb-2">
             <button 
               onClick={() => setQuickStreamFilter('all')} 
-              className={`px-4 py-2 rounded-lg transition ${quickStreamFilter === 'all' ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+              className={`px-4 py-2 rounded-lg transition ${quickStreamFilter === 'all' ? 'bg-gray-800 text-white' : 'bg-gray-100 text-muted-foreground hover:bg-gray-200'}`}
             >
               All Students ({stats.total})
             </button>
@@ -485,7 +485,7 @@ export default function UniversityApplicantsPage() {
           <div className="flex flex-wrap gap-2 mt-3 pb-2">
             <button 
               onClick={() => setQuickStatusFilter('all')} 
-              className={`px-3 py-1 text-xs rounded-full transition ${quickStatusFilter === 'all' ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+              className={`px-3 py-1 text-xs rounded-full transition ${quickStatusFilter === 'all' ? 'bg-gray-800 text-white' : 'bg-gray-200 text-muted-foreground hover:bg-gray-300'}`}
             >
               All Status
             </button>
@@ -529,16 +529,16 @@ export default function UniversityApplicantsPage() {
           
           {/* Advanced Filter Panel */}
           {showFilters && (
-            <div className="mt-4 p-5 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="mt-4 p-5 bg-gray-50 rounded-lg border border-border">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     <MapPin className="w-3 h-3 inline mr-1" /> Region
                   </label>
                   <select
                     value={filters.region}
                     onChange={(e) => setFilters({ ...filters, region: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                   >
                     <option value="all">All Regions</option>
                     {availableRegions.map(region => (
@@ -548,13 +548,13 @@ export default function UniversityApplicantsPage() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     <Users className="w-3 h-3 inline mr-1" /> Gender
                   </label>
                   <select
                     value={filters.gender}
                     onChange={(e) => setFilters({ ...filters, gender: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                   >
                     <option value="all">All Genders</option>
                     <option value="Male">Male</option>
@@ -563,13 +563,13 @@ export default function UniversityApplicantsPage() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     <BookOpen className="w-3 h-3 inline mr-1" /> Stream
                   </label>
                   <select
                     value={filters.stream}
                     onChange={(e) => setFilters({ ...filters, stream: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                   >
                     <option value="all">All Streams</option>
                     <option value="Natural Science">🔬 Natural Science</option>
@@ -578,13 +578,13 @@ export default function UniversityApplicantsPage() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     <GraduationCap className="w-3 h-3 inline mr-1" /> Sort By
                   </label>
                   <select
                     value={filters.sortBy}
                     onChange={(e) => setFilters({ ...filters, sortBy: e.target.value as any })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                   >
                     <option value="submittedAt">Submission Date</option>
                     <option value="name">Student Name (A-Z)</option>
@@ -595,18 +595,18 @@ export default function UniversityApplicantsPage() {
               </div>
               
               {/* Score Filter Section */}
-              <div className="mb-5 p-4 bg-white rounded-lg border border-gray-200">
-                <h4 className="font-medium text-gray-800 mb-3 flex items-center gap-2">
+              <div className="mb-5 p-4 bg-card rounded-lg border border-border">
+                <h4 className="font-medium text-foreground mb-3 flex items-center gap-2">
                   <Award className="w-4 h-4 text-blue-600" />
                   Filter by Exam Score
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm text-gray-600 mb-1">Score Type</label>
+                    <label className="block text-sm text-muted-foreground mb-1">Score Type</label>
                     <select
                       value={filters.scoreType}
                       onChange={(e) => setFilters({ ...filters, scoreType: e.target.value as any })}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                     >
                       <option value="all">All Scores</option>
                       <option value="greater">Greater Than or Equal</option>
@@ -617,12 +617,12 @@ export default function UniversityApplicantsPage() {
                   
                   {filters.scoreType === 'greater' && (
                     <div>
-                      <label className="block text-sm text-gray-600 mb-1">Minimum Score ≥</label>
+                      <label className="block text-sm text-muted-foreground mb-1">Minimum Score ≥</label>
                       <input
                         type="number"
                         value={filters.scoreValue}
                         onChange={(e) => setFilters({ ...filters, scoreValue: parseInt(e.target.value) || 0 })}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                         placeholder="e.g., 450"
                       />
                     </div>
@@ -630,12 +630,12 @@ export default function UniversityApplicantsPage() {
                   
                   {filters.scoreType === 'less' && (
                     <div>
-                      <label className="block text-sm text-gray-600 mb-1">Maximum Score ≤</label>
+                      <label className="block text-sm text-muted-foreground mb-1">Maximum Score ≤</label>
                       <input
                         type="number"
                         value={filters.scoreValue}
                         onChange={(e) => setFilters({ ...filters, scoreValue: parseInt(e.target.value) || 0 })}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                         placeholder="e.g., 400"
                       />
                     </div>
@@ -644,22 +644,22 @@ export default function UniversityApplicantsPage() {
                   {filters.scoreType === 'range' && (
                     <>
                       <div>
-                        <label className="block text-sm text-gray-600 mb-1">Minimum Score</label>
+                        <label className="block text-sm text-muted-foreground mb-1">Minimum Score</label>
                         <input
                           type="number"
                           value={filters.scoreMin}
                           onChange={(e) => setFilters({ ...filters, scoreMin: parseInt(e.target.value) || 0 })}
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                          className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                           placeholder="Min"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm text-gray-600 mb-1">Maximum Score</label>
+                        <label className="block text-sm text-muted-foreground mb-1">Maximum Score</label>
                         <input
                           type="number"
                           value={filters.scoreMax}
                           onChange={(e) => setFilters({ ...filters, scoreMax: parseInt(e.target.value) || 700 })}
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                          className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                           placeholder="Max"
                         />
                       </div>
@@ -669,18 +669,18 @@ export default function UniversityApplicantsPage() {
               </div>
               
               {/* Age Filter Section */}
-              <div className="p-4 bg-white rounded-lg border border-gray-200">
-                <h4 className="font-medium text-gray-800 mb-3 flex items-center gap-2">
+              <div className="p-4 bg-card rounded-lg border border-border">
+                <h4 className="font-medium text-foreground mb-3 flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-blue-600" />
                   Filter by Age
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm text-gray-600 mb-1">Age Type</label>
+                    <label className="block text-sm text-muted-foreground mb-1">Age Type</label>
                     <select
                       value={filters.ageType}
                       onChange={(e) => setFilters({ ...filters, ageType: e.target.value as any })}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                     >
                       <option value="all">All Ages</option>
                       <option value="greater">Greater Than or Equal</option>
@@ -691,12 +691,12 @@ export default function UniversityApplicantsPage() {
                   
                   {filters.ageType === 'greater' && (
                     <div>
-                      <label className="block text-sm text-gray-600 mb-1">Minimum Age ≥</label>
+                      <label className="block text-sm text-muted-foreground mb-1">Minimum Age ≥</label>
                       <input
                         type="number"
                         value={filters.ageValue}
                         onChange={(e) => setFilters({ ...filters, ageValue: parseInt(e.target.value) || 0 })}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                         placeholder="e.g., 20"
                       />
                     </div>
@@ -704,12 +704,12 @@ export default function UniversityApplicantsPage() {
                   
                   {filters.ageType === 'less' && (
                     <div>
-                      <label className="block text-sm text-gray-600 mb-1">Maximum Age ≤</label>
+                      <label className="block text-sm text-muted-foreground mb-1">Maximum Age ≤</label>
                       <input
                         type="number"
                         value={filters.ageValue}
                         onChange={(e) => setFilters({ ...filters, ageValue: parseInt(e.target.value) || 0 })}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                         placeholder="e.g., 25"
                       />
                     </div>
@@ -718,22 +718,22 @@ export default function UniversityApplicantsPage() {
                   {filters.ageType === 'range' && (
                     <>
                       <div>
-                        <label className="block text-sm text-gray-600 mb-1">Minimum Age</label>
+                        <label className="block text-sm text-muted-foreground mb-1">Minimum Age</label>
                         <input
                           type="number"
                           value={filters.ageMin}
                           onChange={(e) => setFilters({ ...filters, ageMin: parseInt(e.target.value) || 0 })}
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                          className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                           placeholder="Min Age"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm text-gray-600 mb-1">Maximum Age</label>
+                        <label className="block text-sm text-muted-foreground mb-1">Maximum Age</label>
                         <input
                           type="number"
                           value={filters.ageMax}
                           onChange={(e) => setFilters({ ...filters, ageMax: parseInt(e.target.value) || 100 })}
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                          className="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                           placeholder="Max Age"
                         />
                       </div>
@@ -747,7 +747,7 @@ export default function UniversityApplicantsPage() {
                 <button
                   onClick={() => setFilters({ ...filters, sortOrder: 'asc' })}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition ${
-                    filters.sortOrder === 'asc' ? 'bg-green-500 text-white border-green-500' : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                    filters.sortOrder === 'asc' ? 'bg-green-500 text-white border-green-500' : 'border-border text-muted-foreground hover:bg-gray-50'
                   }`}
                 >
                   <SortAsc className="w-4 h-4" />
@@ -756,7 +756,7 @@ export default function UniversityApplicantsPage() {
                 <button
                   onClick={() => setFilters({ ...filters, sortOrder: 'desc' })}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition ${
-                    filters.sortOrder === 'desc' ? 'bg-green-500 text-white border-green-500' : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                    filters.sortOrder === 'desc' ? 'bg-green-500 text-white border-green-500' : 'border-border text-muted-foreground hover:bg-gray-50'
                   }`}
                 >
                   <SortDesc className="w-4 h-4" />
@@ -772,23 +772,23 @@ export default function UniversityApplicantsPage() {
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Exam ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Student Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stream</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Program</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Region</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Gender</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Age</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Score</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Submitted</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Exam ID</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Student Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Stream</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Program</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Region</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Gender</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Age</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Score</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Submitted</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {filteredApplicants.length === 0 ? (
                 <tr>
-                  <td colSpan={11} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={11} className="px-6 py-8 text-center text-muted-foreground">
                     No applicants match your filters.
                   </td>
                 </tr>
@@ -803,7 +803,7 @@ export default function UniversityApplicantsPage() {
                       ) : applicant.student?.stream === 'Social Science' ? (
                         <span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">📚 Social</span>
                       ) : (
-                        <span className="text-gray-400 text-xs">—</span>
+                        <span className="text-muted-foreground text-xs">—</span>
                       )}
                     </td>
                     <td className="px-6 py-4 text-sm max-w-[200px] truncate">{applicant.programName || applicant.program?.name || '—'}</td>
@@ -821,7 +821,7 @@ export default function UniversityApplicantsPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4">{getStatusBadge(applicant.status, applicant.finalStatus)}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
+                    <td className="px-6 py-4 text-sm text-muted-foreground">
                       {applicant.submittedAt ? new Date(applicant.submittedAt).toLocaleDateString() : '—'}
                     </td>
                     <td className="px-6 py-4">
@@ -841,12 +841,12 @@ export default function UniversityApplicantsPage() {
         </div>
         
         {/* Footer with pagination info */}
-        <div className="px-6 py-3 border-t border-gray-200 bg-gray-50">
-          <div className="flex justify-between items-center text-sm text-gray-500">
+        <div className="px-6 py-3 border-t border-border bg-gray-50">
+          <div className="flex justify-between items-center text-sm text-muted-foreground">
             <p>Showing {filteredApplicants.length} of {applicants.length} applicants</p>
             <div className="flex gap-2">
-              <button className="px-3 py-1 rounded border hover:bg-white transition">Previous</button>
-              <button className="px-3 py-1 rounded border hover:bg-white transition">Next</button>
+              <button className="px-3 py-1 rounded border hover:bg-card transition">Previous</button>
+              <button className="px-3 py-1 rounded border hover:bg-card transition">Next</button>
             </div>
           </div>
         </div>
