@@ -140,6 +140,21 @@ export const authAPI = {
     }
   },
 
+  // MOE Admin Register
+  moeRegister: async (data: any) => {
+    try {
+      const res = await fetch(`${API_BASE}/moe/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...data, confirmPassword: data.confirmPassword || data.password }),
+      });
+      return await res.json();
+    } catch (error) {
+      console.error('MOE register error:', error);
+      return { success: false, error: 'Network error' };
+    }
+  },
+
   // Student Logout
   logout: () => {
     authHelpers.logout();
