@@ -148,7 +148,11 @@ export const authAPI = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...data, confirmPassword: data.confirmPassword || data.password }),
       });
-      return await res.json();
+      const result = await res.json();
+      if (!res.ok) {
+        return { success: false, error: result.message || result.error || 'Registration failed' };
+      }
+      return result;
     } catch (error) {
       console.error('MOE register error:', error);
       return { success: false, error: 'Network error' };
